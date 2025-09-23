@@ -1,0 +1,107 @@
+#############################################
+# Global ignores
+#############################################
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+#############################################
+# Flutter / Dart
+#############################################
+# Build outputs
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Generated files
+*.dart_tool/
+*.flutter-plugins
+*.flutter-plugins-dependencies
+*.metadata
+
+# Coverage
+coverage/
+
+# Android
+android/.gradle/
+android/app/build/
+android/local.properties
+*.keystore
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Web
+web/.dart_tool/
+
+#############################################
+# .NET / C#
+#############################################
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+out/
+
+# VS stuff
+*.user
+*.rsuser
+*.suo
+*.cache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Entity Framework
+Migrations/
+
+# Azure
+PublishProfiles/
+
+# Test results
+TestResult*/
+*.TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+#############################################
+# Others
+#############################################
+.env
+.env.local
+.env.*.local
+*.sqlite
+*.db
+docs/project-guide/
