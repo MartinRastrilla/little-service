@@ -11,22 +11,24 @@ Este monorepo incluye:
 
 ## 🏗️ Arquitectura del Monorepo
 
+```plaintext
 /little-service/
-│── backend/ # API en .NET 8
-│ ├── src/ # Código fuente
-│ ├── tests/ # Tests unitarios/integración
-│ └── MiApp.sln # Solution principal
+│── backend/              # API en .NET 8
+│   ├── src/              # Código fuente
+│   ├── tests/            # Tests unitarios/integración
+│   └── MiApp.sln         # Solution principal
 │
-│── mobile/ # App Flutter
-│ ├── lib/ # Código fuente
-│ ├── test/ # Tests unitarios/widget
-│ └── pubspec.yaml # Dependencias Flutter
+│── mobile/               # App Flutter
+│   ├── lib/              # Código fuente
+│   ├── test/             # Tests unitarios/widget
+│   └── pubspec.yaml      # Dependencias Flutter
 │
-│── docs/ # Documentación adicional
+│── docs/                 # Documentación adicional
 │
-│── .github/workflows/ # CI con GitHub Actions
-│── README.md # Este archivo
-│── LICENSE # Licencia (MIT recomendada)
+│── .github/workflows/    # CI con GitHub Actions
+│── README.md             # Este archivo
+│── LICENSE               # Licencia (MIT recomendada)
+```
 
 
 ---
