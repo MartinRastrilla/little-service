@@ -57,63 +57,63 @@ Este monorepo incluye:
 
 ## 🔧 Cómo correr el proyecto
 
-### 1. Clonar el repo
+### 1 Clonar el repo
+```bash
 git clone https://github.com/TU-USUARIO/little-service.git
 cd mi-app-fiverr-clone
+```
 
 ### 2. Backend (.NET 8)
-Requisitos
+**Requisitos**
+    - .NET 8 SDK
+    - Docker Desktop (para la base de datos)
 
-.NET 8 SDK
-
-Docker Desktop (para la base de datos)
-
-Pasos
+**Pasos**
+```bash
 cd backend
 dotnet restore
 dotnet build
-dotnet run --project src/MiApp.Api
+dotnet run --project src/LittleService.Api
+```
 
-La API estará disponible en: https://localhost:5001
-Swagger UI: https://localhost:5001/swagger
+    - La API estará disponible en: https://localhost:5001
+    - Swagger UI: https://localhost:5001/swagger
 
 ### 3. Mobile (Flutter)
-Requisitos
+- **Requisitos**
+    - Flutter SDK 3.x
+    - Android Studio o Xcode
 
-Flutter SDK 3.x
-
-Android Studio o Xcode
-
-Pasos
+**Pasos**
+```bash
 cd mobile
 flutter pub get
 flutter run
+```
 
 ## 🧪 CI/CD con GitHub Actions
 
-Este monorepo incluye integración continua:
-
-Cada push corre tests de .NET 8 y Flutter.
-
-Configuración en: .github/workflows/ci.yml.
+**Este monorepo incluye integración continua:**
+    - Cada push corre tests de .NET 8 y Flutter.
+    - Configuración en: .github/workflows/ci.yml.
 
 ## 📌 Roadmap (MVP)
 
- Registro y login de usuarios (cliente/freelancer).
+- Registro y login de usuarios (cliente/freelancer).
 
- Perfiles con descripción, skills e imagen.
+- Perfiles con descripción, skills e imagen.
 
- Publicación de servicios.
+- Publicación de servicios.
 
- Búsqueda y contratación de servicios.
+- Búsqueda y contratación de servicios.
 
- Chat en tiempo real (SignalR).
+- Chat en tiempo real (SignalR).
 
- Reseñas y calificaciones.
+- Reseñas y calificaciones.
 
- Notificaciones push.
+- Notificaciones push.
 
  ## 👨‍💻 Autor
 
-Proyecto desarrollado por Martin Rastrilla como iniciativa universitaria y de portfolio.
+**Proyecto desarrollado por Martin Rastrilla como iniciativa universitaria y de portfolio.**
 Si te interesa colaborar o dar feedback, ¡bienvenido! 🚀
