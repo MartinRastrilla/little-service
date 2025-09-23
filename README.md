@@ -116,4 +116,3 @@ flutter run
  ## 👨‍💻 Autor
 
 - **Proyecto desarrollado por Martin Rastrilla como iniciativa universitaria y de portfolio.**
-- Si te interesa colaborar o dar feedback, ¡bienvenido! 🚀
