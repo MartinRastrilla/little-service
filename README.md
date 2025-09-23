@@ -60,11 +60,11 @@ Este monorepo incluye:
 ### 1 Clonar el repo
 ```bash
 git clone https://github.com/TU-USUARIO/little-service.git
-cd mi-app-fiverr-clone
+cd little-service
 ```
 
 ### 2. Backend (.NET 8)
-**Requisitos**
+- **Requisitos**
     - .NET 8 SDK
     - Docker Desktop (para la base de datos)
 
@@ -93,7 +93,7 @@ flutter run
 
 ## 🧪 CI/CD con GitHub Actions
 
-**Este monorepo incluye integración continua:**
+- **Este monorepo incluye integración continua:**
     - Cada push corre tests de .NET 8 y Flutter.
     - Configuración en: .github/workflows/ci.yml.
 
@@ -115,5 +115,5 @@ flutter run
 
  ## 👨‍💻 Autor
 
-**Proyecto desarrollado por Martin Rastrilla como iniciativa universitaria y de portfolio.**
-Si te interesa colaborar o dar feedback, ¡bienvenido! 🚀
+- **Proyecto desarrollado por Martin Rastrilla como iniciativa universitaria y de portfolio.**
+- Si te interesa colaborar o dar feedback, ¡bienvenido! 🚀
