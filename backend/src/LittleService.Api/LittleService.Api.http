@@ -1,0 +1,6 @@
+@LittleService.Api_HostAddress = http://localhost:5278
+
+GET {{LittleService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
