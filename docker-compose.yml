@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:15
+    container_name: little-service-db
+    restart: always
+    environment:
+      POSTGRES_USER: little-service-user
+      POSTGRES_PASSWORD: little-service-password
+      POSTGRES_DB: little-service-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - little-service-db-data:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: little-service-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@little-service.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  little-service-db-data:
+  pgadmin-data:
