@@ -1,40 +1,34 @@
-using LittleService.Application.DTOs;
-using LittleService.Application.DTOs.Common;
-using LittleService.Application.Interfaces;
+using LittleService.Application.DTOs.Auth;
+using LittleService.Application.UseCases.Auth.LoginUser;
+using LittleService.Application.UseCases.Auth.RegisterUser;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly RegisterUserCommandHandler _registerUserHandler;
+    private readonly LoginUserCommandHandler _loginUserHandler;
 
-    public AuthController(IAuthService authService)
+    public AuthController(RegisterUserCommandHandler registerUserHandler, LoginUserCommandHandler loginUserHandler)
     {
-        _authService = authService;
-    }
-
-    [HttpPost("login")]
-    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
-    {
-        var result = await _authService.LoginAsync(loginDto);
-
-        if (!result.IsSuccess)
-        {
-            return result.ErrorCode switch
-            {
-                "INVALID_CREDENTIALS" => Unauthorized(new { message = result.Error }),
-                _ => BadRequest(new { message = result.Error })
-            };
-        }
-
-        return Ok(result.Value);
+        _registerUserHandler = registerUserHandler;
+        _loginUserHandler = loginUserHandler;
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto)
     {
-        var result = await _authService.RegisterAsync(registerDto);
+        var command = new RegisterUserCommand
+        {
+            Name = registerDto.Name,
+            Email = registerDto.Email,
+            Password = registerDto.Password,
+            ConfirmPassword = registerDto.ConfirmPassword,
+            Roles = registerDto.Roles,
+        };
+
+        var result = await _registerUserHandler.HandleAsync(command);
 
         if (!result.IsSuccess)
         {
@@ -45,23 +39,50 @@ public class AuthController : ControllerBase
                 "PASSWORD_EMPTY" or "PASSWORD_TOO_SHORT" or "PASSWORD_TOO_LONG"
                 or "PASSWORD_NO_UPPERCASE" or "PASSWORD_NO_LOWERCASE" or "PASSWORD_NO_DIGIT"
                     => BadRequest(new { message = result.Error }),
+                "NO_ROLES_SPECIFIED" or "INVALID_ROLES" or "ROLES_NOT_FOUND"
+                    => BadRequest(new { message = result.Error }),
                 _ => BadRequest(new { message = result.Error })
             };
         }
 
-        return Ok(result.Value);
+        var response = new AuthResponseDto
+        {
+            Token = result.Value!.Token,
+            ExpiresAt = result.Value!.ExpiresAt,
+            User = result.Value!.User,
+        };
+
+        return Ok(response);
     }
 
-    [HttpPost("validate")]
-    public async Task<ActionResult<bool>> Validate([FromBody] LoginDto loginDto)
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
     {
-        var result = await _authService.ValidateUserAsync(loginDto.Email, loginDto.Password);
+        var command = new LoginUserCommand
+        {
+            Email = loginDto.Email,
+            Password = loginDto.Password,
+        };
+
+        var result = await _loginUserHandler.HandleAsync(command);
 
         if (!result.IsSuccess)
         {
-            return BadRequest(new { message = result.Error });
+            return result.ErrorCode switch
+            {
+                "INVALID_CREDENTIALS" => Unauthorized(new { message = result.Error }),
+                "INVALID_PASSWORD" => Unauthorized(new { message = result.Error }),
+                _ => BadRequest(new { message = result.Error })
+            };
         }
 
-        return Ok(new { isValid = result.Value });
+        var response = new AuthResponseDto
+        {
+            Token = result.Value!.Token,
+            ExpiresAt = result.Value!.ExpiresAt,
+            User = result.Value!.User,
+        };
+
+        return Ok(response);
     }
 }
