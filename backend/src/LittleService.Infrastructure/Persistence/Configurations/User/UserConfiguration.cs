@@ -43,12 +43,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasOne(u => u.Freelancer)
             .WithOne(f => f.User)
-            .HasForeignKey<Freelancer>(f => f.UserId)
+            .HasForeignKey<Freelancer>(f => f.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(u => u.Client)
             .WithOne(c => c.User)
-            .HasForeignKey<Client>(c => c.UserId)
+            .HasForeignKey<Client>(c => c.Id)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

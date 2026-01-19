@@ -41,5 +41,19 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ServiceConfiguration());
         modelBuilder.ApplyConfiguration(new FreelancerConfiguration());
         modelBuilder.ApplyConfiguration(new ClientConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractPaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractConfiguration());
+        modelBuilder.ApplyConfiguration(new ServiceRequestConfiguration());
+        modelBuilder.ApplyConfiguration(new ServiceRequestPhotoConfiguration());
+        modelBuilder.ApplyConfiguration(new FreelancerApplicationConfiguration());
+        modelBuilder.ApplyConfiguration(new CertificateConfiguration());
+        modelBuilder.ApplyConfiguration(new SkillConfiguration());
+        modelBuilder.ApplyConfiguration(new FreelancerSkillConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageConfiguration());
+        modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+        modelBuilder.ApplyConfiguration(new RatingConfiguration());
+        modelBuilder.ApplyConfiguration(new ReportConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityLogConfiguration());
     }
 }

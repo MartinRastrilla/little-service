@@ -8,7 +8,7 @@ public class FreelancerConfiguration : IEntityTypeConfiguration<Freelancer>
 {
     public void Configure(EntityTypeBuilder<Freelancer> builder)
     {
-        builder.HasKey(f => f.UserId);
+        builder.HasKey(f => f.Id);
 
         builder.Property(f => f.Bio)
             .IsRequired(false)
@@ -29,7 +29,7 @@ public class FreelancerConfiguration : IEntityTypeConfiguration<Freelancer>
         //? Relationships
         builder.HasOne(f => f.User)
             .WithOne(u => u.Freelancer)
-            .HasForeignKey<Freelancer>(f => f.UserId)
+            .HasForeignKey<Freelancer>(f => f.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(f => f.Services)

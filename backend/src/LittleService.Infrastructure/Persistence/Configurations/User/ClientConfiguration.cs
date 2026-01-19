@@ -8,7 +8,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
 {
     public void Configure(EntityTypeBuilder<Client> builder)
     {
-        builder.HasKey(c => c.UserId);
+        builder.HasKey(c => c.Id);
 
         builder.Property(c => c.TotalContracts)
             .IsRequired()
@@ -17,7 +17,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
         //? Relationships
         builder.HasOne(c => c.User)
             .WithOne(u => u.Client)
-            .HasForeignKey<Client>(c => c.UserId)
+            .HasForeignKey<Client>(c => c.Id)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
