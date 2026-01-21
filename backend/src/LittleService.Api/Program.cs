@@ -1,4 +1,5 @@
 using System.Text;
+using LittleService.Api.Middleware;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Application.Mappings;
 using LittleService.Application.UseCases.Auth.LoginUser;
@@ -120,6 +121,10 @@ using (var scope = app.Services.CreateScope())
 // ------------------------------------
 // Middleware
 // ------------------------------------
+
+//? Global Exception Handler (must be placed before other middleware)
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -128,6 +133,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Little Service API v1");
     });
 }
+
 
 //? File Storage
 app.UseStaticFiles();
