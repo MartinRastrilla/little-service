@@ -3,6 +3,7 @@ using LittleService.Application.Common;
 using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace LittleService.Application.UseCases.Client.UpdateClient;
 
@@ -11,16 +12,19 @@ public class UpdateClientCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IFileStorageService _fileStorageService;
+    private readonly ILogger<UpdateClientCommandHandler> _logger;
 
-    public UpdateClientCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService)
+    public UpdateClientCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, ILogger<UpdateClientCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _fileStorageService = fileStorageService;
+        _logger = logger;
     }
 
     public async Task<Result<UpdateClientResult>> HandleAsync(UpdateClientCommand command, CancellationToken cancellationToken = default)
     {
+        var hasChanges = false;
         //? 1. Verify user exists
         var user = await _unitOfWork.Users.GetByIdAsync(command.UserId, cancellationToken);
         if (user == null)
@@ -34,50 +38,46 @@ public class UpdateClientCommandHandler
             return Result<UpdateClientResult>.Failure("Cliente no encontrado", "CLIENT_NOT_FOUND");
         }
 
-        //? 3. Save profile picture
-        if (command.ProfilePicture != null && string.IsNullOrEmpty(command.ProfilePictureFileName))
+        //? 3. Update client Name
+        if (!string.IsNullOrWhiteSpace(command.Name))
         {
-            //? 3.1 Delete old profile picture if exists
-            if (!string.IsNullOrEmpty(user.ProfilePictureUrl) && !user.ProfilePictureUrl.Contains("default-profile-picture.png"))
-            {
-                var oldFilePath = user.ProfilePictureUrl.Replace(_fileStorageService.GetFileUrl(""), "");
-                await _fileStorageService.DeleteFileAsync(oldFilePath, cancellationToken);
-            }
-
-            //? 3.2 Save new profile picture
-            var extension = Path.GetExtension(command.ProfilePictureFileName);
-            var baseFileName = $"{user.Id}_profile_picture";
-            var fileNameWithExtension = $"{baseFileName}{extension}";
-
-            //? 3.3 Save file
-            var savedFilePath = await _fileStorageService.SaveFileAsync(
-                command.ProfilePicture,
-                fileNameWithExtension,
-                "profiles",
-                cancellationToken
-            );
-
-            //? 3.4 Update user profile picture url
-            user.ProfilePictureUrl = _fileStorageService.GetFileUrl(savedFilePath);
-        }
-
-        //? 4. Update user
-        var hasChanges = false;
-        if (string.IsNullOrEmpty(command.Name) || command.Name != user.Name)
-        {
-            user.Name = command.Name ?? user.Name;
+            user.UpdateName(command.Name);
             hasChanges = true;
         }
 
-        if (hasChanges)
+        //? 4. Update client Profile Picture
+        if (command.ProfilePicture != null && !string.IsNullOrEmpty(command.ProfilePictureFileName))
         {
-            user.UpdatedAt = DateTime.UtcNow;
-            await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var profilePictureUrl = await _fileStorageService.SaveFileAsync(command.ProfilePicture, command.ProfilePictureFileName, "profiles", cancellationToken);
+            if (profilePictureUrl == null)
+            {
+                return Result<UpdateClientResult>.Failure("Error al subir la foto de perfil", "PROFILE_PICTURE_UPLOAD_ERROR");
+            }
+            user.UpdateProfilePicture(profilePictureUrl);
+            hasChanges = true;
         }
 
-        //? 5. Map to DTO
+        //? 5. Update user
+        if (hasChanges)
+        {
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                user.UpdatedAt = DateTime.UtcNow;
+                await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                _logger.LogError(ex, "Error al actualizar el cliente");
+                return Result<UpdateClientResult>.Failure("Error al actualizar el cliente", "UPDATE_CLIENT_ERROR");
+            }
+        }
+        //? 6. Map to DTO
         var userDto = _mapper.Map<UserDto>(user);
+        _logger.LogInformation("Cliente actualizado correctamente");
         return Result<UpdateClientResult>.Success(new UpdateClientResult
         {
             User = userDto

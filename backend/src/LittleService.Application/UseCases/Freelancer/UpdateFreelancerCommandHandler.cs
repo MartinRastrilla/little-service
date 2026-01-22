@@ -3,6 +3,7 @@ using LittleService.Application.Common;
 using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace LittleService.Application.UseCases.Freelancer.UpdateFreelancer;
 
@@ -11,16 +12,19 @@ public class UpdateFreelancerCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IFileStorageService _fileStorageService;
+    private readonly ILogger<UpdateFreelancerCommandHandler> _logger;
 
-    public UpdateFreelancerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService)
+    public UpdateFreelancerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, ILogger<UpdateFreelancerCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _fileStorageService = fileStorageService;
+        _logger = logger;
     }
 
     public async Task<Result<UpdateFreelancerResult>> HandleAsync(UpdateFreelancerCommand command, CancellationToken cancellationToken = default)
     {
+        var hasChanges = false;
         //? 1. Verify user exists
         var user = await _unitOfWork.Users.GetByIdAsync(command.UserId, cancellationToken);
         if (user == null)
@@ -28,60 +32,59 @@ public class UpdateFreelancerCommandHandler
             return Result<UpdateFreelancerResult>.Failure("Usuario no encontrado", "USER_NOT_FOUND");
         }
 
-        //? 2. Verify freelancer exists
+        //? 2. Verify user has Freelancer role
         if (user.Freelancer == null)
         {
             return Result<UpdateFreelancerResult>.Failure("Freelancer no encontrado", "FREELANCER_NOT_FOUND");
         }
 
-        //? 3. Save profile picture
-        if (command.ProfilePicture != null && string.IsNullOrEmpty(command.ProfilePictureFileName))
+        //? 3. Update freelancer Name
+        if (!string.IsNullOrWhiteSpace(command.Name))
         {
-            //? 3.1 Delete old profile picture if exists
-            if (!string.IsNullOrEmpty(user.ProfilePictureUrl) && !user.ProfilePictureUrl.Contains("default-profile-picture.png"))
+            user.UpdateName(command.Name);
+            hasChanges = true;
+        }
+
+        //? 4. Update freelancer Bio
+        if (!string.IsNullOrWhiteSpace(command.Bio))
+        {
+            user.Freelancer.UpdateBio(command.Bio);
+            hasChanges = true;
+        }
+
+        //? 5. Update freelancer Profile Picture
+        if (command.ProfilePicture != null && !string.IsNullOrEmpty(command.ProfilePictureFileName))
+        {
+            var profilePictureUrl = await _fileStorageService.SaveFileAsync(command.ProfilePicture, command.ProfilePictureFileName, "profiles", cancellationToken);
+            if (profilePictureUrl == null)
             {
-                var oldFilePath = user.ProfilePictureUrl.Replace(_fileStorageService.GetFileUrl(""), "");
-                await _fileStorageService.DeleteFileAsync(oldFilePath, cancellationToken);
+                return Result<UpdateFreelancerResult>.Failure("Error al subir la foto de perfil", "PROFILE_PICTURE_UPLOAD_ERROR");
             }
-
-            //? 3.2 Save new profile picture
-            var extension = Path.GetExtension(command.ProfilePictureFileName);
-            var baseFileName = $"{user.Id}_profile_picture";
-            var fileNameWithExtension = $"{baseFileName}{extension}";
-
-            //? 3.3 Save file
-            var savedFilePath = await _fileStorageService.SaveFileAsync(
-                command.ProfilePicture,
-                fileNameWithExtension,
-                "profiles",
-                cancellationToken
-            );
-
-            //? 3.4 Update user profile picture url
-            user.ProfilePictureUrl = _fileStorageService.GetFileUrl(savedFilePath);
-        }
-
-        //? 4. Update user
-        var hasChanges = false;
-        if (string.IsNullOrEmpty(command.Name) || command.Name != user.Name)
-        {
-            user.Name = command.Name ?? user.Name;
+            user.UpdateProfilePicture(profilePictureUrl);
             hasChanges = true;
         }
-        if (string.IsNullOrEmpty(command.Bio) || command.Bio != user.Freelancer.Bio)
-        {
-            user.Freelancer.Bio = command.Bio;
-            hasChanges = true;
-        }
+
+        //? 6. Update user
         if (hasChanges)
         {
-            user.UpdatedAt = DateTime.UtcNow;
-            await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                user.UpdatedAt = DateTime.UtcNow;
+                await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                _logger.LogError(ex, "Error al actualizar el freelancer");
+                return Result<UpdateFreelancerResult>.Failure("Error al actualizar el freelancer", "UPDATE_FREELANCER_ERROR");
+            }
         }
-
-        //? 5. Map to DTO
+        //? 7. Map to DTO
         var userDto = _mapper.Map<UserDto>(user);
+        _logger.LogInformation("Freelancer actualizado correctamente");
         return Result<UpdateFreelancerResult>.Success(new UpdateFreelancerResult
         {
             User = userDto
