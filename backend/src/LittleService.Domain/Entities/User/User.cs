@@ -325,6 +325,72 @@ public class User : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Sets the Freelancer profile for this user.
+    /// This method should be called when a user is assigned the Freelancer role.
+    /// </summary>
+    /// <param name="freelancer">Freelancer instance to associate with this user</param>
+    /// <exception cref="DomainException">If freelancer is null or already set</exception>
+    public void SetFreelancerProfile(Freelancer freelancer)
+    {
+        if (freelancer == null)
+        {
+            throw new DomainException(
+                "El perfil de Freelancer no puede ser nulo",
+                "FREELANCER_NULL");
+        }
+
+        if (Freelancer != null)
+        {
+            throw new DomainException(
+                "El usuario ya tiene un perfil de Freelancer",
+                "FREELANCER_ALREADY_EXISTS");
+        }
+
+        if (freelancer.Id != Id)
+        {
+            throw new DomainException(
+                "El ID del Freelancer debe coincidir con el ID del Usuario",
+                "FREELANCER_ID_MISMATCH");
+        }
+
+        Freelancer = freelancer;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Sets the Client profile for this user.
+    /// This method should be called when a user is assigned the Client role.
+    /// </summary>
+    /// <param name="client">Client instance to associate with this user</param>
+    /// <exception cref="DomainException">If client is null or already set</exception>
+    public void SetClientProfile(Client client)
+    {
+        if (client == null)
+        {
+            throw new DomainException(
+                "El perfil de Client no puede ser nulo",
+                "CLIENT_NULL");
+        }
+
+        if (Client != null)
+        {
+            throw new DomainException(
+                "El usuario ya tiene un perfil de Client",
+                "CLIENT_ALREADY_EXISTS");
+        }
+
+        if (client.Id != Id)
+        {
+            throw new DomainException(
+                "El ID del Client debe coincidir con el ID del Usuario",
+                "CLIENT_ID_MISMATCH");
+        }
+
+        Client = client;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     // ====================================================================
     // QUERY METHODS - No side effects
     // ====================================================================

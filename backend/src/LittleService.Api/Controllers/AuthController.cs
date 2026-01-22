@@ -34,14 +34,12 @@ public class AuthController : ControllerBase
         {
             return result.ErrorCode switch
             {
-                "PASSWORDS_DONT_MATCH" => BadRequest(new { message = result.Error }),
-                "USER_ALREADY_EXISTS" => Conflict(new { message = result.Error }),
-                "PASSWORD_EMPTY" or "PASSWORD_TOO_SHORT" or "PASSWORD_TOO_LONG"
+                "USER_ALREADY_EXISTS" => Conflict(new { message = result.Error, code = result.ErrorCode }),
+                "PASSWORDS_DONT_MATCH" or "PASSWORD_EMPTY" or "PASSWORD_TOO_SHORT" or "PASSWORD_TOO_LONG"
                 or "PASSWORD_NO_UPPERCASE" or "PASSWORD_NO_LOWERCASE" or "PASSWORD_NO_DIGIT"
-                    => BadRequest(new { message = result.Error }),
-                "NO_ROLES_SPECIFIED" or "INVALID_ROLES" or "ROLES_NOT_FOUND"
-                    => BadRequest(new { message = result.Error }),
-                _ => BadRequest(new { message = result.Error })
+                or "NO_ROLES_SPECIFIED" or "INVALID_ROLES" or "ROLES_NOT_FOUND"
+                    => BadRequest(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
             };
         }
 
@@ -70,9 +68,8 @@ public class AuthController : ControllerBase
         {
             return result.ErrorCode switch
             {
-                "INVALID_CREDENTIALS" => Unauthorized(new { message = result.Error }),
-                "INVALID_PASSWORD" => Unauthorized(new { message = result.Error }),
-                _ => BadRequest(new { message = result.Error })
+                "INVALID_CREDENTIALS" or "USER_INACTIVE" => Unauthorized(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
             };
         }
 

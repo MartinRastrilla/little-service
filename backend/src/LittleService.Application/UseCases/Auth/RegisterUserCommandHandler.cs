@@ -3,7 +3,9 @@ using LittleService.Application.Common;
 using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Domain.Entities;
+using LittleService.Domain.Exceptions;
 using LittleService.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace LittleService.Application.UseCases.Auth.RegisterUser;
 
@@ -13,126 +15,127 @@ public class RegisterUserCommandHandler
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenGenerator _tokenGenerator;
     private readonly IMapper _mapper;
+    private readonly ILogger<RegisterUserCommandHandler> _logger;
 
-    public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IMapper mapper)
+    public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IMapper mapper, ILogger<RegisterUserCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
         _tokenGenerator = tokenGenerator;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<Result<RegisterUserResult>> HandleAsync(RegisterUserCommand command, CancellationToken cancellationToken = default)
     {
-        //? 1. Validar que las contraseñas coincidan
-        if (command.Password != command.ConfirmPassword)
-        {
-            return Result<RegisterUserResult>.Failure(
-                "Las contraseñas no coinciden",
-                "PASSWORDS_DONT_MATCH");
-        }
-
-        //? 2. Validar fortaleza de la contraseña
-        var passwordValidation = ValidatePasswordStrength(command.Password);
-        if (!passwordValidation.IsSuccess)
-        {
-            return Result<RegisterUserResult>.Failure(
-                passwordValidation.Error!,
-                passwordValidation.ErrorCode);
-        }
-
-        //? 3. Validar que el usuario ya exista
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(command.Email, cancellationToken);
-        if (existingUser != null)
-        {
-            return Result<RegisterUserResult>.Failure(
-                "El usuario ya existe",
-                "USER_ALREADY_EXISTS");
-        }
-
-        //? 4. Validar y obtener roles
-        var rolesResult = await ValidateAndGetRolesAsync(command.Roles, cancellationToken);
-
-        if (!rolesResult.IsSuccess)
-        {
-            return Result<RegisterUserResult>.Failure(
-                rolesResult.Error!,
-                rolesResult.ErrorCode);
-        }
-
-        var roles = rolesResult.Value!.ToList();
-
-        //? 5. Crear usuario
-        var newUser = new User
-        {
-            Id = Guid.NewGuid(),
-            Name = command.Name,
-            Email = command.Email,
-            Password = _passwordHasher.HashPassword(command.Password),
-            ProfilePictureUrl = "/images/default-profile-picture.png", // ! Hardcoded from /images/default-profile-picture.png
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-            UserRoles = roles.Select(role => new UserRole
-            {
-                RoleId = role.Id,
-                Role = role,
-            }).ToList()
-        };
-
-        //? 6. Agregar Freelancer o Client si es necesario
-        var roleNames = roles.Select(r => r.Name).ToList();
-        if (roleNames.Contains("Freelancer", StringComparer.OrdinalIgnoreCase))
-        {
-            newUser.Freelancer = new Freelancer
-            {
-                UserId = newUser.Id,
-                Bio = null,
-                RatingAverage = 0,
-                RatingCount = 0,
-                CompletedJobs = 0,
-                Services = new List<Service>()
-            };
-        }
-
-        if (roleNames.Contains("Client", StringComparer.OrdinalIgnoreCase))
-        {
-            newUser.Client = new Client
-            {
-                UserId = newUser.Id,
-                TotalContracts = 0
-            };
-        }
-
-        //? 7. Guardar cambios con transacción
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            await _unitOfWork.Users.AddAsync(newUser, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            //? 1. Validate that passwords match
+            if (command.Password != command.ConfirmPassword)
+            {
+                return Result<RegisterUserResult>.Failure(
+                    "Las contraseñas no coinciden",
+                    "PASSWORDS_DONT_MATCH");
+            }
+
+            //? 2. Validate password strength
+            var passwordValidation = ValidatePasswordStrength(command.Password);
+            if (!passwordValidation.IsSuccess)
+            {
+                return Result<RegisterUserResult>.Failure(
+                    passwordValidation.Error!,
+                    passwordValidation.ErrorCode);
+            }
+
+            //? 3. Validate that user does not exist
+            var existingUser = await _unitOfWork.Users.GetByEmailAsync(command.Email, cancellationToken);
+            if (existingUser != null)
+            {
+                return Result<RegisterUserResult>.Failure(
+                    "El usuario ya existe",
+                    "USER_ALREADY_EXISTS");
+            }
+
+            //? 4. Validate and get roles
+            var rolesResult = await ValidateAndGetRolesAsync(command.Roles, cancellationToken);
+            if (!rolesResult.IsSuccess)
+            {
+                return Result<RegisterUserResult>.Failure(
+                    rolesResult.Error!,
+                    rolesResult.ErrorCode);
+            }
+            var roles = rolesResult.Value!.ToList();
+
+            //? 5. Create user
+            var hashedPassword = _passwordHasher.HashPassword(command.Password);
+            var newUser = User.Create(
+                command.Name,
+                command.Email,
+                hashedPassword,
+                User.DEFAULT_PROFILE_PICTURE_URL
+            );
+
+            //? 6. Add roles to user
+            foreach (var role in roles)
+            {
+                newUser.AddRole(role);
+            }
+
+            //? 7. Create freelancer or client profile based on role
+            var roleNames = roles.Select(r => r.Name).ToList();
+            if (roleNames.Contains("Freelancer", StringComparer.OrdinalIgnoreCase))
+            {
+                var freelancer = LittleService.Domain.Entities.Freelancer.Create(newUser.Id);
+                newUser.SetFreelancerProfile(freelancer);
+            }
+
+            if (roleNames.Contains("Client", StringComparer.OrdinalIgnoreCase))
+            {
+                var client = LittleService.Domain.Entities.Client.Create(newUser.Id);
+                newUser.SetClientProfile(client);
+            }
+
+            //? 8. Save user with transaction
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                await _unitOfWork.Users.AddAsync(newUser, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                throw;
+            }
+
+            //? 9. Generate JWT token
+            var token = _tokenGenerator.GenerateToken(newUser);
+            var expiresAt = _tokenGenerator.GetTokenExpirationDate(token);
+
+            //? 10. Map to DTO
+            var userDto = _mapper.Map<UserDto>(newUser);
+
+            //? 11. Return success result
+            return Result<RegisterUserResult>.Success(new RegisterUserResult
+            {
+                Token = token,
+                ExpiresAt = expiresAt,
+                User = userDto
+            });
         }
-        catch
+        catch (DomainException ex)
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-            throw;
+            _logger.LogError(ex, "Error al registrar el usuario");
+            return Result<RegisterUserResult>.Failure(ex.Message, ex.ErrorCode);
         }
-
-        //? 8. Generar token
-        var token = _tokenGenerator.GenerateToken(newUser);
-        var expiresAt = _tokenGenerator.GetTokenExpirationDate(token);
-
-        //? 9. Mapear a DTO
-        var userDto = _mapper.Map<UserDto>(newUser);
-
-        //? 10. Retornar resultado
-        var result = new RegisterUserResult
+        catch (Exception ex)
         {
-            Token = token,
-            ExpiresAt = expiresAt,
-            User = userDto
-        };
-
-        return Result<RegisterUserResult>.Success(result);
+            _logger.LogError(ex, "Error al registrar el usuario");
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            return Result<RegisterUserResult>.Failure("Ocurrió un error al registrar el usuario", "REGISTRATION_ERROR");
+        }
     }
 
     private static Result ValidatePasswordStrength(string password)
