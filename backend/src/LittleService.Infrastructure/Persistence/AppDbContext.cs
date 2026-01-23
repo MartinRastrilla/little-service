@@ -16,6 +16,20 @@ public class AppDbContext : DbContext
     public DbSet<Service> Services { get; set; }
     public DbSet<Freelancer> Freelancers { get; set; }
     public DbSet<Client> Clients { get; set; }
+    public DbSet<ServiceRequest> ServiceRequests { get; set; }
+    public DbSet<ServiceRequestPhoto> ServiceRequestPhotos { get; set; }
+    public DbSet<FreelancerApplication> FreelancerApplications { get; set; }
+    public DbSet<Certificate> Certificates { get; set; }
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<FreelancerSkill> FreelancerSkills { get; set; }
+    public DbSet<Message> Messages { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Rating> Ratings { get; set; }
+    public DbSet<Report> Reports { get; set; }
+    public DbSet<ActivityLog> ActivityLogs { get; set; }
+    public DbSet<Contract> Contracts { get; set; }
+    public DbSet<ContractPayment> ContractPayments { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

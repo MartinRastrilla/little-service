@@ -1,0 +1,113 @@
+using LittleService.Domain.Entities;
+using LittleService.Domain.Entities.Enums;
+using LittleService.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+namespace LittleService.Infrastructure.Persistence.Repositories;
+
+public class ServiceRequestRepository : IServiceRequestRepository
+{
+    private readonly AppDbContext _context;
+
+    public ServiceRequestRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<ServiceRequest?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Include(sr => sr.Client)
+            .Include(sr => sr.FreelancerPicked)
+            .Include(sr => sr.Contract)
+            .Include(sr => sr.Photos)
+            .FirstOrDefaultAsync(sr => sr.Id == id, cancellationToken);
+    }
+
+    public async Task<ServiceRequest> AddAsync(ServiceRequest serviceRequest, CancellationToken cancellationToken = default)
+    {
+        await _context.ServiceRequests.AddAsync(serviceRequest, cancellationToken);
+        return serviceRequest;
+    }
+
+    public async Task UpdateAsync(ServiceRequest serviceRequest, CancellationToken cancellationToken = default)
+    {
+        _context.ServiceRequests.Update(serviceRequest);
+        await Task.CompletedTask;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var serviceRequest = await GetByIdAsync(id, cancellationToken);
+        if (serviceRequest == null) return false;
+
+        _context.ServiceRequests.Remove(serviceRequest);
+        return true;
+    }
+
+    public async Task<IEnumerable<ServiceRequest>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Where(sr => sr.ClientId == clientId)
+            .Include(sr => sr.FreelancerPicked)
+            .Include(sr => sr.Contract)
+            .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<ServiceRequest>> GetByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Where(sr => sr.FreelancerPickedId == freelancerId)
+            .Include(sr => sr.FreelancerPicked)
+            .Include(sr => sr.Contract)
+            .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<ServiceRequest>> GetByStatusAsync(ServiceRequestStatus status, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Where(sr => sr.Status == status)
+            .Include(sr => sr.FreelancerPicked)
+            .Include(sr => sr.Contract)
+            .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<ServiceRequest>> GetOpenRequestsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Where(sr => sr.Status == ServiceRequestStatus.Opened)
+            .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<ServiceRequest>> GetOpenRequestsByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Where(sr => sr.ClientId == clientId && sr.Status == ServiceRequestStatus.Opened)
+            .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<ServiceRequest>> GetByFreelancerIdAndStatusAsync(Guid freelancerId, ServiceRequestStatus status, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Where(sr => sr.FreelancerPickedId == freelancerId && sr.Status == status)
+            .Include(sr => sr.FreelancerPicked)
+            .Include(sr => sr.Contract)
+            .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests.AnyAsync(sr => sr.Id == id, cancellationToken);
+    }
+
+    public async Task<bool> CanAcceptApplicationsAsync(Guid serviceRequestId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests.AnyAsync(sr => sr.Id == serviceRequestId && sr.CanAcceptApplications(), cancellationToken);
+    }
+}
