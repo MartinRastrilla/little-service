@@ -14,10 +14,27 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
         Users = new UserRepository(context);
         Roles = new RoleRepository(context);
+        ServiceRequests = new ServiceRequestRepository(context);
+        Contracts = new ContractRepository(context);
+        Payments = new PaymentRepository(context);
+        FreelancerApplications = new FreelancerApplicationRepository(context);
+        Services = new ServiceRepository(context);
+        Notifications = new NotificationRepository(context);
+        Ratings = new RatingRepository(context);
+        Messages = new MessageRepository(context);
     }
 
     public IUserRepository Users { get; private set; }
     public IRoleRepository Roles { get; private set; }
+    public IServiceRequestRepository ServiceRequests { get; private set; }
+    public IContractRepository Contracts { get; private set; }
+    public IPaymentRepository Payments { get; private set; }
+    public IFreelancerApplicationRepository FreelancerApplications { get; private set; }
+    public IServiceRepository Services { get; private set; }
+    public INotificationRepository Notifications { get; private set; }
+    public IRatingRepository Ratings { get; private set; }
+    public IMessageRepository Messages { get; private set; }
+
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
