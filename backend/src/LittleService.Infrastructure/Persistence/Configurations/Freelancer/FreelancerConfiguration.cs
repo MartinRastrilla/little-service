@@ -14,6 +14,10 @@ public class FreelancerConfiguration : IEntityTypeConfiguration<Freelancer>
             .IsRequired(false)
             .HasMaxLength(2000);
 
+        builder.Property(f => f.Profession)
+            .IsRequired(false)
+            .HasMaxLength(100);
+
         builder.Property(f => f.RatingAverage)
             .IsRequired()
             .HasDefaultValue(0);

@@ -17,9 +17,13 @@ public class UserProfile : Profile
         CreateMap<Role, RoleDto>();
 
         // Freelancer -> FreelancerDto
-        CreateMap<Freelancer, FreelancerDto>();
+        CreateMap<Freelancer, FreelancerDto>()
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
 
         // Client -> ClientDto
-        CreateMap<Client, ClientDto>();
+        CreateMap<Client, ClientDto>()
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.TotalContracts, opt => opt.MapFrom(src => src.TotalContracts))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address));
     }
 }

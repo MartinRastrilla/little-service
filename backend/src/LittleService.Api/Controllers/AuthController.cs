@@ -1,34 +1,36 @@
 using LittleService.Application.DTOs.Auth;
 using LittleService.Application.UseCases.Auth.LoginUser;
 using LittleService.Application.UseCases.Auth.RegisterUser;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly RegisterUserCommandHandler _registerUserHandler;
-    private readonly LoginUserCommandHandler _loginUserHandler;
+    private readonly IMediator _mediator;
 
-    public AuthController(RegisterUserCommandHandler registerUserHandler, LoginUserCommandHandler loginUserHandler)
+    public AuthController(IMediator mediator)
     {
-        _registerUserHandler = registerUserHandler;
-        _loginUserHandler = loginUserHandler;
+        _mediator = mediator;
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto)
+    public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto, CancellationToken cancellationToken)
     {
         var command = new RegisterUserCommand
         {
-            Name = registerDto.Name,
-            Email = registerDto.Email,
-            Password = registerDto.Password,
-            ConfirmPassword = registerDto.ConfirmPassword,
-            Roles = registerDto.Roles,
+            Request = new RegisterUserRequest
+            {
+                Name = registerDto.Name,
+                Email = registerDto.Email,
+                Password = registerDto.Password,
+                ConfirmPassword = registerDto.ConfirmPassword,
+                Roles = registerDto.Roles,
+            }
         };
 
-        var result = await _registerUserHandler.HandleAsync(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -54,15 +56,18 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
+    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto, CancellationToken cancellationToken)
     {
         var command = new LoginUserCommand
         {
-            Email = loginDto.Email,
-            Password = loginDto.Password,
+            Request = new LoginUserRequest
+            {
+                Email = loginDto.Email,
+                Password = loginDto.Password,
+            }
         };
 
-        var result = await _loginUserHandler.HandleAsync(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)
         {

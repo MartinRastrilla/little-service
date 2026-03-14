@@ -14,6 +14,10 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .IsRequired()
             .HasDefaultValue(0);
 
+        builder.Property(c => c.Address)
+            .IsRequired(false)
+            .HasMaxLength(500);
+
         //? Relationships
         builder.HasOne(c => c.User)
             .WithOne(u => u.Client)

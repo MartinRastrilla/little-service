@@ -2,15 +2,15 @@ using System.Text;
 using LittleService.Api.Middleware;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Application.Mappings;
-using LittleService.Application.UseCases.Auth.LoginUser;
-using LittleService.Application.UseCases.Auth.RegisterUser;
 using LittleService.Domain.Interfaces.Repositories;
 using LittleService.Infrastructure.Persistence;
 using LittleService.Infrastructure.Persistence.Seeders;
 using LittleService.Infrastructure.Services;
 using LittleService.Infrastructure.Storage;
+using Mediator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,12 +44,11 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
-//? Application Use Cases
-builder.Services.AddScoped<RegisterUserCommandHandler>();
-builder.Services.AddScoped<LoginUserCommandHandler>();
+//? Mediator (discovers handlers from Application assembly)
+builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
 
 //? AutoMapper
-builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(ServiceProfile));
 
 //? File Storage
 builder.Services.AddScoped<IFileStorageService, LocalFileStorage>();

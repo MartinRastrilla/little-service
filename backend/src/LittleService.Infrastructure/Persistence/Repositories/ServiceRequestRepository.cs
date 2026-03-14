@@ -106,6 +106,21 @@ public class ServiceRequestRepository : IServiceRequestRepository
         return await _context.ServiceRequests.AnyAsync(sr => sr.Id == id, cancellationToken);
     }
 
+    public async Task<ServiceRequest?> GetByIdWithApplicationsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .Include(sr => sr.Client)
+                .ThenInclude(c => c.User)
+            .Include(sr => sr.FreelancerPicked)
+                .ThenInclude(f => f!.User)
+            .Include(sr => sr.Photos)
+            .Include(sr => sr.FreelancerApplications)
+                .ThenInclude(fa => fa.Freelancer)
+                    .ThenInclude(f => f.User)
+            .Include(sr => sr.Contract)
+            .FirstOrDefaultAsync(sr => sr.Id == id, cancellationToken);
+    }
+
     public async Task<bool> CanAcceptApplicationsAsync(Guid serviceRequestId, CancellationToken cancellationToken = default)
     {
         return await _context.ServiceRequests.AnyAsync(sr => sr.Id == serviceRequestId && sr.CanAcceptApplications(), cancellationToken);
