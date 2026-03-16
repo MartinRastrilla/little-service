@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using LittleService.Api.Models;
 using LittleService.Application.UseCases.Freelancer.GetFreelancerProfile;
 using LittleService.Application.UseCases.Freelancer.GetMyApplications;
 using LittleService.Application.UseCases.Freelancer.UpdateFreelancer;
@@ -41,7 +42,7 @@ public class FreelancersController : ControllerBase
     }
 
     [HttpPut("me")]
-    public async Task<IActionResult> UpdateProfile([FromForm] string? name, [FromForm] string? bio, [FromForm] string? profession, [FromForm] IFormFile? profilePicture, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProfile([FromForm] UpdateFreelancerProfileFormDto form, CancellationToken cancellationToken)
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
@@ -49,10 +50,10 @@ public class FreelancersController : ControllerBase
 
         Stream? stream = null;
         string? fileName = null;
-        if (profilePicture != null)
+        if (form.ProfilePicture != null)
         {
-            stream = profilePicture.OpenReadStream();
-            fileName = profilePicture.FileName;
+            stream = form.ProfilePicture.OpenReadStream();
+            fileName = form.ProfilePicture.FileName;
         }
 
         var command = new UpdateFreelancerCommand
@@ -60,9 +61,9 @@ public class FreelancersController : ControllerBase
             UserId = userId,
             Request = new UpdateFreelancerRequest
             {
-                Name = name,
-                Bio = bio,
-                Profession = profession,
+                Name = form.Name,
+                Bio = form.Bio,
+                Profession = form.Profession,
                 ProfilePicture = stream,
                 ProfilePictureFileName = fileName,
             }

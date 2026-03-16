@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using LittleService.Api.Models;
 using LittleService.Application.UseCases.Client.GetClientProfile;
 using LittleService.Application.UseCases.Client.UpdateClient;
 using Mediator;
@@ -40,7 +41,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPut("me")]
-    public async Task<IActionResult> UpdateProfile([FromForm] string? name, [FromForm] string? address, [FromForm] IFormFile? profilePicture, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProfile([FromForm] UpdateClientProfileFormDto form, CancellationToken cancellationToken)
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
@@ -48,10 +49,10 @@ public class ClientsController : ControllerBase
 
         Stream? stream = null;
         string? fileName = null;
-        if (profilePicture != null)
+        if (form.ProfilePicture != null)
         {
-            stream = profilePicture.OpenReadStream();
-            fileName = profilePicture.FileName;
+            stream = form.ProfilePicture.OpenReadStream();
+            fileName = form.ProfilePicture.FileName;
         }
 
         var command = new UpdateClientCommand
@@ -59,8 +60,8 @@ public class ClientsController : ControllerBase
             UserId = userId,
             Request = new UpdateClientRequest
             {
-                Name = name,
-                Address = address,
+                Name = form.Name,
+                Address = form.Address,
                 ProfilePicture = stream,
                 ProfilePictureFileName = fileName,
             }

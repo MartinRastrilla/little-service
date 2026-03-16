@@ -47,8 +47,8 @@ builder.Services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 //? Mediator (discovers handlers from Application assembly)
 builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
 
-//? AutoMapper
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(ServiceProfile));
+//? AutoMapper (v16: first param is config action, then assembly marker types to scan for Profile)
+builder.Services.AddAutoMapper((_) => { }, typeof(UserProfile), typeof(ServiceProfile));
 
 //? File Storage
 builder.Services.AddScoped<IFileStorageService, LocalFileStorage>();
@@ -57,6 +57,8 @@ builder.Services.AddScoped<IFileStorageService, LocalFileStorage>();
 builder.Services.AddEndpointsApiExplorer(); // Allows endpoints to be discovered
 builder.Services.AddSwaggerGen(options =>
 {
+    options.OperationFilter<LittleService.Api.Filters.MultipartFormDataOperationFilter>();
+    options.SchemaFilter<LittleService.Api.Filters.FileUploadSchemaFilter>();
     options.SwaggerDoc("v1", new()
     {
         Title = "Little Service API",
