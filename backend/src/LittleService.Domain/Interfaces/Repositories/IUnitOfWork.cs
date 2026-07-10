@@ -12,6 +12,7 @@ public interface IUnitOfWork : IDisposable
     INotificationRepository Notifications { get; }
     IRatingRepository Ratings { get; }
     IMessageRepository Messages { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

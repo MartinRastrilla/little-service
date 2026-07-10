@@ -1,5 +1,4 @@
 using LittleService.Application.Common;
-using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Domain.Exceptions;
 using LittleService.Domain.Interfaces.Repositories;
@@ -12,14 +11,18 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly ITokenGenerator _tokenGenerator;
+    private readonly IAuthTokenIssuer _authTokenIssuer;
     private readonly ILogger<LoginUserCommandHandler> _logger;
 
-    public LoginUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, ILogger<LoginUserCommandHandler> logger)
+    public LoginUserCommandHandler(
+        IUnitOfWork unitOfWork,
+        IPasswordHasher passwordHasher,
+        IAuthTokenIssuer authTokenIssuer,
+        ILogger<LoginUserCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
-        _tokenGenerator = tokenGenerator;
+        _authTokenIssuer = authTokenIssuer;
         _logger = logger;
     }
 
@@ -49,44 +52,15 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
             user.RecordLogin();
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var token = _tokenGenerator.GenerateToken(user);
-            var expiresAt = _tokenGenerator.GetTokenExpirationDate(token);
-            var userDto = new UserDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                ProfilePictureUrl = user.ProfilePictureUrl,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt ?? user.CreatedAt,
-                Roles = user.UserRoles.Select(ur => new RoleDto
-                {
-                    Id = ur.Role.Id,
-                    Name = ur.Role.Name,
-                    Description = ur.Role.Description
-                }).ToList(),
-                Freelancer = user.Freelancer is null ? null : new FreelancerDto
-                {
-                    UserId = user.Freelancer.Id,
-                    Bio = user.Freelancer.Bio,
-                    Profession = user.Freelancer.Profession,
-                    RatingAverage = user.Freelancer.RatingAverage,
-                    RatingCount = user.Freelancer.RatingCount,
-                    CompletedJobs = user.Freelancer.CompletedJobs
-                },
-                Client = user.Client is null ? null : new ClientDto
-                {
-                    UserId = user.Client.Id,
-                    Address = user.Client.Address,
-                    TotalContracts = user.Client.TotalContracts
-                }
-            };
+            var tokens = await _authTokenIssuer.IssueAsync(user, cancellationToken: cancellationToken);
 
             return Result<LoginUserResult>.Success(new LoginUserResult
             {
-                Token = token,
-                ExpiresAt = expiresAt,
-                User = userDto
+                Token = tokens.Token,
+                ExpiresAt = tokens.ExpiresAt,
+                RefreshToken = tokens.RefreshToken,
+                RefreshTokenExpiresAt = tokens.RefreshTokenExpiresAt,
+                User = tokens.User
             });
         }
         catch (DomainException ex)
@@ -98,7 +72,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<
         {
             _logger.LogError(ex, "Unexpected error during login");
             return Result<LoginUserResult>.Failure(
-                "Ocurrió un error al iniciar sesión. Por favor, intente más tarde.",
+                "Ocurrió un error al iniciar sesión",
                 "LOGIN_ERROR");
         }
     }

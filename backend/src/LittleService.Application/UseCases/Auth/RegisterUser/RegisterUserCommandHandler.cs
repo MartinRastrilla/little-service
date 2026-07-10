@@ -1,5 +1,4 @@
 using LittleService.Application.Common;
-using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Domain.Entities;
 using LittleService.Domain.Exceptions;
@@ -13,14 +12,14 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly ITokenGenerator _tokenGenerator;
+    private readonly IAuthTokenIssuer _authTokenIssuer;
     private readonly ILogger<RegisterUserCommandHandler> _logger;
 
-    public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, ILogger<RegisterUserCommandHandler> logger)
+    public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, IAuthTokenIssuer authTokenIssuer, ILogger<RegisterUserCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
-        _tokenGenerator = tokenGenerator;
+        _authTokenIssuer = authTokenIssuer;
         _logger = logger;
     }
 
@@ -84,44 +83,15 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
                 throw;
             }
 
-            var token = _tokenGenerator.GenerateToken(newUser);
-            var expiresAt = _tokenGenerator.GetTokenExpirationDate(token);
-            var userDto = new UserDto
-            {
-                Id = newUser.Id,
-                Name = newUser.Name,
-                Email = newUser.Email,
-                ProfilePictureUrl = newUser.ProfilePictureUrl,
-                CreatedAt = newUser.CreatedAt,
-                UpdatedAt = newUser.UpdatedAt ?? newUser.CreatedAt,
-                Roles = newUser.UserRoles.Select(ur => new RoleDto
-                {
-                    Id = ur.Role.Id,
-                    Name = ur.Role.Name,
-                    Description = ur.Role.Description
-                }).ToList(),
-                Freelancer = newUser.Freelancer is null ? null : new FreelancerDto
-                {
-                    UserId = newUser.Freelancer.Id,
-                    Bio = newUser.Freelancer.Bio,
-                    Profession = newUser.Freelancer.Profession,
-                    RatingAverage = newUser.Freelancer.RatingAverage,
-                    RatingCount = newUser.Freelancer.RatingCount,
-                    CompletedJobs = newUser.Freelancer.CompletedJobs
-                },
-                Client = newUser.Client is null ? null : new ClientDto
-                {
-                    UserId = newUser.Client.Id,
-                    Address = newUser.Client.Address,
-                    TotalContracts = newUser.Client.TotalContracts
-                }
-            };
+            var tokens = await _authTokenIssuer.IssueAsync(newUser, cancellationToken: cancellationToken);
 
             return Result<RegisterUserResult>.Success(new RegisterUserResult
             {
-                Token = token,
-                ExpiresAt = expiresAt,
-                User = userDto
+                Token = tokens.Token,
+                ExpiresAt = tokens.ExpiresAt,
+                RefreshToken = tokens.RefreshToken,
+                RefreshTokenExpiresAt = tokens.RefreshTokenExpiresAt,
+                User = tokens.User
             });
         }
         catch (DomainException ex)

@@ -22,6 +22,7 @@ public class UnitOfWork : IUnitOfWork
         Notifications = new NotificationRepository(context);
         Ratings = new RatingRepository(context);
         Messages = new MessageRepository(context);
+        RefreshTokens = new RefreshTokenRepository(context);
     }
 
     public IUserRepository Users { get; private set; }
@@ -34,6 +35,7 @@ public class UnitOfWork : IUnitOfWork
     public INotificationRepository Notifications { get; private set; }
     public IRatingRepository Ratings { get; private set; }
     public IMessageRepository Messages { get; private set; }
+    public IRefreshTokenRepository RefreshTokens { get; private set; }
 
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

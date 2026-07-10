@@ -1,5 +1,7 @@
 using LittleService.Application.DTOs.Auth;
 using LittleService.Application.UseCases.Auth.LoginUser;
+using LittleService.Application.UseCases.Auth.LogoutUser;
+using LittleService.Application.UseCases.Auth.RefreshToken;
 using LittleService.Application.UseCases.Auth.RegisterUser;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
@@ -45,14 +47,12 @@ public class AuthController : ControllerBase
             };
         }
 
-        var response = new AuthResponseDto
-        {
-            Token = result.Value!.Token,
-            ExpiresAt = result.Value!.ExpiresAt,
-            User = result.Value!.User,
-        };
-
-        return Ok(response);
+        return Ok(ToAuthResponseDto(
+            result.Value!.Token,
+            result.Value.ExpiresAt,
+            result.Value.RefreshToken,
+            result.Value.RefreshTokenExpiresAt,
+            result.Value.User));
     }
 
     [HttpPost("login")]
@@ -78,13 +78,84 @@ public class AuthController : ControllerBase
             };
         }
 
-        var response = new AuthResponseDto
+        return Ok(ToAuthResponseDto(
+            result.Value!.Token,
+            result.Value.ExpiresAt,
+            result.Value.RefreshToken,
+            result.Value.RefreshTokenExpiresAt,
+            result.Value.User));
+    }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResponseDto>> Refresh([FromBody] RefreshTokenDto refreshTokenDto, CancellationToken cancellationToken)
+    {
+        var command = new RefreshTokenCommand
         {
-            Token = result.Value!.Token,
-            ExpiresAt = result.Value!.ExpiresAt,
-            User = result.Value!.User,
+            Request = new RefreshTokenRequest
+            {
+                RefreshToken = refreshTokenDto.RefreshToken,
+            }
         };
 
-        return Ok(response);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "REFRESH_TOKEN_INVALID" or "REFRESH_TOKEN_EXPIRED" or "REFRESH_TOKEN_REVOKED" or "USER_INACTIVE"
+                    => Unauthorized(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(ToAuthResponseDto(
+            result.Value!.Token,
+            result.Value.ExpiresAt,
+            result.Value.RefreshToken,
+            result.Value.RefreshTokenExpiresAt,
+            result.Value.User));
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] LogoutDto logoutDto, CancellationToken cancellationToken)
+    {
+        var command = new LogoutUserCommand
+        {
+            Request = new LogoutUserRequest
+            {
+                RefreshToken = logoutDto.RefreshToken,
+            }
+        };
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "LOGOUT_ERROR" => BadRequest(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return NoContent();
+    }
+
+    private static AuthResponseDto ToAuthResponseDto(
+        string token,
+        DateTime expiresAt,
+        string refreshToken,
+        DateTime refreshTokenExpiresAt,
+        LittleService.Application.DTOs.Users.UserDto user)
+    {
+        return new AuthResponseDto
+        {
+            Token = token,
+            ExpiresAt = expiresAt,
+            RefreshToken = refreshToken,
+            RefreshTokenExpiresAt = refreshTokenExpiresAt,
+            User = user,
+        };
     }
 }

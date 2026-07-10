@@ -1,8 +1,8 @@
 using LittleService.Application.DTOs.Users;
 
-namespace LittleService.Application.UseCases.Auth.LoginUser;
+namespace LittleService.Application.Services;
 
-public class LoginUserResult
+public class AuthTokensResult
 {
     public string Token { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }

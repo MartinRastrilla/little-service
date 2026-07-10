@@ -44,11 +44,14 @@ public class JwtTokenGenerator : ITokenGenerator
             }
         }
 
+        var accessTokenMinutesRaw = _configuration["Jwt:AccessTokenMinutes"];
+        var accessTokenMinutes = int.TryParse(accessTokenMinutesRaw, out var parsedMinutes) ? parsedMinutes : 15;
+
         var token = new JwtSecurityToken(
             issuer: jwtIssuer,
             audience: jwtIssuer,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1), //! TODO: Cambiar a la duración del token
+            expires: DateTime.UtcNow.AddMinutes(accessTokenMinutes),
             signingCredentials: credentials
         );
 

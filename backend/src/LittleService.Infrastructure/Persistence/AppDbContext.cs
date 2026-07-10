@@ -30,6 +30,7 @@ public class AppDbContext : DbContext
     public DbSet<Contract> Contracts { get; set; }
     public DbSet<ContractPayment> ContractPayments { get; set; }
     public DbSet<Payment> Payments { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -69,5 +70,6 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RatingConfiguration());
         modelBuilder.ApplyConfiguration(new ReportConfiguration());
         modelBuilder.ApplyConfiguration(new ActivityLogConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
     }
 }

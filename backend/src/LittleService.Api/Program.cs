@@ -42,6 +42,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IAuthTokenIssuer, AuthTokenIssuer>();
 
 //? Mediator (discovers handlers from Application assembly)
 builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);

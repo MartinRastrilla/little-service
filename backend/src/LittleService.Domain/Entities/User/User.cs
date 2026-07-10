@@ -43,6 +43,7 @@ public class User : BaseEntity
     public ICollection<Rating> Ratings { get; private set; } = new List<Rating>();
     public ICollection<Report> Reports { get; private set; } = new List<Report>();
     public ICollection<Payment> Payments { get; private set; } = new List<Payment>();
+    public ICollection<RefreshToken> RefreshTokens { get; private set; } = new List<RefreshToken>();
 
     private User() { }
 
