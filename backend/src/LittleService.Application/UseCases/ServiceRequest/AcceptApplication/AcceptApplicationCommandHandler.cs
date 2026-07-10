@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Exceptions;
@@ -11,13 +10,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.AcceptApplication;
 public class AcceptApplicationCommandHandler : IRequestHandler<AcceptApplicationCommand, Result<AcceptApplicationResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<AcceptApplicationCommandHandler> _logger;
 
-    public AcceptApplicationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AcceptApplicationCommandHandler> logger)
+    public AcceptApplicationCommandHandler(IUnitOfWork unitOfWork, ILogger<AcceptApplicationCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -44,7 +41,6 @@ public class AcceptApplicationCommandHandler : IRequestHandler<AcceptApplication
         {
             application.Accept(serviceRequest);
 
-            // Reject all remaining pending applications
             foreach (var pending in serviceRequest.FreelancerApplications
                 .Where(fa => fa.Id != command.ApplicationId && fa.IsPending()))
             {
@@ -71,7 +67,19 @@ public class AcceptApplicationCommandHandler : IRequestHandler<AcceptApplication
         }
 
         _logger.LogInformation("Aplicación {ApplicationId} aceptada para ServiceRequest {ServiceRequestId}", command.ApplicationId, command.ServiceRequestId);
-        var dto = _mapper.Map<FreelancerApplicationSummaryDto>(application);
+        var dto = new FreelancerApplicationSummaryDto
+        {
+            Id = application.Id,
+            ServiceRequestId = application.ServiceRequestId,
+            FreelancerId = application.FreelancerId,
+            FreelancerName = application.Freelancer?.User?.Name ?? string.Empty,
+            FreelancerProfilePicture = application.Freelancer?.User?.ProfilePictureUrl,
+            RatingAverage = application.Freelancer?.RatingAverage ?? 0,
+            RatingCount = application.Freelancer?.RatingCount ?? 0,
+            Bio = application.Freelancer?.Bio,
+            Status = application.Status.ToString(),
+            CreatedAt = application.CreatedAt
+        };
         return Result<AcceptApplicationResult>.Success(new AcceptApplicationResult { Application = dto });
     }
 }

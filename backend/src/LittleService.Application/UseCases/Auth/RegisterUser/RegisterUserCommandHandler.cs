@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
@@ -15,15 +14,13 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenGenerator _tokenGenerator;
-    private readonly IMapper _mapper;
     private readonly ILogger<RegisterUserCommandHandler> _logger;
 
-    public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, IMapper mapper, ILogger<RegisterUserCommandHandler> logger)
+    public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, ITokenGenerator tokenGenerator, ILogger<RegisterUserCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
         _tokenGenerator = tokenGenerator;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -89,7 +86,36 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
 
             var token = _tokenGenerator.GenerateToken(newUser);
             var expiresAt = _tokenGenerator.GetTokenExpirationDate(token);
-            var userDto = _mapper.Map<UserDto>(newUser);
+            var userDto = new UserDto
+            {
+                Id = newUser.Id,
+                Name = newUser.Name,
+                Email = newUser.Email,
+                ProfilePictureUrl = newUser.ProfilePictureUrl,
+                CreatedAt = newUser.CreatedAt,
+                UpdatedAt = newUser.UpdatedAt ?? newUser.CreatedAt,
+                Roles = newUser.UserRoles.Select(ur => new RoleDto
+                {
+                    Id = ur.Role.Id,
+                    Name = ur.Role.Name,
+                    Description = ur.Role.Description
+                }).ToList(),
+                Freelancer = newUser.Freelancer is null ? null : new FreelancerDto
+                {
+                    UserId = newUser.Freelancer.Id,
+                    Bio = newUser.Freelancer.Bio,
+                    Profession = newUser.Freelancer.Profession,
+                    RatingAverage = newUser.Freelancer.RatingAverage,
+                    RatingCount = newUser.Freelancer.RatingCount,
+                    CompletedJobs = newUser.Freelancer.CompletedJobs
+                },
+                Client = newUser.Client is null ? null : new ClientDto
+                {
+                    UserId = newUser.Client.Id,
+                    Address = newUser.Client.Address,
+                    TotalContracts = newUser.Client.TotalContracts
+                }
+            };
 
             return Result<RegisterUserResult>.Success(new RegisterUserResult
             {

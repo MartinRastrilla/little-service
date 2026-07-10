@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.Services;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.Service.GetMyServices;
 public class GetMyServicesQueryHandler : IRequestHandler<GetMyServicesQuery, Result<GetMyServicesResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetMyServicesQueryHandler> _logger;
 
-    public GetMyServicesQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetMyServicesQueryHandler> logger)
+    public GetMyServicesQueryHandler(IUnitOfWork unitOfWork, ILogger<GetMyServicesQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -28,8 +25,17 @@ public class GetMyServicesQueryHandler : IRequestHandler<GetMyServicesQuery, Res
         if (user.Freelancer == null)
             return Result<GetMyServicesResult>.Failure("Perfil de freelancer no encontrado", "FREELANCER_NOT_FOUND");
 
-        var services = await _unitOfWork.Services.GetByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
-        var dtos = _mapper.Map<IList<ServiceDto>>(services);
+        var summaries = await _unitOfWork.Services.GetSummariesByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
+        var dtos = summaries.Select(s => new ServiceDto
+        {
+            Id = s.Id,
+            FreelancerId = s.FreelancerId,
+            Title = s.Title,
+            Description = s.Description,
+            Price = s.Price,
+            IsActive = s.IsActive,
+            CreatedAt = s.CreatedAt
+        }).ToList();
 
         return Result<GetMyServicesResult>.Success(new GetMyServicesResult { Services = dtos });
     }

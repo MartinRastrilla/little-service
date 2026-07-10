@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Entities;
@@ -12,13 +11,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.ApplyToServiceReques
 public class ApplyToServiceRequestCommandHandler : IRequestHandler<ApplyToServiceRequestCommand, Result<ApplyToServiceRequestResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<ApplyToServiceRequestCommandHandler> _logger;
 
-    public ApplyToServiceRequestCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ApplyToServiceRequestCommandHandler> logger)
+    public ApplyToServiceRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<ApplyToServiceRequestCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -63,12 +60,24 @@ public class ApplyToServiceRequestCommandHandler : IRequestHandler<ApplyToServic
             return Result<ApplyToServiceRequestResult>.Failure("Error al aplicar a la solicitud", "APPLY_TO_SERVICE_REQUEST_ERROR");
         }
 
-        // Reload application with freelancer user data for mapping
         var savedApplication = await _unitOfWork.FreelancerApplications.GetByServiceRequestAndFreelancerAsync(
             command.ServiceRequestId, user.Freelancer.Id, cancellationToken);
+        var applicationToMap = savedApplication ?? application;
 
         _logger.LogInformation("Freelancer {FreelancerId} aplicó a ServiceRequest {ServiceRequestId}", user.Freelancer.Id, command.ServiceRequestId);
-        var dto = _mapper.Map<FreelancerApplicationSummaryDto>(savedApplication ?? application);
+        var dto = new FreelancerApplicationSummaryDto
+        {
+            Id = applicationToMap.Id,
+            ServiceRequestId = applicationToMap.ServiceRequestId,
+            FreelancerId = applicationToMap.FreelancerId,
+            FreelancerName = applicationToMap.Freelancer?.User?.Name ?? string.Empty,
+            FreelancerProfilePicture = applicationToMap.Freelancer?.User?.ProfilePictureUrl,
+            RatingAverage = applicationToMap.Freelancer?.RatingAverage ?? 0,
+            RatingCount = applicationToMap.Freelancer?.RatingCount ?? 0,
+            Bio = applicationToMap.Freelancer?.Bio,
+            Status = applicationToMap.Status.ToString(),
+            CreatedAt = applicationToMap.CreatedAt
+        };
         return Result<ApplyToServiceRequestResult>.Success(new ApplyToServiceRequestResult { Application = dto });
     }
 }

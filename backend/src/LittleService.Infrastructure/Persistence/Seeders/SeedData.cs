@@ -7,10 +7,21 @@ namespace LittleService.Infrastructure.Persistence.Seeders;
 /// </summary>
 public static class SeedData
 {
+    public const string DevelopmentAdminName = "Admin";
+    public const string DevelopmentAdminEmail = "admin@littleservice.com";
+    public const string DevelopmentAdminPassword = "Admin123!";
+    public const string DevelopmentAdminRoleName = "Super Admin";
+
     public static IEnumerable<Role> GetDefaultRoles()
     {
         return new List<Role>
         {
+            new Role
+            {
+                Id = Guid.Parse("11111111-0000-0000-0000-000000000000"),
+                Name = "Super Admin",
+                Description = "Persona que administra el sistema y tiene todos los permisos"
+            },
             new Role
             {
                 Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),

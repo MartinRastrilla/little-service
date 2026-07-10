@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.GetOpenServiceReques
 public class GetOpenServiceRequestsQueryHandler : IRequestHandler<GetOpenServiceRequestsQuery, Result<GetOpenServiceRequestsResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetOpenServiceRequestsQueryHandler> _logger;
 
-    public GetOpenServiceRequestsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetOpenServiceRequestsQueryHandler> logger)
+    public GetOpenServiceRequestsQueryHandler(IUnitOfWork unitOfWork, ILogger<GetOpenServiceRequestsQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -28,17 +25,28 @@ public class GetOpenServiceRequestsQueryHandler : IRequestHandler<GetOpenService
         if (user.Freelancer == null)
             return Result<GetOpenServiceRequestsResult>.Failure("Perfil de freelancer no encontrado", "FREELANCER_NOT_FOUND");
 
-        var openRequests = await _unitOfWork.ServiceRequests.GetOpenRequestsAsync(cancellationToken);
+        var openSummaries = await _unitOfWork.ServiceRequests.GetOpenSummariesAsync(cancellationToken);
 
-        // Exclude requests from service requests this freelancer already applied to
-        var freelancerApplications = await _unitOfWork.FreelancerApplications.GetByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
+        var freelancerApplications = await _unitOfWork.FreelancerApplications.GetSummariesByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
         var appliedRequestIds = freelancerApplications.Select(fa => fa.ServiceRequestId).ToHashSet();
 
-        var available = openRequests
+        var dtos = openSummaries
             .Where(sr => sr.ClientId != user.Freelancer.Id && !appliedRequestIds.Contains(sr.Id))
+            .Select(sr => new ServiceRequestSummaryDto
+            {
+                Id = sr.Id,
+                Title = sr.Title,
+                Description = sr.Description,
+                Location = sr.Location,
+                Status = sr.Status.ToString(),
+                Price = sr.Price,
+                ClientId = sr.ClientId,
+                FreelancerPickedId = sr.FreelancerPickedId,
+                PhotosCount = sr.PhotosCount,
+                CreatedAt = sr.CreatedAt
+            })
             .ToList();
 
-        var dtos = _mapper.Map<IList<ServiceRequestSummaryDto>>(available);
         return Result<GetOpenServiceRequestsResult>.Success(new GetOpenServiceRequestsResult { ServiceRequests = dtos });
     }
 }

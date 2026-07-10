@@ -1,7 +1,5 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.Services;
-using LittleService.Domain.Entities;
 using LittleService.Domain.Interfaces.Repositories;
 using Mediator;
 using Microsoft.Extensions.Logging;
@@ -11,13 +9,11 @@ namespace LittleService.Application.UseCases.Service.CreateService;
 public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, Result<CreateServiceResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<CreateServiceCommandHandler> _logger;
 
-    public CreateServiceCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateServiceCommandHandler> logger)
+    public CreateServiceCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateServiceCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -64,7 +60,16 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
         }
 
         _logger.LogInformation("Servicio {Id} creado por freelancer {FreelancerId}", service.Id, user.Freelancer.Id);
-        var dto = _mapper.Map<ServiceDto>(service);
+        var dto = new ServiceDto
+        {
+            Id = service.Id,
+            FreelancerId = service.FreelancerId,
+            Title = service.Title,
+            Description = service.Description,
+            Price = service.Price,
+            IsActive = service.IsActive,
+            CreatedAt = service.CreatedAt
+        };
         return Result<CreateServiceResult>.Success(new CreateServiceResult { Service = dto });
     }
 }

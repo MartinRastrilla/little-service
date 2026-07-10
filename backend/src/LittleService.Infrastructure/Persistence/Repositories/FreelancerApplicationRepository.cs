@@ -1,6 +1,7 @@
 using LittleService.Domain.Entities;
 using LittleService.Domain.Entities.Enums;
 using LittleService.Domain.Interfaces.Repositories;
+using LittleService.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleService.Infrastructure.Persistence.Repositories;
@@ -19,6 +20,7 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
         return await _context.FreelancerApplications
             .Include(fa => fa.ServiceRequest)
             .Include(fa => fa.Freelancer)
+                .ThenInclude(f => f.User)
             .FirstOrDefaultAsync(fa => fa.Id == id, cancellationToken);
     }
 
@@ -49,6 +51,28 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
             .Where(fa => fa.ServiceRequestId == serviceRequestId)
             .Include(fa => fa.ServiceRequest)
             .Include(fa => fa.Freelancer)
+                .ThenInclude(f => f.User)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<FreelancerApplicationSummaryReadModel>> GetSummariesByServiceRequestIdAsync(Guid serviceRequestId, CancellationToken cancellationToken = default)
+    {
+        return await _context.FreelancerApplications
+            .AsNoTracking()
+            .Where(fa => fa.ServiceRequestId == serviceRequestId)
+            .Select(fa => new FreelancerApplicationSummaryReadModel
+            {
+                Id = fa.Id,
+                ServiceRequestId = fa.ServiceRequestId,
+                FreelancerId = fa.FreelancerId,
+                FreelancerName = fa.Freelancer.User.Name,
+                FreelancerProfilePicture = fa.Freelancer.User.ProfilePictureUrl,
+                RatingAverage = fa.Freelancer.RatingAverage,
+                RatingCount = fa.Freelancer.RatingCount,
+                Bio = fa.Freelancer.Bio,
+                Status = fa.Status,
+                CreatedAt = fa.CreatedAt
+            })
             .ToListAsync(cancellationToken);
     }
 
@@ -58,6 +82,28 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
             .Where(fa => fa.FreelancerId == freelancerId)
             .Include(fa => fa.ServiceRequest)
             .Include(fa => fa.Freelancer)
+                .ThenInclude(f => f.User)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<FreelancerApplicationSummaryReadModel>> GetSummariesByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default)
+    {
+        return await _context.FreelancerApplications
+            .AsNoTracking()
+            .Where(fa => fa.FreelancerId == freelancerId)
+            .Select(fa => new FreelancerApplicationSummaryReadModel
+            {
+                Id = fa.Id,
+                ServiceRequestId = fa.ServiceRequestId,
+                FreelancerId = fa.FreelancerId,
+                FreelancerName = fa.Freelancer.User.Name,
+                FreelancerProfilePicture = fa.Freelancer.User.ProfilePictureUrl,
+                RatingAverage = fa.Freelancer.RatingAverage,
+                RatingCount = fa.Freelancer.RatingCount,
+                Bio = fa.Freelancer.Bio,
+                Status = fa.Status,
+                CreatedAt = fa.CreatedAt
+            })
             .ToListAsync(cancellationToken);
     }
 
@@ -108,6 +154,7 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
             .Where(fa => fa.ServiceRequestId == serviceRequestId && fa.FreelancerId == freelancerId)
             .Include(fa => fa.ServiceRequest)
             .Include(fa => fa.Freelancer)
+                .ThenInclude(f => f.User)
             .FirstOrDefaultAsync(cancellationToken);
     }
 

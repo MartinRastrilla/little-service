@@ -1,6 +1,7 @@
 using LittleService.Domain.Entities;
 using LittleService.Domain.Entities.Enums;
 using LittleService.Domain.Interfaces.Repositories;
+using LittleService.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleService.Infrastructure.Persistence.Repositories;
@@ -55,6 +56,27 @@ public class ServiceRequestRepository : IServiceRequestRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetSummariesByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .AsNoTracking()
+            .Where(sr => sr.ClientId == clientId)
+            .Select(sr => new ServiceRequestSummaryReadModel
+            {
+                Id = sr.Id,
+                Title = sr.Title,
+                Description = sr.Description,
+                Location = sr.Location,
+                Status = sr.Status,
+                Price = sr.Price,
+                ClientId = sr.ClientId,
+                FreelancerPickedId = sr.FreelancerPickedId,
+                PhotosCount = sr.Photos.Count,
+                CreatedAt = sr.CreatedAt
+            })
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<ServiceRequest>> GetByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default)
     {
         return await _context.ServiceRequests
@@ -80,6 +102,27 @@ public class ServiceRequestRepository : IServiceRequestRepository
         return await _context.ServiceRequests
             .Where(sr => sr.Status == ServiceRequestStatus.Opened)
             .Include(sr => sr.Photos)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetOpenSummariesAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .AsNoTracking()
+            .Where(sr => sr.Status == ServiceRequestStatus.Opened)
+            .Select(sr => new ServiceRequestSummaryReadModel
+            {
+                Id = sr.Id,
+                Title = sr.Title,
+                Description = sr.Description,
+                Location = sr.Location,
+                Status = sr.Status,
+                Price = sr.Price,
+                ClientId = sr.ClientId,
+                FreelancerPickedId = sr.FreelancerPickedId,
+                PhotosCount = sr.Photos.Count,
+                CreatedAt = sr.CreatedAt
+            })
             .ToListAsync(cancellationToken);
     }
 

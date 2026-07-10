@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Exceptions;
@@ -11,13 +10,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.RejectApplication;
 public class RejectApplicationCommandHandler : IRequestHandler<RejectApplicationCommand, Result<RejectApplicationResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<RejectApplicationCommandHandler> _logger;
 
-    public RejectApplicationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<RejectApplicationCommandHandler> logger)
+    public RejectApplicationCommandHandler(IUnitOfWork unitOfWork, ILogger<RejectApplicationCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -64,7 +61,19 @@ public class RejectApplicationCommandHandler : IRequestHandler<RejectApplication
         }
 
         _logger.LogInformation("Aplicación {ApplicationId} rechazada para ServiceRequest {ServiceRequestId}", command.ApplicationId, command.ServiceRequestId);
-        var dto = _mapper.Map<FreelancerApplicationSummaryDto>(application);
+        var dto = new FreelancerApplicationSummaryDto
+        {
+            Id = application.Id,
+            ServiceRequestId = application.ServiceRequestId,
+            FreelancerId = application.FreelancerId,
+            FreelancerName = application.Freelancer?.User?.Name ?? string.Empty,
+            FreelancerProfilePicture = application.Freelancer?.User?.ProfilePictureUrl,
+            RatingAverage = application.Freelancer?.RatingAverage ?? 0,
+            RatingCount = application.Freelancer?.RatingCount ?? 0,
+            Bio = application.Freelancer?.Bio,
+            Status = application.Status.ToString(),
+            CreatedAt = application.CreatedAt
+        };
         return Result<RejectApplicationResult>.Success(new RejectApplicationResult { Application = dto });
     }
 }

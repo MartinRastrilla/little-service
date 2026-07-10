@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.Services;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.Service.UpdateService;
 public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand, Result<UpdateServiceResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<UpdateServiceCommandHandler> _logger;
 
-    public UpdateServiceCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UpdateServiceCommandHandler> logger)
+    public UpdateServiceCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateServiceCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -80,7 +77,16 @@ public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand,
             }
         }
 
-        var dto = _mapper.Map<ServiceDto>(service);
+        var dto = new ServiceDto
+        {
+            Id = service.Id,
+            FreelancerId = service.FreelancerId,
+            Title = service.Title,
+            Description = service.Description,
+            Price = service.Price,
+            IsActive = service.IsActive,
+            CreatedAt = service.CreatedAt
+        };
         return Result<UpdateServiceResult>.Success(new UpdateServiceResult { Service = dto });
     }
 }

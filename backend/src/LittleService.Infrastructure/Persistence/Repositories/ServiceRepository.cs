@@ -1,5 +1,6 @@
 using LittleService.Domain.Entities;
 using LittleService.Domain.Interfaces.Repositories;
+using LittleService.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleService.Infrastructure.Persistence.Repositories;
@@ -46,6 +47,24 @@ public class ServiceRepository : IServiceRepository
         return await _context.Services
             .Include(s => s.Freelancer)
             .Where(s => s.FreelancerId == freelancerId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ServiceSummaryReadModel>> GetSummariesByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Services
+            .AsNoTracking()
+            .Where(s => s.FreelancerId == freelancerId)
+            .Select(s => new ServiceSummaryReadModel
+            {
+                Id = s.Id,
+                FreelancerId = s.FreelancerId,
+                Title = s.Title,
+                Description = s.Description,
+                Price = s.Price,
+                IsActive = s.IsActive,
+                CreatedAt = s.CreatedAt
+            })
             .ToListAsync(cancellationToken);
     }
 

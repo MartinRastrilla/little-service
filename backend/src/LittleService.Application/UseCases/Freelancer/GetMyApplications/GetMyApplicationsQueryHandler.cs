@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.Freelancer.GetMyApplications;
 public class GetMyApplicationsQueryHandler : IRequestHandler<GetMyApplicationsQuery, Result<GetMyApplicationsResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetMyApplicationsQueryHandler> _logger;
 
-    public GetMyApplicationsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetMyApplicationsQueryHandler> logger)
+    public GetMyApplicationsQueryHandler(IUnitOfWork unitOfWork, ILogger<GetMyApplicationsQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -28,8 +25,20 @@ public class GetMyApplicationsQueryHandler : IRequestHandler<GetMyApplicationsQu
         if (user.Freelancer == null)
             return Result<GetMyApplicationsResult>.Failure("Perfil de freelancer no encontrado", "FREELANCER_NOT_FOUND");
 
-        var applications = await _unitOfWork.FreelancerApplications.GetByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
-        var dtos = _mapper.Map<IList<FreelancerApplicationSummaryDto>>(applications);
+        var summaries = await _unitOfWork.FreelancerApplications.GetSummariesByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
+        var dtos = summaries.Select(fa => new FreelancerApplicationSummaryDto
+        {
+            Id = fa.Id,
+            ServiceRequestId = fa.ServiceRequestId,
+            FreelancerId = fa.FreelancerId,
+            FreelancerName = fa.FreelancerName,
+            FreelancerProfilePicture = fa.FreelancerProfilePicture,
+            RatingAverage = fa.RatingAverage,
+            RatingCount = fa.RatingCount,
+            Bio = fa.Bio,
+            Status = fa.Status.ToString(),
+            CreatedAt = fa.CreatedAt
+        }).ToList();
 
         return Result<GetMyApplicationsResult>.Success(new GetMyApplicationsResult { Applications = dtos });
     }

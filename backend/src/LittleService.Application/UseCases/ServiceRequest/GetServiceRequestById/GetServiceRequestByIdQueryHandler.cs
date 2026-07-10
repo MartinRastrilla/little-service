@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.GetServiceRequestByI
 public class GetServiceRequestByIdQueryHandler : IRequestHandler<GetServiceRequestByIdQuery, Result<GetServiceRequestByIdResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetServiceRequestByIdQueryHandler> _logger;
 
-    public GetServiceRequestByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetServiceRequestByIdQueryHandler> logger)
+    public GetServiceRequestByIdQueryHandler(IUnitOfWork unitOfWork, ILogger<GetServiceRequestByIdQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -38,7 +35,25 @@ public class GetServiceRequestByIdQueryHandler : IRequestHandler<GetServiceReque
         if (!isClient && !isAssignedFreelancer && !hasApplied && user.Freelancer == null)
             return Result<GetServiceRequestByIdResult>.Failure("No tienes acceso a esta solicitud", "FORBIDDEN");
 
-        var dto = _mapper.Map<ServiceRequestDetailDto>(serviceRequest);
+        var dto = new ServiceRequestDetailDto
+        {
+            Id = serviceRequest.Id,
+            Title = serviceRequest.Title,
+            Description = serviceRequest.Description,
+            Location = serviceRequest.Location,
+            Status = serviceRequest.Status.ToString(),
+            Price = serviceRequest.Price,
+            ClientId = serviceRequest.ClientId,
+            FreelancerPickedId = serviceRequest.FreelancerPickedId,
+            ApplicationsCount = serviceRequest.FreelancerApplications.Count,
+            Photos = serviceRequest.Photos.Select(p => new ServiceRequestPhotoDto
+            {
+                Id = p.Id,
+                FilePath = p.FilePath
+            }).ToList(),
+            CreatedAt = serviceRequest.CreatedAt,
+            UpdatedAt = serviceRequest.UpdatedAt
+        };
         return Result<GetServiceRequestByIdResult>.Success(new GetServiceRequestByIdResult { ServiceRequest = dto });
     }
 }

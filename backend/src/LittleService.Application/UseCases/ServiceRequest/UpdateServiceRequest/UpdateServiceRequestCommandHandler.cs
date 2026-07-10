@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Exceptions;
@@ -11,13 +10,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.UpdateServiceRequest
 public class UpdateServiceRequestCommandHandler : IRequestHandler<UpdateServiceRequestCommand, Result<UpdateServiceRequestResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<UpdateServiceRequestCommandHandler> _logger;
 
-    public UpdateServiceRequestCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UpdateServiceRequestCommandHandler> logger)
+    public UpdateServiceRequestCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateServiceRequestCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -79,7 +76,25 @@ public class UpdateServiceRequestCommandHandler : IRequestHandler<UpdateServiceR
             return Result<UpdateServiceRequestResult>.Failure(ex.Message, ex.ErrorCode);
         }
 
-        var dto = _mapper.Map<ServiceRequestDetailDto>(serviceRequest);
+        var dto = new ServiceRequestDetailDto
+        {
+            Id = serviceRequest.Id,
+            Title = serviceRequest.Title,
+            Description = serviceRequest.Description,
+            Location = serviceRequest.Location,
+            Status = serviceRequest.Status.ToString(),
+            Price = serviceRequest.Price,
+            ClientId = serviceRequest.ClientId,
+            FreelancerPickedId = serviceRequest.FreelancerPickedId,
+            ApplicationsCount = serviceRequest.FreelancerApplications.Count,
+            Photos = serviceRequest.Photos.Select(p => new ServiceRequestPhotoDto
+            {
+                Id = p.Id,
+                FilePath = p.FilePath
+            }).ToList(),
+            CreatedAt = serviceRequest.CreatedAt,
+            UpdatedAt = serviceRequest.UpdatedAt
+        };
         return Result<UpdateServiceRequestResult>.Success(new UpdateServiceRequestResult { ServiceRequest = dto });
     }
 }

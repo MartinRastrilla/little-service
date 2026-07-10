@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.Users;
 using LittleService.Application.Interfaces.Services;
@@ -11,14 +10,12 @@ namespace LittleService.Application.UseCases.Freelancer.UpdateFreelancer;
 public class UpdateFreelancerCommandHandler : IRequestHandler<UpdateFreelancerCommand, Result<UpdateFreelancerResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IFileStorageService _fileStorageService;
     private readonly ILogger<UpdateFreelancerCommandHandler> _logger;
 
-    public UpdateFreelancerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, ILogger<UpdateFreelancerCommandHandler> logger)
+    public UpdateFreelancerCommandHandler(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, ILogger<UpdateFreelancerCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _fileStorageService = fileStorageService;
         _logger = logger;
     }
@@ -76,7 +73,36 @@ public class UpdateFreelancerCommandHandler : IRequestHandler<UpdateFreelancerCo
             }
         }
 
-        var userDto = _mapper.Map<UserDto>(user);
+        var userDto = new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            ProfilePictureUrl = user.ProfilePictureUrl,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt ?? user.CreatedAt,
+            Roles = user.UserRoles.Select(ur => new RoleDto
+            {
+                Id = ur.Role.Id,
+                Name = ur.Role.Name,
+                Description = ur.Role.Description
+            }).ToList(),
+            Freelancer = user.Freelancer is null ? null : new FreelancerDto
+            {
+                UserId = user.Freelancer.Id,
+                Bio = user.Freelancer.Bio,
+                Profession = user.Freelancer.Profession,
+                RatingAverage = user.Freelancer.RatingAverage,
+                RatingCount = user.Freelancer.RatingCount,
+                CompletedJobs = user.Freelancer.CompletedJobs
+            },
+            Client = user.Client is null ? null : new ClientDto
+            {
+                UserId = user.Client.Id,
+                Address = user.Client.Address,
+                TotalContracts = user.Client.TotalContracts
+            }
+        };
         _logger.LogInformation("Freelancer actualizado correctamente");
         return Result<UpdateFreelancerResult>.Success(new UpdateFreelancerResult { User = userDto });
     }

@@ -1,7 +1,6 @@
 using System.Text;
 using LittleService.Api.Middleware;
 using LittleService.Application.Interfaces.Services;
-using LittleService.Application.Mappings;
 using LittleService.Domain.Interfaces.Repositories;
 using LittleService.Infrastructure.Persistence;
 using LittleService.Infrastructure.Persistence.Seeders;
@@ -46,9 +45,6 @@ builder.Services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
 //? Mediator (discovers handlers from Application assembly)
 builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
-
-//? AutoMapper (v16: first param is config action, then assembly marker types to scan for Profile)
-builder.Services.AddAutoMapper((_) => { }, typeof(UserProfile), typeof(ServiceProfile));
 
 //? File Storage
 builder.Services.AddScoped<IFileStorageService, LocalFileStorage>();
@@ -106,9 +102,15 @@ using (var scope = app.Services.CreateScope())
 
         //? Seed database
         var unitOfWork = services.GetRequiredService<IUnitOfWork>();
+        var passwordHasher = services.GetRequiredService<IPasswordHasher>();
         var logger = services.GetRequiredService<ILogger<DatabaseSeeder>>();
         var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-        var seeder = new DatabaseSeeder(unitOfWork, logger, loggerFactory);
+        var seeder = new DatabaseSeeder(
+            unitOfWork,
+            passwordHasher,
+            app.Environment.IsDevelopment(),
+            logger,
+            loggerFactory);
         await seeder.SeedAsync();
     }
     catch (Exception ex)

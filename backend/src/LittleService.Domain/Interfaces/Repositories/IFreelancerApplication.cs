@@ -1,5 +1,6 @@
 using LittleService.Domain.Entities;
 using LittleService.Domain.Entities.Enums;
+using LittleService.Domain.Queries;
 
 namespace LittleService.Domain.Interfaces.Repositories;
 
@@ -13,7 +14,9 @@ public interface IFreelancerApplicationRepository
 
     //? Query Methods for relationships
     Task<IEnumerable<FreelancerApplication>> GetByServiceRequestIdAsync(Guid serviceRequestId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FreelancerApplicationSummaryReadModel>> GetSummariesByServiceRequestIdAsync(Guid serviceRequestId, CancellationToken cancellationToken = default);
     Task<IEnumerable<FreelancerApplication>> GetByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FreelancerApplicationSummaryReadModel>> GetSummariesByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
 
     //? Query Methods for status
     Task<IEnumerable<FreelancerApplication>> GetByStatusAsync(FreelancerApplicationStatus status, CancellationToken cancellationToken = default);

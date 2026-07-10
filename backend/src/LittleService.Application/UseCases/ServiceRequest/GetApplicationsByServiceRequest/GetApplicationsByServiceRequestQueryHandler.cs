@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.GetApplicationsBySer
 public class GetApplicationsByServiceRequestQueryHandler : IRequestHandler<GetApplicationsByServiceRequestQuery, Result<GetApplicationsByServiceRequestResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetApplicationsByServiceRequestQueryHandler> _logger;
 
-    public GetApplicationsByServiceRequestQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetApplicationsByServiceRequestQueryHandler> logger)
+    public GetApplicationsByServiceRequestQueryHandler(IUnitOfWork unitOfWork, ILogger<GetApplicationsByServiceRequestQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -28,14 +25,28 @@ public class GetApplicationsByServiceRequestQueryHandler : IRequestHandler<GetAp
         if (user.Client == null)
             return Result<GetApplicationsByServiceRequestResult>.Failure("Perfil de cliente no encontrado", "CLIENT_NOT_FOUND");
 
-        var serviceRequest = await _unitOfWork.ServiceRequests.GetByIdWithApplicationsAsync(query.ServiceRequestId, cancellationToken);
+        var serviceRequest = await _unitOfWork.ServiceRequests.GetByIdAsync(query.ServiceRequestId, cancellationToken);
         if (serviceRequest == null)
             return Result<GetApplicationsByServiceRequestResult>.Failure("Solicitud de servicio no encontrada", "SERVICE_REQUEST_NOT_FOUND");
 
         if (serviceRequest.ClientId != user.Client.Id)
             return Result<GetApplicationsByServiceRequestResult>.Failure("No tienes permisos para ver estas aplicaciones", "FORBIDDEN");
 
-        var dtos = _mapper.Map<IList<FreelancerApplicationSummaryDto>>(serviceRequest.FreelancerApplications);
+        var summaries = await _unitOfWork.FreelancerApplications.GetSummariesByServiceRequestIdAsync(query.ServiceRequestId, cancellationToken);
+        var dtos = summaries.Select(fa => new FreelancerApplicationSummaryDto
+        {
+            Id = fa.Id,
+            ServiceRequestId = fa.ServiceRequestId,
+            FreelancerId = fa.FreelancerId,
+            FreelancerName = fa.FreelancerName,
+            FreelancerProfilePicture = fa.FreelancerProfilePicture,
+            RatingAverage = fa.RatingAverage,
+            RatingCount = fa.RatingCount,
+            Bio = fa.Bio,
+            Status = fa.Status.ToString(),
+            CreatedAt = fa.CreatedAt
+        }).ToList();
+
         return Result<GetApplicationsByServiceRequestResult>.Success(new GetApplicationsByServiceRequestResult { Applications = dtos });
     }
 }

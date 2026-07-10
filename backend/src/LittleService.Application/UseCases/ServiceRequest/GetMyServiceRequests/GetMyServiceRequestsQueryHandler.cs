@@ -1,4 +1,3 @@
-using AutoMapper;
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
 using LittleService.Domain.Interfaces.Repositories;
@@ -10,13 +9,11 @@ namespace LittleService.Application.UseCases.ServiceRequest.GetMyServiceRequests
 public class GetMyServiceRequestsQueryHandler : IRequestHandler<GetMyServiceRequestsQuery, Result<GetMyServiceRequestsResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetMyServiceRequestsQueryHandler> _logger;
 
-    public GetMyServiceRequestsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetMyServiceRequestsQueryHandler> logger)
+    public GetMyServiceRequestsQueryHandler(IUnitOfWork unitOfWork, ILogger<GetMyServiceRequestsQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -28,8 +25,20 @@ public class GetMyServiceRequestsQueryHandler : IRequestHandler<GetMyServiceRequ
         if (user.Client == null)
             return Result<GetMyServiceRequestsResult>.Failure("Perfil de cliente no encontrado", "CLIENT_NOT_FOUND");
 
-        var serviceRequests = await _unitOfWork.ServiceRequests.GetByClientIdAsync(user.Client.Id, cancellationToken);
-        var dtos = _mapper.Map<IList<ServiceRequestSummaryDto>>(serviceRequests);
+        var summaries = await _unitOfWork.ServiceRequests.GetSummariesByClientIdAsync(user.Client.Id, cancellationToken);
+        var dtos = summaries.Select(sr => new ServiceRequestSummaryDto
+        {
+            Id = sr.Id,
+            Title = sr.Title,
+            Description = sr.Description,
+            Location = sr.Location,
+            Status = sr.Status.ToString(),
+            Price = sr.Price,
+            ClientId = sr.ClientId,
+            FreelancerPickedId = sr.FreelancerPickedId,
+            PhotosCount = sr.PhotosCount,
+            CreatedAt = sr.CreatedAt
+        }).ToList();
 
         return Result<GetMyServiceRequestsResult>.Success(new GetMyServiceRequestsResult { ServiceRequests = dtos });
     }
