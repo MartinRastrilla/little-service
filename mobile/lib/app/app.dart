@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/app/di.dart';
 import 'package:mobile/app/router.dart';
+import 'package:mobile/core/theme/app_theme.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_event.dart';
 
@@ -44,10 +45,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       value: _authBloc,
       child: MaterialApp.router(
         title: 'Little Service',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-          useMaterial3: true,
-        ),
+        theme: buildLightTheme(),
+        darkTheme: buildDarkTheme(),
+        themeMode: ThemeMode.system,
         routerConfig: _appRouter.router,
       ),
     );
