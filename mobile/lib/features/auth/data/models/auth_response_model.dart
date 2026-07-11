@@ -14,6 +14,9 @@ abstract class AuthResponseModel with _$AuthResponseModel {
     required String token,
     @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)
     required DateTime expiresAt,
+    required String refreshToken,
+    @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)
+    required DateTime refreshTokenExpiresAt,
     required UserModel user,
   }) = _AuthResponseModel;
 

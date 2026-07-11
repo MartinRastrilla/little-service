@@ -2,7 +2,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenStorage {
   static const accessTokenKey = 'access_token';
-  // TODO(refresh-token): add refresh_token key when backend supports it.
+  static const refreshTokenKey = 'refresh_token';
+  static const refreshTokenExpiresAtKey = 'refresh_token_expires_at';
 
   final FlutterSecureStorage _storage;
 

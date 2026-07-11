@@ -12,4 +12,6 @@ sealed class AuthEvent with _$AuthEvent {
   }) = AuthLoginRequested;
 
   const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
+
+  const factory AuthEvent.sessionExpired() = AuthSessionExpired;
 }

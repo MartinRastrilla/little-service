@@ -22,6 +22,29 @@ class AuthRemoteDataSource {
     }
   }
 
+  Future<AuthResponseModel> refresh({required String refreshToken}) async {
+    try {
+      final response = await dio.post(
+        '/auth/refresh',
+        data: {'refreshToken': refreshToken},
+      );
+      return AuthResponseModel.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<void> logoutRemote({required String refreshToken}) async {
+    try {
+      await dio.post(
+        '/auth/logout',
+        data: {'refreshToken': refreshToken},
+      );
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
   // TODO(register): POST /auth/register will be added in a future iteration.
 
   ApiException _mapDioException(DioException error) {

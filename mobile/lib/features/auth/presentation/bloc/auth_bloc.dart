@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/core/auth/auth_session_notifier.dart';
 import 'package:mobile/core/usecases/usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/check_session_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/login_usecase.dart';
@@ -10,15 +13,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final LogoutUseCase logoutUseCase;
   final CheckSessionUseCase checkSessionUseCase;
+  final AuthSessionNotifier sessionNotifier;
+  StreamSubscription<void>? _sessionExpiredSubscription;
 
   AuthBloc({
     required this.loginUseCase,
     required this.logoutUseCase,
     required this.checkSessionUseCase,
+    required this.sessionNotifier,
   }) : super(const AuthState.initial()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
+    on<AuthSessionExpired>(_onSessionExpired);
+
+    _sessionExpiredSubscription = sessionNotifier.onSessionExpired.listen((_) {
+      add(const AuthEvent.sessionExpired());
+    });
   }
 
   Future<void> _onCheckRequested(
@@ -65,5 +76,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ),
       (_) => emit(const AuthState.unauthenticated()),
     );
+  }
+
+  Future<void> _onSessionExpired(
+    AuthSessionExpired event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.unauthenticated());
+  }
+
+  @override
+  Future<void> close() {
+    _sessionExpiredSubscription?.cancel();
+    return super.close();
   }
 }

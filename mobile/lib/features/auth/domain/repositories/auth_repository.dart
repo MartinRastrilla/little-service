@@ -12,6 +12,5 @@ abstract class AuthRepository {
 
   Future<Either<Failure, AuthSession>> getCachedSession();
 
-  // TODO(refresh-token): Future<Either<Failure, AuthSession>> refreshSession();
-  // Se implementará cuando el backend exponga refreshToken + POST /auth/refresh.
+  Future<Either<Failure, AuthSession>> refreshSession();
 }
