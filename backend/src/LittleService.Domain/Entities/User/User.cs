@@ -14,7 +14,7 @@ public class User : BaseEntity
     public const int MAX_NAME_LENGTH = 200;
     public const int MAX_EMAIL_LENGTH = 100;
     public const int MAX_PROFILE_PICTURE_URL_LENGTH = 255;
-    public const string DEFAULT_PROFILE_PICTURE_URL = "/images/default-profile-picture.png";
+    public const string DEFAULT_PROFILE_PICTURE_URL = "/uploads/images/default_profile_pic.png";
 
     //? Image formats allowed (extensions)
     private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
@@ -572,17 +572,8 @@ public class User : BaseEntity
                 "PROFILE_PICTURE_URL_TOO_LONG");
         }
 
-        // Validate URL format
-        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
-            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-        {
-            throw new DomainException(
-                "La URL de la foto de perfil debe ser una URL válida (http:// o https://)",
-                "INVALID_PROFILE_PICTURE_URL");
-        }
-
         // Validate image extension
-        var extension = System.IO.Path.GetExtension(uri.AbsolutePath);
+        var extension = System.IO.Path.GetExtension(url);
         if (string.IsNullOrEmpty(extension) || !AllowedImageExtensions.Contains(extension))
         {
             var allowedFormats = string.Join(", ", AllowedImageExtensions);
