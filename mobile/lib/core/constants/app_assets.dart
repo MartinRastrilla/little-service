@@ -4,4 +4,6 @@ abstract final class AppAssets {
 
   static const littleServiceIsotipo = '$_brand/little-service-isotipo.png';
   static const landscape = '$_illustrations/landscape-asset.png';
+  static const landscapeWithoutBackground =
+      '$_illustrations/landscape-asset-w-background.png';
 }

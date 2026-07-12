@@ -1,0 +1,1 @@
+enum ActiveAppRole { client, freelancer }

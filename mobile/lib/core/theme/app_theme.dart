@@ -93,6 +93,7 @@ ThemeData buildLightTheme() {
       thickness: 1,
       space: 1,
     ),
+    navigationBarTheme: _navigationBarTheme(colorScheme, textTheme),
   );
 }
 
@@ -183,6 +184,34 @@ ThemeData buildDarkTheme() {
       thickness: 1,
       space: 1,
     ),
+    navigationBarTheme: _navigationBarTheme(colorScheme, textTheme),
+  );
+}
+
+NavigationBarThemeData _navigationBarTheme(
+  ColorScheme colorScheme,
+  TextTheme textTheme,
+) {
+  return NavigationBarThemeData(
+    height: 72,
+    elevation: 0,
+    backgroundColor: colorScheme.surface,
+    surfaceTintColor: Colors.transparent,
+    indicatorColor: colorScheme.primaryContainer,
+    labelTextStyle: WidgetStateProperty.resolveWith((states) {
+      final isSelected = states.contains(WidgetState.selected);
+      return textTheme.labelMedium?.copyWith(
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+      );
+    }),
+    iconTheme: WidgetStateProperty.resolveWith((states) {
+      final isSelected = states.contains(WidgetState.selected);
+      return IconThemeData(
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+        size: 24,
+      );
+    }),
   );
 }
 
