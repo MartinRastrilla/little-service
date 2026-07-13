@@ -56,12 +56,13 @@ extension AuthEventPatterns on AuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AuthCheckRequested value)?  checkRequested,TResult Function( AuthLoginRequested value)?  loginRequested,TResult Function( AuthLogoutRequested value)?  logoutRequested,TResult Function( AuthSessionExpired value)?  sessionExpired,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AuthCheckRequested value)?  checkRequested,TResult Function( AuthLoginRequested value)?  loginRequested,TResult Function( AuthRegisterRequested value)?  registerRequested,TResult Function( AuthLogoutRequested value)?  logoutRequested,TResult Function( AuthSessionExpired value)?  sessionExpired,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case AuthCheckRequested() when checkRequested != null:
 return checkRequested(_that);case AuthLoginRequested() when loginRequested != null:
-return loginRequested(_that);case AuthLogoutRequested() when logoutRequested != null:
+return loginRequested(_that);case AuthRegisterRequested() when registerRequested != null:
+return registerRequested(_that);case AuthLogoutRequested() when logoutRequested != null:
 return logoutRequested(_that);case AuthSessionExpired() when sessionExpired != null:
 return sessionExpired(_that);case _:
   return orElse();
@@ -81,12 +82,13 @@ return sessionExpired(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AuthCheckRequested value)  checkRequested,required TResult Function( AuthLoginRequested value)  loginRequested,required TResult Function( AuthLogoutRequested value)  logoutRequested,required TResult Function( AuthSessionExpired value)  sessionExpired,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AuthCheckRequested value)  checkRequested,required TResult Function( AuthLoginRequested value)  loginRequested,required TResult Function( AuthRegisterRequested value)  registerRequested,required TResult Function( AuthLogoutRequested value)  logoutRequested,required TResult Function( AuthSessionExpired value)  sessionExpired,}){
 final _that = this;
 switch (_that) {
 case AuthCheckRequested():
 return checkRequested(_that);case AuthLoginRequested():
-return loginRequested(_that);case AuthLogoutRequested():
+return loginRequested(_that);case AuthRegisterRequested():
+return registerRequested(_that);case AuthLogoutRequested():
 return logoutRequested(_that);case AuthSessionExpired():
 return sessionExpired(_that);}
 }
@@ -102,12 +104,13 @@ return sessionExpired(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AuthCheckRequested value)?  checkRequested,TResult? Function( AuthLoginRequested value)?  loginRequested,TResult? Function( AuthLogoutRequested value)?  logoutRequested,TResult? Function( AuthSessionExpired value)?  sessionExpired,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AuthCheckRequested value)?  checkRequested,TResult? Function( AuthLoginRequested value)?  loginRequested,TResult? Function( AuthRegisterRequested value)?  registerRequested,TResult? Function( AuthLogoutRequested value)?  logoutRequested,TResult? Function( AuthSessionExpired value)?  sessionExpired,}){
 final _that = this;
 switch (_that) {
 case AuthCheckRequested() when checkRequested != null:
 return checkRequested(_that);case AuthLoginRequested() when loginRequested != null:
-return loginRequested(_that);case AuthLogoutRequested() when logoutRequested != null:
+return loginRequested(_that);case AuthRegisterRequested() when registerRequested != null:
+return registerRequested(_that);case AuthLogoutRequested() when logoutRequested != null:
 return logoutRequested(_that);case AuthSessionExpired() when sessionExpired != null:
 return sessionExpired(_that);case _:
   return null;
@@ -126,11 +129,12 @@ return sessionExpired(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  checkRequested,TResult Function( String email,  String password)?  loginRequested,TResult Function()?  logoutRequested,TResult Function()?  sessionExpired,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  checkRequested,TResult Function( String email,  String password)?  loginRequested,TResult Function( String name,  String email,  String password,  String confirmPassword,  List<String> roles)?  registerRequested,TResult Function()?  logoutRequested,TResult Function()?  sessionExpired,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case AuthCheckRequested() when checkRequested != null:
 return checkRequested();case AuthLoginRequested() when loginRequested != null:
-return loginRequested(_that.email,_that.password);case AuthLogoutRequested() when logoutRequested != null:
+return loginRequested(_that.email,_that.password);case AuthRegisterRequested() when registerRequested != null:
+return registerRequested(_that.name,_that.email,_that.password,_that.confirmPassword,_that.roles);case AuthLogoutRequested() when logoutRequested != null:
 return logoutRequested();case AuthSessionExpired() when sessionExpired != null:
 return sessionExpired();case _:
   return orElse();
@@ -150,11 +154,12 @@ return sessionExpired();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  checkRequested,required TResult Function( String email,  String password)  loginRequested,required TResult Function()  logoutRequested,required TResult Function()  sessionExpired,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  checkRequested,required TResult Function( String email,  String password)  loginRequested,required TResult Function( String name,  String email,  String password,  String confirmPassword,  List<String> roles)  registerRequested,required TResult Function()  logoutRequested,required TResult Function()  sessionExpired,}) {final _that = this;
 switch (_that) {
 case AuthCheckRequested():
 return checkRequested();case AuthLoginRequested():
-return loginRequested(_that.email,_that.password);case AuthLogoutRequested():
+return loginRequested(_that.email,_that.password);case AuthRegisterRequested():
+return registerRequested(_that.name,_that.email,_that.password,_that.confirmPassword,_that.roles);case AuthLogoutRequested():
 return logoutRequested();case AuthSessionExpired():
 return sessionExpired();}
 }
@@ -170,11 +175,12 @@ return sessionExpired();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  checkRequested,TResult? Function( String email,  String password)?  loginRequested,TResult? Function()?  logoutRequested,TResult? Function()?  sessionExpired,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  checkRequested,TResult? Function( String email,  String password)?  loginRequested,TResult? Function( String name,  String email,  String password,  String confirmPassword,  List<String> roles)?  registerRequested,TResult? Function()?  logoutRequested,TResult? Function()?  sessionExpired,}) {final _that = this;
 switch (_that) {
 case AuthCheckRequested() when checkRequested != null:
 return checkRequested();case AuthLoginRequested() when loginRequested != null:
-return loginRequested(_that.email,_that.password);case AuthLogoutRequested() when logoutRequested != null:
+return loginRequested(_that.email,_that.password);case AuthRegisterRequested() when registerRequested != null:
+return registerRequested(_that.name,_that.email,_that.password,_that.confirmPassword,_that.roles);case AuthLogoutRequested() when logoutRequested != null:
 return logoutRequested();case AuthSessionExpired() when sessionExpired != null:
 return sessionExpired();case _:
   return null;
@@ -278,6 +284,86 @@ class _$AuthLoginRequestedCopyWithImpl<$Res>
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class AuthRegisterRequested implements AuthEvent {
+  const AuthRegisterRequested({required this.name, required this.email, required this.password, required this.confirmPassword, required  List<String> roles}): _roles = roles;
+  
+
+ final  String name;
+ final  String email;
+ final  String password;
+ final  String confirmPassword;
+ final  List<String> _roles;
+ List<String> get roles {
+  if (_roles is EqualUnmodifiableListView) return _roles;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_roles);
+}
+
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AuthRegisterRequestedCopyWith<AuthRegisterRequested> get copyWith => _$AuthRegisterRequestedCopyWithImpl<AuthRegisterRequested>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthRegisterRequested&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.confirmPassword, confirmPassword) || other.confirmPassword == confirmPassword)&&const DeepCollectionEquality().equals(other._roles, _roles));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,name,email,password,confirmPassword,const DeepCollectionEquality().hash(_roles));
+
+@override
+String toString() {
+  return 'AuthEvent.registerRequested(name: $name, email: $email, password: $password, confirmPassword: $confirmPassword, roles: $roles)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AuthRegisterRequestedCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
+  factory $AuthRegisterRequestedCopyWith(AuthRegisterRequested value, $Res Function(AuthRegisterRequested) _then) = _$AuthRegisterRequestedCopyWithImpl;
+@useResult
+$Res call({
+ String name, String email, String password, String confirmPassword, List<String> roles
+});
+
+
+
+
+}
+/// @nodoc
+class _$AuthRegisterRequestedCopyWithImpl<$Res>
+    implements $AuthRegisterRequestedCopyWith<$Res> {
+  _$AuthRegisterRequestedCopyWithImpl(this._self, this._then);
+
+  final AuthRegisterRequested _self;
+  final $Res Function(AuthRegisterRequested) _then;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? name = null,Object? email = null,Object? password = null,Object? confirmPassword = null,Object? roles = null,}) {
+  return _then(AuthRegisterRequested(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,confirmPassword: null == confirmPassword ? _self.confirmPassword : confirmPassword // ignore: cast_nullable_to_non_nullable
+as String,roles: null == roles ? _self._roles : roles // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

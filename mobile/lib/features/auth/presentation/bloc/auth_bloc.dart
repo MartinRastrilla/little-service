@@ -6,11 +6,13 @@ import 'package:mobile/core/usecases/usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/check_session_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:mobile/features/auth/domain/usecases/register_usecase.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_event.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
+  final RegisterUseCase registerUseCase;
   final LogoutUseCase logoutUseCase;
   final CheckSessionUseCase checkSessionUseCase;
   final AuthSessionNotifier sessionNotifier;
@@ -18,12 +20,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({
     required this.loginUseCase,
+    required this.registerUseCase,
     required this.logoutUseCase,
     required this.checkSessionUseCase,
     required this.sessionNotifier,
   }) : super(const AuthState.initial()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthLoginRequested>(_onLoginRequested);
+    on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthSessionExpired>(_onSessionExpired);
 
@@ -53,6 +57,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await loginUseCase(
       LoginParams(email: event.email, password: event.password),
+    );
+
+    result.fold(
+      (failure) => emit(
+        AuthState.failure(message: failure.message, code: failure.code),
+      ),
+      (session) => emit(AuthState.authenticated(session: session)),
+    );
+  }
+
+  Future<void> _onRegisterRequested(
+    AuthRegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+
+    final result = await registerUseCase(
+      RegisterParams(
+        name: event.name,
+        email: event.email,
+        password: event.password,
+        confirmPassword: event.confirmPassword,
+        roles: event.roles,
+      ),
     );
 
     result.fold(

@@ -8,6 +8,14 @@ abstract class AuthRepository {
     required String password,
   });
 
+  Future<Either<Failure, AuthSession>> register({
+    required String name,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required List<String> roles,
+  });
+
   Future<Either<Failure, void>> logout();
 
   Future<Either<Failure, AuthSession>> getCachedSession();

@@ -11,6 +11,14 @@ sealed class AuthEvent with _$AuthEvent {
     required String password,
   }) = AuthLoginRequested;
 
+  const factory AuthEvent.registerRequested({
+    required String name,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required List<String> roles,
+  }) = AuthRegisterRequested;
+
   const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
 
   const factory AuthEvent.sessionExpired() = AuthSessionExpired;

@@ -45,7 +45,29 @@ class AuthRemoteDataSource {
     }
   }
 
-  // TODO(register): POST /auth/register will be added in a future iteration.
+  Future<AuthResponseModel> register({
+    required String name,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required List<String> roles,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/auth/register',
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          'confirmPassword': confirmPassword,
+          'roles': roles,
+        },
+      );
+      return AuthResponseModel.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
 
   ApiException _mapDioException(DioException error) {
     final statusCode = error.response?.statusCode;

@@ -29,6 +29,29 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, AuthSession>> register({
+    required String name,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required List<String> roles,
+  }) async {
+    try {
+      final model = await remote.register(
+        name: name,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+        roles: roles,
+      );
+      await local.saveSession(model);
+      return Right(model.toEntity());
+    } catch (error) {
+      return Left(mapExceptionToFailure(error));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> logout() async {
     try {
       final refreshToken = await local.readRefreshToken();

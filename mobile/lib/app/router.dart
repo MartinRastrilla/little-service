@@ -8,6 +8,7 @@ import 'package:mobile/app/shell/presentation/pages/shell_tab_page.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mobile/features/auth/presentation/pages/login_page.dart';
+import 'package:mobile/features/auth/presentation/pages/register_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -31,15 +32,15 @@ class AppRouter {
         redirect: (context, state) {
           final authState = authBloc.state;
           final location = state.matchedLocation;
-          final isLoggingIn = location == '/login';
+          final isAuthRoute = location == '/login' || location == '/register';
           final isLegacyHome = location == '/home';
 
           return authState.maybeWhen(
             authenticated: (_) {
-              if (isLoggingIn || isLegacyHome) return '/shell/home';
+              if (isAuthRoute || isLegacyHome) return '/shell/home';
               return null;
             },
-            unauthenticated: () => isLoggingIn ? null : '/login',
+            unauthenticated: () => isAuthRoute ? null : '/login',
             orElse: () => null,
           );
         },
@@ -47,6 +48,10 @@ class AppRouter {
           GoRoute(
             path: '/login',
             builder: (context, state) => const LoginPage(),
+          ),
+          GoRoute(
+            path: '/register',
+            builder: (context, state) => const RegisterPage(),
           ),
           GoRoute(
             path: '/home',

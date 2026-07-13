@@ -12,6 +12,7 @@ import 'package:mobile/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mobile/features/auth/domain/usecases/check_session_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:mobile/features/auth/domain/usecases/register_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -57,6 +58,7 @@ Future<void> setupDependencyInjection() async {
   }, instanceName: apiDioInstanceName);
 
   sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
   sl.registerLazySingleton(() => CheckSessionUseCase(sl()));
   sl.registerLazySingleton(() => RefreshTokenUseCase(sl()));
@@ -64,6 +66,7 @@ Future<void> setupDependencyInjection() async {
   sl.registerFactory(
     () => AuthBloc(
       loginUseCase: sl(),
+      registerUseCase: sl(),
       logoutUseCase: sl(),
       checkSessionUseCase: sl(),
       sessionNotifier: sl(),

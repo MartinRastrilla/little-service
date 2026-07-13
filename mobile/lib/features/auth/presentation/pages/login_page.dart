@@ -238,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
                                               PlaceholderAlignment.baseline,
                                           baseline: TextBaseline.alphabetic,
                                           child: GestureDetector(
-                                            onTap: () {},
+                                            onTap: () => context.go('/register'),
                                             child: Text(
                                               'Regístrate',
                                               style: context.text.bodyMedium
