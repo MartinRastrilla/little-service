@@ -10,7 +10,6 @@ const freelancerShellTabs = <ShellTabDefinition>[
     placeholderTitle: 'Inicio',
     placeholderDescription:
         'Explorá pedidos abiertos y encontrá nuevas oportunidades.',
-    usesWelcomeTitle: true,
   ),
   ShellTabDefinition(
     id: ShellTabId.activity,

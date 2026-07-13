@@ -120,16 +120,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: _currentStep == 1
-          ? AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => _goToStep(0),
-              ),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            )
-          : null,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(

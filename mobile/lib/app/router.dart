@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/app/shell/presentation/app_shell_page.dart';
 import 'package:mobile/app/shell/presentation/config/shell_tab_definition.dart';
+import 'package:mobile/app/shell/presentation/pages/more_page.dart';
 import 'package:mobile/app/shell/presentation/pages/shell_tab_page.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
@@ -93,8 +94,7 @@ class AppRouter {
                 routes: [
                   GoRoute(
                     path: '/shell/more',
-                    builder: (context, state) =>
-                        const ShellTabPage(tabId: ShellTabId.more),
+                    builder: (context, state) => const MorePage(),
                   ),
                 ],
               ),

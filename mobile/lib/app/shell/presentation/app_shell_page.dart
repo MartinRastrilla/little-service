@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile/app/shell/presentation/config/shell_tabs_resolver.dart';
 import 'package:mobile/app/shell/presentation/widgets/app_shell_scaffold.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:mobile/features/auth/presentation/bloc/auth_event.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
 
 class AppShellPage extends StatelessWidget {
@@ -35,16 +34,12 @@ class AppShellPage extends StatelessWidget {
               return AppShellScaffold(
                 tabs: tabs,
                 currentIndex: navigationShell.currentIndex,
+                userName: session.user.name,
                 onDestinationSelected: (index) {
                   // TODO(tech-debt): Implement navigation to actual feature screens.
                   navigationShell.goBranch(
                     index,
                     initialLocation: index == navigationShell.currentIndex,
-                  );
-                },
-                onLogout: () {
-                  context.read<AuthBloc>().add(
-                    const AuthEvent.logoutRequested(),
                   );
                 },
                 body: navigationShell,

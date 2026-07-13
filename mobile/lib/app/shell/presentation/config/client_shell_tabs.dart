@@ -10,7 +10,6 @@ const clientShellTabs = <ShellTabDefinition>[
     placeholderTitle: 'Inicio',
     placeholderDescription:
         'Descubrí freelancers y servicios para tu próximo proyecto.',
-    usesWelcomeTitle: true,
   ),
   ShellTabDefinition(
     id: ShellTabId.activity,
