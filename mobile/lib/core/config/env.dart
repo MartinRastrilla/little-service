@@ -3,4 +3,9 @@ class Env {
     'BASE_URL',
     defaultValue: 'http://10.0.2.2:5278/api',
   );
+
+  static const String mediaBaseUrl = String.fromEnvironment(
+    'MEDIA_BASE_URL',
+    defaultValue: 'http://10.0.2.2:5278',
+  );
 }

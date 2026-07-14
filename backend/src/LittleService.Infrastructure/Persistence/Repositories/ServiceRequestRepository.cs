@@ -61,6 +61,7 @@ public class ServiceRequestRepository : IServiceRequestRepository
         return await _context.ServiceRequests
             .AsNoTracking()
             .Where(sr => sr.ClientId == clientId)
+            .OrderByDescending(sr => sr.CreatedAt)
             .Select(sr => new ServiceRequestSummaryReadModel
             {
                 Id = sr.Id,
@@ -72,6 +73,11 @@ public class ServiceRequestRepository : IServiceRequestRepository
                 ClientId = sr.ClientId,
                 FreelancerPickedId = sr.FreelancerPickedId,
                 PhotosCount = sr.Photos.Count,
+                ContractStatus = sr.Contract != null ? sr.Contract.Status : null,
+                CoverPhotoPath = sr.Photos
+                    .OrderBy(p => p.CreatedAt)
+                    .Select(p => p.FilePath)
+                    .FirstOrDefault(),
                 CreatedAt = sr.CreatedAt
             })
             .ToListAsync(cancellationToken);
@@ -110,6 +116,7 @@ public class ServiceRequestRepository : IServiceRequestRepository
         return await _context.ServiceRequests
             .AsNoTracking()
             .Where(sr => sr.Status == ServiceRequestStatus.Opened)
+            .OrderByDescending(sr => sr.CreatedAt)
             .Select(sr => new ServiceRequestSummaryReadModel
             {
                 Id = sr.Id,
@@ -121,6 +128,11 @@ public class ServiceRequestRepository : IServiceRequestRepository
                 ClientId = sr.ClientId,
                 FreelancerPickedId = sr.FreelancerPickedId,
                 PhotosCount = sr.Photos.Count,
+                ContractStatus = sr.Contract != null ? sr.Contract.Status : null,
+                CoverPhotoPath = sr.Photos
+                    .OrderBy(p => p.CreatedAt)
+                    .Select(p => p.FilePath)
+                    .FirstOrDefault(),
                 CreatedAt = sr.CreatedAt
             })
             .ToListAsync(cancellationToken);

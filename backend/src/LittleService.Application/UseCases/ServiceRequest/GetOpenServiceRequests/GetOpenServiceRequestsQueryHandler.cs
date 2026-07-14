@@ -1,5 +1,5 @@
 using LittleService.Application.Common;
-using LittleService.Application.DTOs.ServiceRequests;
+using LittleService.Application.Mappers;
 using LittleService.Domain.Interfaces.Repositories;
 using Mediator;
 using Microsoft.Extensions.Logging;
@@ -9,11 +9,16 @@ namespace LittleService.Application.UseCases.ServiceRequest.GetOpenServiceReques
 public class GetOpenServiceRequestsQueryHandler : IRequestHandler<GetOpenServiceRequestsQuery, Result<GetOpenServiceRequestsResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ServiceRequestSummaryMapper _summaryMapper;
     private readonly ILogger<GetOpenServiceRequestsQueryHandler> _logger;
 
-    public GetOpenServiceRequestsQueryHandler(IUnitOfWork unitOfWork, ILogger<GetOpenServiceRequestsQueryHandler> logger)
+    public GetOpenServiceRequestsQueryHandler(
+        IUnitOfWork unitOfWork,
+        ServiceRequestSummaryMapper summaryMapper,
+        ILogger<GetOpenServiceRequestsQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _summaryMapper = summaryMapper;
         _logger = logger;
     }
 
@@ -30,22 +35,10 @@ public class GetOpenServiceRequestsQueryHandler : IRequestHandler<GetOpenService
         var freelancerApplications = await _unitOfWork.FreelancerApplications.GetSummariesByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
         var appliedRequestIds = freelancerApplications.Select(fa => fa.ServiceRequestId).ToHashSet();
 
-        var dtos = openSummaries
-            .Where(sr => sr.ClientId != user.Freelancer.Id && !appliedRequestIds.Contains(sr.Id))
-            .Select(sr => new ServiceRequestSummaryDto
-            {
-                Id = sr.Id,
-                Title = sr.Title,
-                Description = sr.Description,
-                Location = sr.Location,
-                Status = sr.Status.ToString(),
-                Price = sr.Price,
-                ClientId = sr.ClientId,
-                FreelancerPickedId = sr.FreelancerPickedId,
-                PhotosCount = sr.PhotosCount,
-                CreatedAt = sr.CreatedAt
-            })
-            .ToList();
+        var filteredSummaries = openSummaries
+            .Where(sr => sr.ClientId != user.Freelancer.Id && !appliedRequestIds.Contains(sr.Id));
+
+        var dtos = _summaryMapper.MapMany(filteredSummaries);
 
         return Result<GetOpenServiceRequestsResult>.Success(new GetOpenServiceRequestsResult { ServiceRequests = dtos });
     }

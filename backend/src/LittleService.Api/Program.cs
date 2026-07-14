@@ -1,6 +1,7 @@
 using System.Text;
 using LittleService.Api.Middleware;
 using LittleService.Application.Interfaces.Services;
+using LittleService.Application.Mappers;
 using LittleService.Domain.Interfaces.Repositories;
 using LittleService.Infrastructure.Persistence;
 using LittleService.Infrastructure.Persistence.Seeders;
@@ -50,6 +51,7 @@ builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetim
 
 //? File Storage
 builder.Services.AddScoped<IFileStorageService, LocalFileStorage>();
+builder.Services.AddScoped<ServiceRequestSummaryMapper>();
 
 //? Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer(); // Allows endpoints to be discovered

@@ -15,6 +15,11 @@ import 'package:mobile/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/register_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mobile/features/service_requests/data/datasources/service_requests_remote_datasource.dart';
+import 'package:mobile/features/service_requests/data/repositories/service_requests_repository_impl.dart';
+import 'package:mobile/features/service_requests/domain/repositories/service_requests_repository.dart';
+import 'package:mobile/features/service_requests/domain/usecases/get_my_service_requests_usecase.dart';
+import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
 
 const authDioInstanceName = 'authDio';
 const apiDioInstanceName = 'apiDio';
@@ -71,5 +76,21 @@ Future<void> setupDependencyInjection() async {
       checkSessionUseCase: sl(),
       sessionNotifier: sl(),
     ),
+  );
+
+  sl.registerLazySingleton(
+    () => ServiceRequestsRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<ServiceRequestsRepository>(
+    () => ServiceRequestsRepositoryImpl(remote: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetMyServiceRequestsUseCase(sl()));
+
+  sl.registerFactory(
+    () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
   );
 }

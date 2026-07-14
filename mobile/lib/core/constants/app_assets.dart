@@ -6,4 +6,5 @@ abstract final class AppAssets {
   static const landscape = '$_illustrations/landscape-asset.png';
   static const landscapeWithoutBackground =
       '$_illustrations/landscape-asset-w-background.png';
+  static const noPicPlaceholder = '$_illustrations/no-pic-placeholder.png';
 }

@@ -13,5 +13,7 @@ public class ServiceRequestSummaryReadModel
     public Guid ClientId { get; init; }
     public Guid? FreelancerPickedId { get; init; }
     public int PhotosCount { get; init; }
+    public ContractStatus? ContractStatus { get; init; }
+    public string? CoverPhotoPath { get; init; }
     public DateTime CreatedAt { get; init; }
 }

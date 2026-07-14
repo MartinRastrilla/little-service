@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/app/shell/presentation/config/shell_tab_definition.dart';
 import 'package:mobile/app/shell/presentation/widgets/app_bottom_navigation_bar.dart';
-import 'package:mobile/app/shell/presentation/widgets/shell_header.dart';
 
 class AppShellScaffold extends StatelessWidget {
   final List<ShellTabDefinition> tabs;
@@ -25,7 +24,7 @@ class AppShellScaffold extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ShellHeader(userName: userName),
+          //ShellHeader(userName: userName),
           Expanded(child: body),
         ],
       ),
