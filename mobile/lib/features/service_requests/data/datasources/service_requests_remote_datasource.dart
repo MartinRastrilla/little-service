@@ -51,7 +51,7 @@ class ServiceRequestsRemoteDataSource {
         'title': params.title,
         'description': params.description,
         'location': params.location,
-        if (params.price != null) 'price': params.price,
+        if (params.price != null) 'price': params.price!.round().toString(),
       });
 
       for (final photo in params.photos) {

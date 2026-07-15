@@ -105,3 +105,4 @@ TestResult*/
 *.sqlite
 *.db
 docs/project-guide/
+/backend/src/LittleService.Api/wwwroot/uploads
