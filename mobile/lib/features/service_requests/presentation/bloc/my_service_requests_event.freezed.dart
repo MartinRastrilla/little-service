@@ -56,11 +56,12 @@ extension MyServiceRequestsEventPatterns on MyServiceRequestsEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MyServiceRequestsRequested value)?  requested,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MyServiceRequestsRequested value)?  requested,TResult Function( MyServiceRequestsLoadMore value)?  loadMore,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case MyServiceRequestsRequested() when requested != null:
-return requested(_that);case _:
+return requested(_that);case MyServiceRequestsLoadMore() when loadMore != null:
+return loadMore(_that);case _:
   return orElse();
 
 }
@@ -78,11 +79,12 @@ return requested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MyServiceRequestsRequested value)  requested,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MyServiceRequestsRequested value)  requested,required TResult Function( MyServiceRequestsLoadMore value)  loadMore,}){
 final _that = this;
 switch (_that) {
 case MyServiceRequestsRequested():
-return requested(_that);}
+return requested(_that);case MyServiceRequestsLoadMore():
+return loadMore(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -96,11 +98,12 @@ return requested(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MyServiceRequestsRequested value)?  requested,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MyServiceRequestsRequested value)?  requested,TResult? Function( MyServiceRequestsLoadMore value)?  loadMore,}){
 final _that = this;
 switch (_that) {
 case MyServiceRequestsRequested() when requested != null:
-return requested(_that);case _:
+return requested(_that);case MyServiceRequestsLoadMore() when loadMore != null:
+return loadMore(_that);case _:
   return null;
 
 }
@@ -117,10 +120,11 @@ return requested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  requested,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( ServiceRequestFilterOption filter,  String? search,  int page)?  requested,TResult Function()?  loadMore,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MyServiceRequestsRequested() when requested != null:
-return requested();case _:
+return requested(_that.filter,_that.search,_that.page);case MyServiceRequestsLoadMore() when loadMore != null:
+return loadMore();case _:
   return orElse();
 
 }
@@ -138,10 +142,11 @@ return requested();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  requested,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( ServiceRequestFilterOption filter,  String? search,  int page)  requested,required TResult Function()  loadMore,}) {final _that = this;
 switch (_that) {
 case MyServiceRequestsRequested():
-return requested();}
+return requested(_that.filter,_that.search,_that.page);case MyServiceRequestsLoadMore():
+return loadMore();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -155,10 +160,11 @@ return requested();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  requested,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( ServiceRequestFilterOption filter,  String? search,  int page)?  requested,TResult? Function()?  loadMore,}) {final _that = this;
 switch (_that) {
 case MyServiceRequestsRequested() when requested != null:
-return requested();case _:
+return requested(_that.filter,_that.search,_that.page);case MyServiceRequestsLoadMore() when loadMore != null:
+return loadMore();case _:
   return null;
 
 }
@@ -170,7 +176,77 @@ return requested();case _:
 
 
 class MyServiceRequestsRequested implements MyServiceRequestsEvent {
-  const MyServiceRequestsRequested();
+  const MyServiceRequestsRequested({this.filter = ServiceRequestFilterOption.all, this.search, this.page = 1});
+  
+
+@JsonKey() final  ServiceRequestFilterOption filter;
+ final  String? search;
+@JsonKey() final  int page;
+
+/// Create a copy of MyServiceRequestsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MyServiceRequestsRequestedCopyWith<MyServiceRequestsRequested> get copyWith => _$MyServiceRequestsRequestedCopyWithImpl<MyServiceRequestsRequested>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MyServiceRequestsRequested&&(identical(other.filter, filter) || other.filter == filter)&&(identical(other.search, search) || other.search == search)&&(identical(other.page, page) || other.page == page));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,filter,search,page);
+
+@override
+String toString() {
+  return 'MyServiceRequestsEvent.requested(filter: $filter, search: $search, page: $page)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MyServiceRequestsRequestedCopyWith<$Res> implements $MyServiceRequestsEventCopyWith<$Res> {
+  factory $MyServiceRequestsRequestedCopyWith(MyServiceRequestsRequested value, $Res Function(MyServiceRequestsRequested) _then) = _$MyServiceRequestsRequestedCopyWithImpl;
+@useResult
+$Res call({
+ ServiceRequestFilterOption filter, String? search, int page
+});
+
+
+
+
+}
+/// @nodoc
+class _$MyServiceRequestsRequestedCopyWithImpl<$Res>
+    implements $MyServiceRequestsRequestedCopyWith<$Res> {
+  _$MyServiceRequestsRequestedCopyWithImpl(this._self, this._then);
+
+  final MyServiceRequestsRequested _self;
+  final $Res Function(MyServiceRequestsRequested) _then;
+
+/// Create a copy of MyServiceRequestsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? filter = null,Object? search = freezed,Object? page = null,}) {
+  return _then(MyServiceRequestsRequested(
+filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
+as ServiceRequestFilterOption,search: freezed == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String?,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class MyServiceRequestsLoadMore implements MyServiceRequestsEvent {
+  const MyServiceRequestsLoadMore();
   
 
 
@@ -180,7 +256,7 @@ class MyServiceRequestsRequested implements MyServiceRequestsEvent {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MyServiceRequestsRequested);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MyServiceRequestsLoadMore);
 }
 
 
@@ -189,7 +265,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'MyServiceRequestsEvent.requested()';
+  return 'MyServiceRequestsEvent.loadMore()';
 }
 
 

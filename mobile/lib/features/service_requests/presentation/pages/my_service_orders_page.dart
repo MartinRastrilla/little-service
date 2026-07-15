@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/theme_context.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_summary.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_event.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_state.dart';
@@ -18,12 +23,49 @@ class MyServiceOrdersPage extends StatefulWidget {
 }
 
 class _MyServiceOrdersPageState extends State<MyServiceOrdersPage> {
+  final _searchController = TextEditingController();
+  Timer? _searchDebounce;
+  ServiceRequestFilterOption _selectedFilter = ServiceRequestFilterOption.all;
+
   @override
   void initState() {
     super.initState();
+    _loadRequests();
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _loadRequests({ServiceRequestFilterOption? filter, String? search}) {
     context.read<MyServiceRequestsBloc>().add(
-      const MyServiceRequestsEvent.requested(),
+      MyServiceRequestsEvent.requested(
+        filter: filter ?? _selectedFilter,
+        search: search ?? _searchController.text,
+      ),
     );
+  }
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+      _loadRequests(search: value);
+    });
+  }
+
+  void _onFilterChanged(ServiceRequestFilterOption filter) {
+    setState(() => _selectedFilter = filter);
+    _loadRequests(filter: filter);
+  }
+
+  Future<void> _openCreateServiceRequest() async {
+    final created = await context.push<bool>('/service-requests/create');
+    if (created == true && mounted) {
+      _loadRequests();
+    }
   }
 
   @override
@@ -34,11 +76,17 @@ class _MyServiceOrdersPageState extends State<MyServiceOrdersPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const ServiceRequestPageHeader(),
+            ServiceRequestPageHeader(
+              searchController: _searchController,
+              onSearchChanged: _onSearchChanged,
+            ),
             const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: ServiceRequestFilterChips(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ServiceRequestFilterChips(
+                selected: _selectedFilter,
+                onFilterChanged: _onFilterChanged,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -49,27 +97,38 @@ class _MyServiceOrdersPageState extends State<MyServiceOrdersPage> {
                     loading: () => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                    loaded: (requests) => ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      itemCount: requests.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == requests.length) {
-                          return const MyOrdersPromoBanner();
-                        }
-
-                        return ServiceRequestCard(request: requests[index]);
-                      },
+                    loadingMore: (requests, _, __, ___, ____, _____) =>
+                        _RequestsList(
+                      requests: requests,
+                      showBottomLoader: true,
+                      onScrollEnd: null,
                     ),
-                    empty: () => _EmptyState(
-                      onRetry: () => context.read<MyServiceRequestsBloc>().add(
-                        const MyServiceRequestsEvent.requested(),
-                      ),
+                    loaded: (
+                      requests,
+                      currentFilter,
+                      currentSearch,
+                      totalCount,
+                      hasMore,
+                      currentPage,
+                      isFilteredOrSearched,
+                    ) =>
+                        _RequestsList(
+                      requests: requests,
+                      showBottomLoader: false,
+                      onScrollEnd: hasMore
+                          ? () => context.read<MyServiceRequestsBloc>().add(
+                                const MyServiceRequestsEvent.loadMore(),
+                              )
+                          : null,
+                    ),
+                    empty: (currentFilter, currentSearch, isFilteredOrSearched) =>
+                        _EmptyState(
+                      isFilteredOrSearched: isFilteredOrSearched,
+                      onRetry: _loadRequests,
                     ),
                     failure: (message) => _FailureState(
                       message: message,
-                      onRetry: () => context.read<MyServiceRequestsBloc>().add(
-                        const MyServiceRequestsEvent.requested(),
-                      ),
+                      onRetry: _loadRequests,
                     ),
                   );
                 },
@@ -78,16 +137,67 @@ class _MyServiceOrdersPageState extends State<MyServiceOrdersPage> {
           ],
         ),
       ),
-      floatingActionButton: const NewServiceRequestFab(),
+      floatingActionButton: NewServiceRequestFab(
+        onPressed: _openCreateServiceRequest,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
 
+class _RequestsList extends StatelessWidget {
+  final List<ServiceRequestSummary> requests;
+  final bool showBottomLoader;
+  final VoidCallback? onScrollEnd;
+
+  const _RequestsList({
+    required this.requests,
+    required this.showBottomLoader,
+    required this.onScrollEnd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (onScrollEnd != null &&
+            notification is ScrollEndNotification &&
+            notification.metrics.pixels >=
+                notification.metrics.maxScrollExtent - 200) {
+          onScrollEnd!();
+        }
+        return false;
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        itemCount: requests.length + 1 + (showBottomLoader ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index < requests.length) {
+            return ServiceRequestCard(request: requests[index]);
+          }
+
+          if (index == requests.length) {
+            return const MyOrdersPromoBanner();
+          }
+
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
+      ),
+    );
+  }
+}
+
 class _EmptyState extends StatelessWidget {
+  final bool isFilteredOrSearched;
   final VoidCallback onRetry;
 
-  const _EmptyState({required this.onRetry});
+  const _EmptyState({
+    required this.isFilteredOrSearched,
+    required this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +214,9 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Aún no tenés pedidos',
+              isFilteredOrSearched
+                  ? 'No encontramos pedidos'
+                  : 'Aún no tenés pedidos',
               style: context.text.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: context.colors.onSurface,
@@ -113,12 +225,21 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Cuando crees un pedido, vas a poder verlo y seguir su estado acá.',
+              isFilteredOrSearched
+                  ? 'Probá con otro filtro o término de búsqueda.'
+                  : 'Cuando crees un pedido, vas a poder verlo y seguir su estado acá.',
               style: context.text.bodyMedium?.copyWith(
                 color: context.colors.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
+            if (isFilteredOrSearched) ...[
+              const SizedBox(height: 16),
+              OutlinedButton(
+                onPressed: onRetry,
+                child: const Text('Reintentar'),
+              ),
+            ],
           ],
         ),
       ),

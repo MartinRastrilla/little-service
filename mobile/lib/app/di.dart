@@ -18,7 +18,9 @@ import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/service_requests/data/datasources/service_requests_remote_datasource.dart';
 import 'package:mobile/features/service_requests/data/repositories/service_requests_repository_impl.dart';
 import 'package:mobile/features/service_requests/domain/repositories/service_requests_repository.dart';
+import 'package:mobile/features/service_requests/domain/usecases/create_service_request_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/get_my_service_requests_usecase.dart';
+import 'package:mobile/features/service_requests/presentation/bloc/create_service_request/create_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
 
 const authDioInstanceName = 'authDio';
@@ -89,8 +91,13 @@ Future<void> setupDependencyInjection() async {
   );
 
   sl.registerLazySingleton(() => GetMyServiceRequestsUseCase(sl()));
+  sl.registerLazySingleton(() => CreateServiceRequestUseCase(sl()));
 
   sl.registerFactory(
     () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
+  );
+
+  sl.registerFactory(
+    () => CreateServiceRequestBloc(createServiceRequestUseCase: sl()),
   );
 }

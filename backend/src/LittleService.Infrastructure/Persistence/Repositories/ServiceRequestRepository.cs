@@ -1,3 +1,4 @@
+using LittleService.Application.Mappers;
 using LittleService.Domain.Entities;
 using LittleService.Domain.Entities.Enums;
 using LittleService.Domain.Interfaces.Repositories;
@@ -81,6 +82,60 @@ public class ServiceRequestRepository : IServiceRequestRepository
                 CreatedAt = sr.CreatedAt
             })
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<(IReadOnlyList<ServiceRequestSummaryReadModel> Items, int TotalCount)> GetSummariesByClientIdPagedAsync(
+        Guid clientId,
+        string? filter,
+        string? search,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.ServiceRequests
+            .AsNoTracking()
+            .Where(sr => sr.ClientId == clientId);
+
+        var filterPredicate = ServiceRequestFilterPredicateBuilder.Build(filter);
+        if (filterPredicate != null)
+            query = query.Where(filterPredicate);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = $"%{search.Trim()}%";
+            query = query.Where(sr =>
+                EF.Functions.ILike(sr.Title, term) ||
+                EF.Functions.ILike(sr.Description, term) ||
+                EF.Functions.ILike(sr.Location, term));
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderByDescending(sr => sr.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(sr => new ServiceRequestSummaryReadModel
+            {
+                Id = sr.Id,
+                Title = sr.Title,
+                Description = sr.Description,
+                Location = sr.Location,
+                Status = sr.Status,
+                Price = sr.Price,
+                ClientId = sr.ClientId,
+                FreelancerPickedId = sr.FreelancerPickedId,
+                PhotosCount = sr.Photos.Count,
+                ContractStatus = sr.Contract != null ? sr.Contract.Status : null,
+                CoverPhotoPath = sr.Photos
+                    .OrderBy(p => p.CreatedAt)
+                    .Select(p => p.FilePath)
+                    .FirstOrDefault(),
+                CreatedAt = sr.CreatedAt
+            })
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
     }
 
     public async Task<IEnumerable<ServiceRequest>> GetByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default)

@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using LittleService.Api.Models;
+using LittleService.Application.Common;
 using LittleService.Application.UseCases.ServiceRequest.AcceptApplication;
 using LittleService.Application.UseCases.ServiceRequest.ApplyToServiceRequest;
 using LittleService.Application.UseCases.ServiceRequest.CancelServiceRequest;
@@ -34,12 +36,39 @@ public class ServiceRequestsController : ControllerBase
     // ─── Client endpoints ────────────────────────────────────────────────
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateServiceRequestRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromForm] CreateServiceRequestFormDto form, CancellationToken cancellationToken)
     {
         var userId = GetUserId();
         if (userId == null) return Unauthorized();
 
-        var command = new CreateServiceRequestCommand { UserId = userId.Value, Request = request };
+        var photos = new List<ServiceRequestPhotoUploadInput>();
+        if (form.Photos != null)
+        {
+            foreach (var photo in form.Photos)
+            {
+                photos.Add(new ServiceRequestPhotoUploadInput
+                {
+                    Content = photo.OpenReadStream(),
+                    FileName = photo.FileName,
+                    ContentType = photo.ContentType,
+                    Length = photo.Length
+                });
+            }
+        }
+
+        var command = new CreateServiceRequestCommand
+        {
+            UserId = userId.Value,
+            Request = new CreateServiceRequestRequest
+            {
+                Title = form.Title,
+                Description = form.Description,
+                Location = form.Location,
+                Price = form.Price,
+                Photos = photos
+            }
+        };
+
         var result = await _mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)
@@ -55,12 +84,24 @@ public class ServiceRequestsController : ControllerBase
     }
 
     [HttpGet("my")]
-    public async Task<IActionResult> GetMy(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMy(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? filter = null,
+        [FromQuery] string? search = null,
+        CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         if (userId == null) return Unauthorized();
 
-        var query = new GetMyServiceRequestsQuery { UserId = userId.Value };
+        var query = new GetMyServiceRequestsQuery
+        {
+            UserId = userId.Value,
+            Page = page,
+            PageSize = pageSize,
+            Filter = filter,
+            Search = search
+        };
         var result = await _mediator.Send(query, cancellationToken);
 
         if (!result.IsSuccess)
@@ -68,6 +109,7 @@ public class ServiceRequestsController : ControllerBase
             return result.ErrorCode switch
             {
                 "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" => NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "INVALID_PAGE" or "INVALID_PAGE_SIZE" or "INVALID_FILTER" => BadRequest(new { message = result.Error, code = result.ErrorCode }),
                 _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
             };
         }

@@ -1,18 +1,35 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/error/exceptions.dart';
-import 'package:mobile/features/service_requests/data/models/service_request_summary_model.dart';
+import 'package:mobile/features/service_requests/data/models/paged_service_requests_result_model.dart';
+import 'package:mobile/features/service_requests/data/models/service_request_detail_model.dart';
+import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
 
 class ServiceRequestsRemoteDataSource {
   final Dio dio;
 
   const ServiceRequestsRemoteDataSource({required this.dio});
 
-  Future<List<ServiceRequestSummaryModel>> getMyServiceRequests() async {
+  Future<PagedServiceRequestsResultModel> getMyServiceRequests({
+    int page = 1,
+    int pageSize = 20,
+    ServiceRequestFilterOption? filter,
+    String? search,
+  }) async {
     try {
-      final response = await dio.get('/service-requests/my');
-      final data = response.data;
+      final response = await dio.get(
+        '/service-requests/my',
+        queryParameters: {
+          'page': page,
+          'pageSize': pageSize,
+          if (filter != null && filter != ServiceRequestFilterOption.all)
+            'filter': filter.apiValue,
+          if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+        },
+      );
 
-      if (data is! List) {
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
         throw ApiException(
           statusCode: response.statusCode,
           message: 'Formato de respuesta inválido',
@@ -20,13 +37,43 @@ class ServiceRequestsRemoteDataSource {
         );
       }
 
-      return data
-          .map(
-            (item) => ServiceRequestSummaryModel.fromJson(
-              item as Map<String, dynamic>,
+      return PagedServiceRequestsResultModel.fromJson(data);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestDetailModel> createServiceRequest(
+    CreateServiceRequestParams params,
+  ) async {
+    try {
+      final formData = FormData.fromMap({
+        'title': params.title,
+        'description': params.description,
+        'location': params.location,
+        if (params.price != null) 'price': params.price,
+      });
+
+      for (final photo in params.photos) {
+        formData.files.add(
+          MapEntry(
+            'photos',
+            await MultipartFile.fromFile(
+              photo.path,
+              filename: photo.fileName,
             ),
-          )
-          .toList();
+          ),
+        );
+      }
+
+      final response = await dio.post(
+        '/service-requests',
+        data: formData,
+      );
+
+      return ServiceRequestDetailModel.fromJson(
+        response.data as Map<String, dynamic>,
+      );
     } on DioException catch (error) {
       throw _mapDioException(error);
     }

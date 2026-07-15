@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/theme_context.dart';
-
-enum ServiceRequestFilterOption {
-  all,
-  open,
-  inProgress,
-  completed,
-  cancelled,
-}
+import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
 
 class ServiceRequestFilterChips extends StatelessWidget {
   final ServiceRequestFilterOption selected;
+  final ValueChanged<ServiceRequestFilterOption>? onFilterChanged;
 
   const ServiceRequestFilterChips({
     super.key,
     this.selected = ServiceRequestFilterOption.all,
+    this.onFilterChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    // TODO(iter-2): Wire filter chips to GET /service-requests/my?status=...
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -27,21 +21,27 @@ class ServiceRequestFilterChips extends StatelessWidget {
           _FilterChip(
             label: 'Todos',
             isSelected: selected == ServiceRequestFilterOption.all,
-            onSelected: null,
+            onSelected: onFilterChanged == null
+                ? null
+                : () => onFilterChanged!(ServiceRequestFilterOption.all),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'Abiertos',
             isSelected: selected == ServiceRequestFilterOption.open,
             leading: _StatusDot(color: context.appColors.success),
-            onSelected: null,
+            onSelected: onFilterChanged == null
+                ? null
+                : () => onFilterChanged!(ServiceRequestFilterOption.open),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'En progreso',
             isSelected: selected == ServiceRequestFilterOption.inProgress,
             leading: _StatusDot(color: context.appColors.warning),
-            onSelected: null,
+            onSelected: onFilterChanged == null
+                ? null
+                : () => onFilterChanged!(ServiceRequestFilterOption.inProgress),
           ),
           const SizedBox(width: 8),
           _FilterChip(
@@ -52,7 +52,9 @@ class ServiceRequestFilterChips extends StatelessWidget {
               size: 16,
               color: context.colors.primary,
             ),
-            onSelected: null,
+            onSelected: onFilterChanged == null
+                ? null
+                : () => onFilterChanged!(ServiceRequestFilterOption.completed),
           ),
           const SizedBox(width: 8),
           _FilterChip(
@@ -63,7 +65,9 @@ class ServiceRequestFilterChips extends StatelessWidget {
               size: 16,
               color: context.appColors.error,
             ),
-            onSelected: null,
+            onSelected: onFilterChanged == null
+                ? null
+                : () => onFilterChanged!(ServiceRequestFilterOption.cancelled),
           ),
         ],
       ),

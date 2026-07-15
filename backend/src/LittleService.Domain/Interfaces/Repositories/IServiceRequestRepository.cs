@@ -15,6 +15,13 @@ public interface IServiceRequestRepository
     //? Query Methods for relationships
     Task<IEnumerable<ServiceRequest>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetSummariesByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default);
+    Task<(IReadOnlyList<ServiceRequestSummaryReadModel> Items, int TotalCount)> GetSummariesByClientIdPagedAsync(
+        Guid clientId,
+        string? filter,
+        string? search,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
     Task<IEnumerable<ServiceRequest>> GetByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
 
     //? Query Methods for status

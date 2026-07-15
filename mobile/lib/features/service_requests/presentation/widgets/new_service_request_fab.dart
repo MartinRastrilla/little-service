@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 
 class NewServiceRequestFab extends StatelessWidget {
-  const NewServiceRequestFab({super.key});
+  final VoidCallback? onPressed;
+
+  const NewServiceRequestFab({
+    super.key,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // TODO(iter-2): Navigate to create service request flow.
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -35,7 +39,7 @@ class NewServiceRequestFab extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           FloatingActionButton(
-            onPressed: null,
+            onPressed: onPressed,
             backgroundColor: context.colors.primary,
             foregroundColor: context.colors.onPrimary,
             child: const Icon(Icons.add),
