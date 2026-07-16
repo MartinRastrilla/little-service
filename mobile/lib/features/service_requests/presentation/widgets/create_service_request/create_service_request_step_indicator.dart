@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/theme/app_color_extension.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 
 class CreateServiceRequestStepIndicator extends StatelessWidget {
@@ -25,9 +26,10 @@ class CreateServiceRequestStepIndicator extends StatelessWidget {
               child: Container(
                 height: 2,
                 margin: const EdgeInsets.only(bottom: 20),
-                color: currentStep >= index
-                    ? context.colors.primary
-                    : context.colors.outlineVariant,
+                color:
+                    currentStep >= index
+                        ? context.colors.primary
+                        : AppColors.light.border,
               ),
             ),
           Expanded(
@@ -60,15 +62,18 @@ class _StepItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isHighlighted = isActive || isCompleted;
-    final circleColor = isHighlighted
-        ? context.colors.primary
-        : context.colors.surfaceContainerHighest;
-    final textColor = isHighlighted
-        ? context.colors.primary
-        : context.colors.onSurfaceVariant;
-    final numberColor = isHighlighted
-        ? context.colors.onPrimary
-        : context.colors.onSurfaceVariant;
+    final circleColor =
+        isHighlighted
+            ? context.colors.primary
+            : context.colors.surfaceContainerHighest;
+    final textColor =
+        isHighlighted
+            ? context.colors.primary
+            : context.colors.onSurfaceVariant;
+    final numberColor =
+        isHighlighted
+            ? context.colors.onPrimary
+            : context.colors.onSurfaceVariant;
 
     return Column(
       children: [
@@ -78,9 +83,10 @@ class _StepItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: circleColor,
             shape: BoxShape.circle,
-            border: isHighlighted
-                ? null
-                : Border.all(color: context.colors.outlineVariant),
+            border:
+                isHighlighted
+                    ? null
+                    : Border.all(color: AppColors.light.border),
           ),
           alignment: Alignment.center,
           child: Text(

@@ -22,7 +22,7 @@ class CreateServiceRequestSectionHeader extends StatelessWidget {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: context.colors.primaryContainer.withValues(alpha: 0.5),
+            color: context.colors.primary.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: context.colors.primary, size: 28),

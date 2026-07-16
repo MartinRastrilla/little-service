@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/theme/app_color_extension.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_draft.dart';
@@ -21,7 +22,7 @@ class CreateServiceRequestSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.colors.outlineVariant),
+        border: Border.all(color: AppColors.light.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,19 +56,21 @@ class CreateServiceRequestSummaryCard extends StatelessWidget {
           _SummaryRow(
             icon: Icons.payments_outlined,
             label: 'Presupuesto',
-            value: draft.price != null
-                ? '${formatArsPrice(draft.price!)} (estimado)'
-                : 'A acordar con el profesional',
+            value:
+                draft.price != null
+                    ? '${formatArsPrice(draft.price!)} (estimado)'
+                    : 'A acordar con el profesional',
           ),
           const SizedBox(height: 12),
           _SummaryRow(
             icon: Icons.photo_library_outlined,
             label: 'Fotos',
-            value: photoCount == 0
-                ? 'Sin fotos'
-                : photoCount == 1
-                ? '1 foto'
-                : '$photoCount fotos',
+            value:
+                photoCount == 0
+                    ? 'Sin fotos'
+                    : photoCount == 1
+                    ? '1 foto'
+                    : '$photoCount fotos',
           ),
           const SizedBox(height: 16),
           Container(
@@ -118,11 +121,7 @@ class _SummaryRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: context.colors.primary,
-        ),
+        Icon(icon, size: 20, color: context.colors.primary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(

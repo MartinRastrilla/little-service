@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/theme/app_color_extension.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 
 class CreateServiceRequestBudgetOptionCard extends StatelessWidget {
@@ -32,9 +33,8 @@ class CreateServiceRequestBudgetOptionCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected
-                  ? context.colors.primary
-                  : context.colors.outlineVariant,
+              color:
+                  isSelected ? context.colors.primary : AppColors.light.border,
               width: isSelected ? 2 : 1,
             ),
             color: context.colors.surface,
@@ -49,9 +49,10 @@ class CreateServiceRequestBudgetOptionCard extends StatelessWidget {
                     isSelected
                         ? Icons.radio_button_checked
                         : Icons.radio_button_off,
-                    color: isSelected
-                        ? context.colors.primary
-                        : context.colors.onSurfaceVariant,
+                    color:
+                        isSelected
+                            ? context.colors.primary
+                            : context.colors.onSurfaceVariant,
                   ),
                   const SizedBox(width: 12),
                   Container(
@@ -89,10 +90,7 @@ class CreateServiceRequestBudgetOptionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (child != null) ...[
-                const SizedBox(height: 12),
-                child!,
-              ],
+              if (child != null) ...[const SizedBox(height: 12), child!],
             ],
           ),
         ),

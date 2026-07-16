@@ -16,7 +16,7 @@ class CreateServiceRequestTipsCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.colors.primaryContainer.withValues(alpha: 0.25),
+        color: context.colors.primaryContainer.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

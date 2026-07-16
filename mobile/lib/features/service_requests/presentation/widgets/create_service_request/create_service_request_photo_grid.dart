@@ -56,9 +56,10 @@ class CreateServiceRequestPhotoGrid extends StatelessWidget {
   Future<ServiceRequestPhotoInput?> _toPhotoInput(XFile file) async {
     final path = file.path;
     final length = await File(path).length();
-    final fileName = file.name.isNotEmpty
-        ? file.name
-        : path.split(Platform.pathSeparator).last;
+    final fileName =
+        file.name.isNotEmpty
+            ? file.name
+            : path.split(Platform.pathSeparator).last;
 
     return ServiceRequestPhotoInput(
       path: path,
@@ -69,15 +70,17 @@ class CreateServiceRequestPhotoGrid extends StatelessWidget {
   }
 
   void _removePhoto(int index) {
-    final updated = List<ServiceRequestPhotoInput>.from(photos)..removeAt(index);
+    final updated = List<ServiceRequestPhotoInput>.from(photos)
+      ..removeAt(index);
     onPhotosChanged(updated);
   }
 
   @override
   Widget build(BuildContext context) {
-    final itemCount = photos.length < maxServiceRequestPhotos
-        ? photos.length + 1
-        : photos.length;
+    final itemCount =
+        photos.length < maxServiceRequestPhotos
+            ? photos.length + 1
+            : photos.length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -122,7 +125,7 @@ class CreateServiceRequestPhotoGrid extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: context.colors.primaryContainer.withValues(alpha: 0.35),
+            color: context.colors.primaryContainer,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -154,10 +157,7 @@ class _PhotoThumbnail extends StatelessWidget {
   final String path;
   final VoidCallback onRemove;
 
-  const _PhotoThumbnail({
-    required this.path,
-    required this.onRemove,
-  });
+  const _PhotoThumbnail({required this.path, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -166,10 +166,7 @@ class _PhotoThumbnail extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.file(
-            File(path),
-            fit: BoxFit.cover,
-          ),
+          child: Image.file(File(path), fit: BoxFit.cover),
         ),
         Positioned(
           top: 4,
@@ -215,11 +212,7 @@ class _AddPhotoTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.add,
-                size: 28,
-                color: context.colors.primary,
-              ),
+              Icon(Icons.add, size: 28, color: context.colors.primary),
               const SizedBox(height: 4),
               Text(
                 'Agregar foto',

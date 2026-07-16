@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/theme/app_color_extension.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 
 class CreateServiceRequestFooter extends StatelessWidget {
@@ -26,9 +27,7 @@ class CreateServiceRequestFooter extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        border: Border(
-          top: BorderSide(color: context.colors.outlineVariant),
-        ),
+        border: Border(top: BorderSide(color: AppColors.light.border)),
       ),
       child: SafeArea(
         top: false,
@@ -64,9 +63,10 @@ class CreateServiceRequestFooter extends StatelessWidget {
                         height: isActive ? 10 : 6,
                         margin: const EdgeInsets.symmetric(horizontal: 3),
                         decoration: BoxDecoration(
-                          color: index <= currentStep
-                              ? context.colors.primary
-                              : context.colors.outlineVariant,
+                          color:
+                              index <= currentStep
+                                  ? context.colors.primary
+                                  : AppColors.light.border,
                           shape: BoxShape.circle,
                         ),
                       );
@@ -80,28 +80,29 @@ class CreateServiceRequestFooter extends StatelessWidget {
               height: 44,
               child: FilledButton(
                 onPressed: isLoading ? null : onContinue,
-                child: isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              continueLabel,
-                              overflow: TextOverflow.ellipsis,
+                child:
+                    isLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                continueLabel,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                          if (!isLastStep) ...[
-                            const SizedBox(width: 4),
-                            const Icon(Icons.arrow_forward, size: 18),
+                            if (!isLastStep) ...[
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward, size: 18),
+                            ],
                           ],
-                        ],
-                      ),
+                        ),
               ),
             ),
           ],
