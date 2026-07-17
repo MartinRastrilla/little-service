@@ -125,6 +125,15 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<int> GetPendingCountByServiceRequestIdAsync(Guid serviceRequestId, CancellationToken cancellationToken = default)
+    {
+        return await _context.FreelancerApplications
+            .CountAsync(
+                fa => fa.ServiceRequestId == serviceRequestId &&
+                      fa.Status == FreelancerApplicationStatus.Pending,
+                cancellationToken);
+    }
+
     public async Task<IEnumerable<FreelancerApplication>> GetByFreelancerIdAndStatusAsync(Guid freelancerId, FreelancerApplicationStatus status, CancellationToken cancellationToken = default)
     {
         return await _context.FreelancerApplications

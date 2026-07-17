@@ -180,4 +180,22 @@ public class MessageRepository : IMessageRepository
     {
         return await _context.Messages.AnyAsync(m => m.Id == id, cancellationToken);
     }
+
+    public async Task<int> GetActiveConversationsCountByServiceRequestIdAsync(
+        Guid serviceRequestId,
+        Guid clientUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var messages = await _context.Messages
+            .Where(m => m.ServiceRequestId == serviceRequestId)
+            .Select(m => new { m.FromUserId, m.ToUserId })
+            .ToListAsync(cancellationToken);
+
+        var interlocutorIds = messages
+            .Select(m => m.FromUserId == clientUserId ? m.ToUserId : m.FromUserId)
+            .Where(userId => userId != clientUserId)
+            .Distinct();
+
+        return interlocutorIds.Count();
+    }
 }

@@ -43,4 +43,8 @@ public interface IMessageRepository
     //? Queries for validations
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
 
+    Task<int> GetActiveConversationsCountByServiceRequestIdAsync(
+        Guid serviceRequestId,
+        Guid clientUserId,
+        CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_summary.dart';
@@ -16,7 +17,6 @@ class ServiceRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(iter-2): navigate to service request detail on tap.
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
@@ -25,9 +25,12 @@ class ServiceRequestCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: context.colors.outline.withValues(alpha: 0.4)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/service-requests/${request.id}'),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -149,6 +152,7 @@ class ServiceRequestCard extends StatelessWidget {
               ],
             ),
           ],
+        ),
         ),
       ),
     );

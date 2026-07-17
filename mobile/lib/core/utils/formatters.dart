@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile/core/config/env.dart';
 
 final _shortDateFormat = DateFormat('d MMM yyyy', 'es_AR');
+final _detailDateTimeFormat = DateFormat("d MMM yyyy 'a las' HH:mm", 'es_AR');
 final _arsPriceFormat = NumberFormat('#,###', 'es_AR');
 
 String formatRelativeTime(DateTime createdAt) {
@@ -29,6 +30,10 @@ String formatRelativeTime(DateTime createdAt) {
 
 String formatShortDate(DateTime date) {
   return _shortDateFormat.format(date.toLocal());
+}
+
+String formatDetailDateTime(DateTime date) {
+  return _detailDateTimeFormat.format(date.toLocal());
 }
 
 String formatArsPrice(num price) {

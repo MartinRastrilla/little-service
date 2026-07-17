@@ -9,6 +9,7 @@ using LittleService.Application.UseCases.ServiceRequest.GetApplicationsByService
 using LittleService.Application.UseCases.ServiceRequest.GetMyServiceRequests;
 using LittleService.Application.UseCases.ServiceRequest.GetOpenServiceRequests;
 using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestById;
+using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestInfo;
 using LittleService.Application.UseCases.ServiceRequest.RejectApplication;
 using LittleService.Application.UseCases.ServiceRequest.UpdateServiceRequest;
 using Mediator;
@@ -136,6 +137,29 @@ public class ServiceRequestsController : ControllerBase
         }
 
         return Ok(result.Value!.ServiceRequests);
+    }
+
+    [HttpGet("{id:guid}/info")]
+    public async Task<IActionResult> GetInfo(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var query = new GetServiceRequestInfoQuery { UserId = userId.Value, ServiceRequestId = id };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" => Forbid(),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.ServiceRequest);
     }
 
     [HttpGet("{id:guid}")]

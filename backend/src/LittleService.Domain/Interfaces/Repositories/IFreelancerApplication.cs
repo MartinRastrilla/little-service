@@ -30,4 +30,5 @@ public interface IFreelancerApplicationRepository
     Task<bool> ExistsAsync(Guid serviceRequestId, Guid freelancerId, CancellationToken cancellationToken = default);
     Task<FreelancerApplication?> GetByServiceRequestAndFreelancerAsync(Guid serviceRequestId, Guid freelancerId, CancellationToken cancellationToken = default);
     Task<bool> HasPendingApplicationAsync(Guid serviceRequestId, Guid freelancerId, CancellationToken cancellationToken = default);
+    Task<int> GetPendingCountByServiceRequestIdAsync(Guid serviceRequestId, CancellationToken cancellationToken = default);
 }
