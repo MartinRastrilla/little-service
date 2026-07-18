@@ -4,6 +4,7 @@ import 'package:mobile/core/error/failures.dart';
 import 'package:mobile/features/service_requests/data/datasources/service_requests_remote_datasource.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
 import 'package:mobile/features/service_requests/domain/entities/paged_service_requests_result.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_activity.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_detail.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_info.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
@@ -52,6 +53,18 @@ class ServiceRequestsRepositoryImpl implements ServiceRequestsRepository {
   ) async {
     try {
       final model = await remote.getServiceRequestInfo(serviceRequestId);
+      return Right(model.toEntity());
+    } catch (error) {
+      return Left(mapExceptionToFailure(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ServiceRequestActivity>> getServiceRequestActivity(
+    String serviceRequestId,
+  ) async {
+    try {
+      final model = await remote.getServiceRequestActivity(serviceRequestId);
       return Right(model.toEntity());
     } catch (error) {
       return Left(mapExceptionToFailure(error));

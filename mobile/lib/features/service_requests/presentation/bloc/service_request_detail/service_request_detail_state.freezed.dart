@@ -126,12 +126,12 @@ return failure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( ServiceRequestInfo info)?  loaded,TResult Function( String message)?  failure,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( ServiceRequestInfo info,  ServiceRequestActivity? activity,  ActivityLoadStatus activityStatus,  String? activityErrorMessage)?  loaded,TResult Function( String message)?  failure,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ServiceRequestDetailInitial() when initial != null:
 return initial();case ServiceRequestDetailLoading() when loading != null:
 return loading();case ServiceRequestDetailLoaded() when loaded != null:
-return loaded(_that.info);case ServiceRequestDetailFailure() when failure != null:
+return loaded(_that.info,_that.activity,_that.activityStatus,_that.activityErrorMessage);case ServiceRequestDetailFailure() when failure != null:
 return failure(_that.message);case _:
   return orElse();
 
@@ -150,12 +150,12 @@ return failure(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( ServiceRequestInfo info)  loaded,required TResult Function( String message)  failure,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( ServiceRequestInfo info,  ServiceRequestActivity? activity,  ActivityLoadStatus activityStatus,  String? activityErrorMessage)  loaded,required TResult Function( String message)  failure,}) {final _that = this;
 switch (_that) {
 case ServiceRequestDetailInitial():
 return initial();case ServiceRequestDetailLoading():
 return loading();case ServiceRequestDetailLoaded():
-return loaded(_that.info);case ServiceRequestDetailFailure():
+return loaded(_that.info,_that.activity,_that.activityStatus,_that.activityErrorMessage);case ServiceRequestDetailFailure():
 return failure(_that.message);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -170,12 +170,12 @@ return failure(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( ServiceRequestInfo info)?  loaded,TResult? Function( String message)?  failure,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( ServiceRequestInfo info,  ServiceRequestActivity? activity,  ActivityLoadStatus activityStatus,  String? activityErrorMessage)?  loaded,TResult? Function( String message)?  failure,}) {final _that = this;
 switch (_that) {
 case ServiceRequestDetailInitial() when initial != null:
 return initial();case ServiceRequestDetailLoading() when loading != null:
 return loading();case ServiceRequestDetailLoaded() when loaded != null:
-return loaded(_that.info);case ServiceRequestDetailFailure() when failure != null:
+return loaded(_that.info,_that.activity,_that.activityStatus,_that.activityErrorMessage);case ServiceRequestDetailFailure() when failure != null:
 return failure(_that.message);case _:
   return null;
 
@@ -252,10 +252,13 @@ String toString() {
 
 
 class ServiceRequestDetailLoaded implements ServiceRequestDetailState {
-  const ServiceRequestDetailLoaded({required this.info});
+  const ServiceRequestDetailLoaded({required this.info, this.activity, this.activityStatus = ActivityLoadStatus.initial, this.activityErrorMessage});
   
 
  final  ServiceRequestInfo info;
+ final  ServiceRequestActivity? activity;
+@JsonKey() final  ActivityLoadStatus activityStatus;
+ final  String? activityErrorMessage;
 
 /// Create a copy of ServiceRequestDetailState
 /// with the given fields replaced by the non-null parameter values.
@@ -267,16 +270,16 @@ $ServiceRequestDetailLoadedCopyWith<ServiceRequestDetailLoaded> get copyWith => 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestDetailLoaded&&(identical(other.info, info) || other.info == info));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestDetailLoaded&&(identical(other.info, info) || other.info == info)&&(identical(other.activity, activity) || other.activity == activity)&&(identical(other.activityStatus, activityStatus) || other.activityStatus == activityStatus)&&(identical(other.activityErrorMessage, activityErrorMessage) || other.activityErrorMessage == activityErrorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,info);
+int get hashCode => Object.hash(runtimeType,info,activity,activityStatus,activityErrorMessage);
 
 @override
 String toString() {
-  return 'ServiceRequestDetailState.loaded(info: $info)';
+  return 'ServiceRequestDetailState.loaded(info: $info, activity: $activity, activityStatus: $activityStatus, activityErrorMessage: $activityErrorMessage)';
 }
 
 
@@ -287,7 +290,7 @@ abstract mixin class $ServiceRequestDetailLoadedCopyWith<$Res> implements $Servi
   factory $ServiceRequestDetailLoadedCopyWith(ServiceRequestDetailLoaded value, $Res Function(ServiceRequestDetailLoaded) _then) = _$ServiceRequestDetailLoadedCopyWithImpl;
 @useResult
 $Res call({
- ServiceRequestInfo info
+ ServiceRequestInfo info, ServiceRequestActivity? activity, ActivityLoadStatus activityStatus, String? activityErrorMessage
 });
 
 
@@ -304,10 +307,13 @@ class _$ServiceRequestDetailLoadedCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? info = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? info = null,Object? activity = freezed,Object? activityStatus = null,Object? activityErrorMessage = freezed,}) {
   return _then(ServiceRequestDetailLoaded(
 info: null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
-as ServiceRequestInfo,
+as ServiceRequestInfo,activity: freezed == activity ? _self.activity : activity // ignore: cast_nullable_to_non_nullable
+as ServiceRequestActivity?,activityStatus: null == activityStatus ? _self.activityStatus : activityStatus // ignore: cast_nullable_to_non_nullable
+as ActivityLoadStatus,activityErrorMessage: freezed == activityErrorMessage ? _self.activityErrorMessage : activityErrorMessage // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

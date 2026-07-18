@@ -10,4 +10,10 @@ sealed class ServiceRequestDetailEvent with _$ServiceRequestDetailEvent {
 
   const factory ServiceRequestDetailEvent.refreshRequested() =
       ServiceRequestDetailRefreshRequested;
+
+  const factory ServiceRequestDetailEvent.activityRequested() =
+      ServiceRequestDetailActivityRequested;
+
+  const factory ServiceRequestDetailEvent.activityRefreshRequested() =
+      ServiceRequestDetailActivityRefreshRequested;
 }

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:mobile/core/error/failures.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
 import 'package:mobile/features/service_requests/domain/entities/paged_service_requests_result.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_activity.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_detail.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_info.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
@@ -19,6 +20,10 @@ abstract class ServiceRequestsRepository {
   );
 
   Future<Either<Failure, ServiceRequestInfo>> getServiceRequestInfo(
+    String serviceRequestId,
+  );
+
+  Future<Either<Failure, ServiceRequestActivity>> getServiceRequestActivity(
     String serviceRequestId,
   );
 }

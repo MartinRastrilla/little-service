@@ -8,6 +8,7 @@ import 'package:mobile/features/service_requests/domain/entities/service_request
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_event.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_state.dart';
+import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/activity/service_request_detail_activity_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/service_request_detail_info_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_status_badge.dart';
 
@@ -67,7 +68,7 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
           centerTitle: true,
           actions: [
             IconButton(
-              // TODO(iter-2): open detail overflow menu (cancel, report, etc.).
+              // TODO(iter-3): open detail overflow menu (cancel, report, etc.).
               onPressed: null,
               icon: const Icon(Icons.more_vert),
             ),
@@ -78,7 +79,8 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
             return state.when(
               initial: () => const SizedBox.shrink(),
               loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (info) => _DetailBody(
+              loaded: (info, activity, activityStatus, activityErrorMessage) =>
+                  _DetailBody(
                 info: info,
                 tabController: _tabController,
               ),
@@ -133,35 +135,19 @@ class _DetailBody extends StatelessWidget {
                 controller: tabController,
                 onTap: (index) {
                   if (index == 1) {
-                    tabController.index = 0;
+                    context.read<ServiceRequestDetailBloc>().add(
+                      const ServiceRequestDetailEvent.activityRequested(),
+                    );
                   }
                 },
-                tabs: [
-                  const Tab(
+                tabs: const [
+                  Tab(
                     icon: Icon(Icons.description_outlined, size: 20),
                     text: 'Información',
                   ),
                   Tab(
-                    child: Opacity(
-                      opacity: 0.45,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.timeline_outlined,
-                            size: 20,
-                            color: context.colors.onSurfaceVariant,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Actividad',
-                            style: context.text.labelSmall?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    icon: Icon(Icons.timeline_outlined, size: 20),
+                    text: 'Actividad',
                   ),
                 ],
               ),
@@ -171,10 +157,9 @@ class _DetailBody extends StatelessWidget {
         Expanded(
           child: TabBarView(
             controller: tabController,
-            physics: const NeverScrollableScrollPhysics(),
             children: [
               ServiceRequestDetailInfoTab(info: info),
-              const SizedBox.shrink(),
+              const ServiceRequestDetailActivityTab(),
             ],
           ),
         ),

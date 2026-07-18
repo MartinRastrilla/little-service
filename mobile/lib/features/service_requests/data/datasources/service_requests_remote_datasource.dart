@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/error/exceptions.dart';
 import 'package:mobile/features/service_requests/data/models/paged_service_requests_result_model.dart';
+import 'package:mobile/features/service_requests/data/models/service_request_activity_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_detail_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_info_model.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
@@ -94,6 +95,25 @@ class ServiceRequestsRemoteDataSource {
       }
 
       return ServiceRequestInfoModel.fromJson(data);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestActivityModel> getServiceRequestActivity(String id) async {
+    try {
+      final response = await dio.get('/service-requests/$id/activity');
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Formato de respuesta inválido',
+          code: 'INVALID_RESPONSE',
+        );
+      }
+
+      return ServiceRequestActivityModel.fromJson(data);
     } on DioException catch (error) {
       throw _mapDioException(error);
     }

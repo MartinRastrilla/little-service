@@ -134,6 +134,34 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
                 cancellationToken);
     }
 
+    public async Task<IReadOnlyList<FreelancerApplicationSummaryReadModel>> GetRecentPendingSummariesByServiceRequestIdAsync(
+        Guid serviceRequestId,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.FreelancerApplications
+            .AsNoTracking()
+            .Where(fa =>
+                fa.ServiceRequestId == serviceRequestId &&
+                fa.Status == FreelancerApplicationStatus.Pending)
+            .OrderByDescending(fa => fa.CreatedAt)
+            .Take(limit)
+            .Select(fa => new FreelancerApplicationSummaryReadModel
+            {
+                Id = fa.Id,
+                ServiceRequestId = fa.ServiceRequestId,
+                FreelancerId = fa.FreelancerId,
+                FreelancerName = fa.Freelancer.User.Name,
+                FreelancerProfilePicture = fa.Freelancer.User.ProfilePictureUrl,
+                RatingAverage = fa.Freelancer.RatingAverage,
+                RatingCount = fa.Freelancer.RatingCount,
+                Bio = fa.Freelancer.Bio,
+                Status = fa.Status,
+                CreatedAt = fa.CreatedAt
+            })
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<FreelancerApplication>> GetByFreelancerIdAndStatusAsync(Guid freelancerId, FreelancerApplicationStatus status, CancellationToken cancellationToken = default)
     {
         return await _context.FreelancerApplications

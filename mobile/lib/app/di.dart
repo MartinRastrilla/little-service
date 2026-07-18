@@ -19,6 +19,7 @@ import 'package:mobile/features/service_requests/data/datasources/service_reques
 import 'package:mobile/features/service_requests/data/repositories/service_requests_repository_impl.dart';
 import 'package:mobile/features/service_requests/domain/repositories/service_requests_repository.dart';
 import 'package:mobile/features/service_requests/domain/usecases/create_service_request_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/get_service_request_activity_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/get_service_request_info_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/get_my_service_requests_usecase.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_bloc.dart';
@@ -95,6 +96,7 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton(() => GetMyServiceRequestsUseCase(sl()));
   sl.registerLazySingleton(() => CreateServiceRequestUseCase(sl()));
   sl.registerLazySingleton(() => GetServiceRequestInfoUseCase(sl()));
+  sl.registerLazySingleton(() => GetServiceRequestActivityUseCase(sl()));
 
   sl.registerFactory(
     () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
@@ -105,6 +107,9 @@ Future<void> setupDependencyInjection() async {
   );
 
   sl.registerFactory(
-    () => ServiceRequestDetailBloc(getServiceRequestInfoUseCase: sl()),
+    () => ServiceRequestDetailBloc(
+      getServiceRequestInfoUseCase: sl(),
+      getServiceRequestActivityUseCase: sl(),
+    ),
   );
 }
