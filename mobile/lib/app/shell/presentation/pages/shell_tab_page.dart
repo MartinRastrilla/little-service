@@ -10,6 +10,9 @@ import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/pages/my_service_orders_page.dart';
+import 'package:mobile/features/freelancer_home/presentation/bloc/freelancer_home_bloc.dart';
+import 'package:mobile/features/freelancer_home/presentation/bloc/freelancer_home_event.dart';
+import 'package:mobile/features/freelancer_home/presentation/pages/freelancer_home_page.dart';
 
 class ShellTabPage extends StatelessWidget {
   final ShellTabId tabId;
@@ -34,6 +37,15 @@ class ShellTabPage extends StatelessWidget {
               return BlocProvider(
                 create: (_) => sl<MyServiceRequestsBloc>(),
                 child: const MyServiceOrdersPage(),
+              );
+            }
+
+            if (tabId == ShellTabId.home &&
+                resolveActiveRole(session.user) == ActiveAppRole.freelancer) {
+              return BlocProvider(
+                create: (_) => sl<FreelancerHomeBloc>()
+                  ..add(const FreelancerHomeEvent.requested()),
+                child: const FreelancerHomePage(),
               );
             }
 

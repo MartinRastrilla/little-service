@@ -27,7 +27,11 @@ public interface IServiceRequestRepository
     //? Query Methods for status
     Task<IEnumerable<ServiceRequest>> GetByStatusAsync(ServiceRequestStatus status, CancellationToken cancellationToken = default);
     Task<IEnumerable<ServiceRequest>> GetOpenRequestsAsync(CancellationToken cancellationToken = default); //? Opened requests
-    Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetOpenSummariesAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetOpenSummariesAsync(
+        string? search,
+        string? filter,
+        int? timezoneOffsetMinutes,
+        CancellationToken cancellationToken = default);
 
     //? Combined Query Methods
     Task<IEnumerable<ServiceRequest>> GetOpenRequestsByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default);

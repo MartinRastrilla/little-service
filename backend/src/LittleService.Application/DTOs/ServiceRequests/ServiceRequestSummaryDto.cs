@@ -15,4 +15,5 @@ public class ServiceRequestSummaryDto
     public string? ContractStatus { get; set; }
     public string? CoverPhotoUrl { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int ApplicationsCount { get; set; }
 }

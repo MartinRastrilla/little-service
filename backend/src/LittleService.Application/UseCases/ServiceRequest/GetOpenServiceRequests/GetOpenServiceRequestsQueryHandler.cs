@@ -24,13 +24,21 @@ public class GetOpenServiceRequestsQueryHandler : IRequestHandler<GetOpenService
 
     public async ValueTask<Result<GetOpenServiceRequestsResult>> Handle(GetOpenServiceRequestsQuery query, CancellationToken cancellationToken)
     {
+        if (!OpenServiceRequestFilterPredicateBuilder.IsValidFilter(query.Filter))
+            return Result<GetOpenServiceRequestsResult>.Failure("Filtro de fecha inválido", "INVALID_FILTER");
+
         var user = await _unitOfWork.Users.GetByIdAsync(query.UserId, cancellationToken);
         if (user == null)
             return Result<GetOpenServiceRequestsResult>.Failure("Usuario no encontrado", "USER_NOT_FOUND");
         if (user.Freelancer == null)
             return Result<GetOpenServiceRequestsResult>.Failure("Perfil de freelancer no encontrado", "FREELANCER_NOT_FOUND");
 
-        var openSummaries = await _unitOfWork.ServiceRequests.GetOpenSummariesAsync(cancellationToken);
+        // TODO(future): when AssignFreelancer changes status away from Opened, revisit this feed criteria.
+        var openSummaries = await _unitOfWork.ServiceRequests.GetOpenSummariesAsync(
+            query.Search,
+            query.Filter,
+            query.TimezoneOffsetMinutes,
+            cancellationToken);
 
         var freelancerApplications = await _unitOfWork.FreelancerApplications.GetSummariesByFreelancerIdAsync(user.Freelancer.Id, cancellationToken);
         var appliedRequestIds = freelancerApplications.Select(fa => fa.ServiceRequestId).ToHashSet();
@@ -40,6 +48,7 @@ public class GetOpenServiceRequestsQueryHandler : IRequestHandler<GetOpenService
 
         var dtos = _summaryMapper.MapMany(filteredSummaries);
 
+        // TODO(future): migrate to paginated response { items, totalCount, hasMore } for infinite scroll.
         return Result<GetOpenServiceRequestsResult>.Success(new GetOpenServiceRequestsResult { ServiceRequests = dtos });
     }
 }

@@ -166,11 +166,29 @@ public class ServiceRequestRepository : IServiceRequestRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetOpenSummariesAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ServiceRequestSummaryReadModel>> GetOpenSummariesAsync(
+        string? search,
+        string? filter,
+        int? timezoneOffsetMinutes,
+        CancellationToken cancellationToken = default)
     {
-        return await _context.ServiceRequests
+        var query = _context.ServiceRequests
             .AsNoTracking()
-            .Where(sr => sr.Status == ServiceRequestStatus.Opened)
+            .Where(sr => sr.Status == ServiceRequestStatus.Opened);
+
+        var dateFilterPredicate = OpenServiceRequestFilterPredicateBuilder.BuildDateFilter(
+            filter,
+            timezoneOffsetMinutes);
+        if (dateFilterPredicate != null)
+            query = query.Where(dateFilterPredicate);
+
+        if (!string.IsNullOrWhiteSpace(search) && search.Trim().Length >= 2)
+        {
+            var term = $"%{search.Trim()}%";
+            query = query.Where(sr => EF.Functions.ILike(sr.Title, term));
+        }
+
+        return await query
             .OrderByDescending(sr => sr.CreatedAt)
             .Select(sr => new ServiceRequestSummaryReadModel
             {
@@ -183,6 +201,7 @@ public class ServiceRequestRepository : IServiceRequestRepository
                 ClientId = sr.ClientId,
                 FreelancerPickedId = sr.FreelancerPickedId,
                 PhotosCount = sr.Photos.Count,
+                ApplicationsCount = sr.FreelancerApplications.Count,
                 ContractStatus = sr.Contract != null ? sr.Contract.Status : null,
                 CoverPhotoPath = sr.Photos
                     .OrderBy(p => p.CreatedAt)

@@ -120,12 +120,22 @@ public class ServiceRequestsController : ControllerBase
     }
 
     [HttpGet("open")]
-    public async Task<IActionResult> GetOpen(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOpen(
+        [FromQuery] string? search = null,
+        [FromQuery] string? filter = null,
+        [FromQuery] int? timezoneOffsetMinutes = null,
+        CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         if (userId == null) return Unauthorized();
 
-        var query = new GetOpenServiceRequestsQuery { UserId = userId.Value };
+        var query = new GetOpenServiceRequestsQuery
+        {
+            UserId = userId.Value,
+            Search = search,
+            Filter = filter,
+            TimezoneOffsetMinutes = timezoneOffsetMinutes
+        };
         var result = await _mediator.Send(query, cancellationToken);
 
         if (!result.IsSuccess)
@@ -133,6 +143,7 @@ public class ServiceRequestsController : ControllerBase
             return result.ErrorCode switch
             {
                 "USER_NOT_FOUND" or "FREELANCER_NOT_FOUND" => NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "INVALID_FILTER" => BadRequest(new { message = result.Error, code = result.ErrorCode }),
                 _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
             };
         }

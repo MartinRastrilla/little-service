@@ -16,4 +16,5 @@ public class ServiceRequestSummaryReadModel
     public ContractStatus? ContractStatus { get; init; }
     public string? CoverPhotoPath { get; init; }
     public DateTime CreatedAt { get; init; }
+    public int ApplicationsCount { get; init; }
 }

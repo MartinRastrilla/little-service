@@ -25,6 +25,11 @@ import 'package:mobile/features/service_requests/domain/usecases/get_my_service_
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/create_service_request/create_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
+import 'package:mobile/features/freelancer_home/data/datasources/open_service_requests_remote_datasource.dart';
+import 'package:mobile/features/freelancer_home/data/repositories/freelancer_home_repository_impl.dart';
+import 'package:mobile/features/freelancer_home/domain/repositories/freelancer_home_repository.dart';
+import 'package:mobile/features/freelancer_home/domain/usecases/get_open_service_requests_usecase.dart';
+import 'package:mobile/features/freelancer_home/presentation/bloc/freelancer_home_bloc.dart';
 
 const authDioInstanceName = 'authDio';
 const apiDioInstanceName = 'apiDio';
@@ -111,5 +116,21 @@ Future<void> setupDependencyInjection() async {
       getServiceRequestInfoUseCase: sl(),
       getServiceRequestActivityUseCase: sl(),
     ),
+  );
+
+  sl.registerLazySingleton(
+    () => OpenServiceRequestsRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<FreelancerHomeRepository>(
+    () => FreelancerHomeRepositoryImpl(remote: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetOpenServiceRequestsUseCase(sl()));
+
+  sl.registerFactory(
+    () => FreelancerHomeBloc(getOpenServiceRequestsUseCase: sl()),
   );
 }

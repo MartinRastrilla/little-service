@@ -6,4 +6,7 @@ namespace LittleService.Application.UseCases.ServiceRequest.GetOpenServiceReques
 public class GetOpenServiceRequestsQuery : IRequest<Result<GetOpenServiceRequestsResult>>
 {
     public Guid UserId { get; set; }
+    public string? Search { get; set; }
+    public string? Filter { get; set; }
+    public int? TimezoneOffsetMinutes { get; set; }
 }

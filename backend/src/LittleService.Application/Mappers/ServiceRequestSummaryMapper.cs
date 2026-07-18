@@ -36,7 +36,8 @@ public class ServiceRequestSummaryMapper
             CoverPhotoUrl = summary.CoverPhotoPath != null
                 ? _fileStorageService.GetFileUrl(summary.CoverPhotoPath)
                 : null,
-            CreatedAt = summary.CreatedAt
+            CreatedAt = summary.CreatedAt,
+            ApplicationsCount = summary.ApplicationsCount
         };
     }
 
