@@ -73,7 +73,7 @@ class _FreelancerServiceRequestDetailView extends StatelessWidget {
                 content: Text('¡Postulación enviada con éxito!'),
               ),
             );
-            context.go('/shell/activity');
+            context.go('/shell/activity?tab=applications');
           },
           failure: (message, detail) {
             if (detail != null) {

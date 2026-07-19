@@ -95,8 +95,10 @@ class AppRouter {
                 routes: [
                   GoRoute(
                     path: '/shell/activity',
-                    builder: (context, state) =>
-                        const ShellTabPage(tabId: ShellTabId.activity),
+                    builder: (context, state) => ShellTabPage(
+                      tabId: ShellTabId.activity,
+                      initialSection: state.uri.queryParameters['tab'],
+                    ),
                   ),
                 ],
               ),

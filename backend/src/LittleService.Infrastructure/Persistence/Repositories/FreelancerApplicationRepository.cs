@@ -199,4 +199,42 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
     {
         return await _context.FreelancerApplications.AnyAsync(fa => fa.ServiceRequestId == serviceRequestId && fa.FreelancerId == freelancerId && fa.Status == FreelancerApplicationStatus.Pending, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<FreelancerWorkItemSummaryReadModel>> GetWorkItemSummariesByFreelancerIdAsync(
+        Guid freelancerId,
+        FreelancerApplicationStatus? statusFilter,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.FreelancerApplications
+            .AsNoTracking()
+            .Where(fa => fa.FreelancerId == freelancerId);
+
+        if (statusFilter.HasValue)
+            query = query.Where(fa => fa.Status == statusFilter.Value);
+
+        return await query
+            .OrderByDescending(fa => fa.CreatedAt)
+            .Select(fa => new FreelancerWorkItemSummaryReadModel
+            {
+                Id = fa.ServiceRequestId,
+                Title = fa.ServiceRequest.Title,
+                Location = fa.ServiceRequest.Location,
+                Status = fa.ServiceRequest.Status,
+                Price = fa.ServiceRequest.Price,
+                PhotosCount = fa.ServiceRequest.Photos.Count,
+                ApplicationsCount = fa.ServiceRequest.FreelancerApplications.Count,
+                CoverPhotoPath = fa.ServiceRequest.Photos
+                    .OrderBy(p => p.CreatedAt)
+                    .Select(p => p.FilePath)
+                    .FirstOrDefault(),
+                CreatedAt = fa.ServiceRequest.CreatedAt,
+                ContractStatus = fa.ServiceRequest.Contract != null
+                    ? fa.ServiceRequest.Contract.Status
+                    : null,
+                ApplicationId = fa.Id,
+                ApplicationStatus = fa.Status,
+                ApplicationCreatedAt = fa.CreatedAt,
+            })
+            .ToListAsync(cancellationToken);
+    }
 }

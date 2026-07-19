@@ -52,6 +52,7 @@ builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetim
 //? File Storage
 builder.Services.AddScoped<IFileStorageService, LocalFileStorage>();
 builder.Services.AddScoped<ServiceRequestSummaryMapper>();
+builder.Services.AddScoped<FreelancerWorkItemSummaryMapper>();
 
 //? Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer(); // Allows endpoints to be discovered

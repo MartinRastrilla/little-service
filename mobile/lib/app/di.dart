@@ -36,6 +36,12 @@ import 'package:mobile/features/freelancer_service_request_detail/domain/reposit
 import 'package:mobile/features/freelancer_service_request_detail/domain/usecases/apply_to_open_service_request_usecase.dart';
 import 'package:mobile/features/freelancer_service_request_detail/domain/usecases/get_open_service_request_detail_usecase.dart';
 import 'package:mobile/features/freelancer_service_request_detail/presentation/bloc/freelancer_service_request_detail_bloc.dart';
+import 'package:mobile/features/freelancer_my_work/data/datasources/freelancer_my_work_remote_datasource.dart';
+import 'package:mobile/features/freelancer_my_work/data/repositories/freelancer_my_work_repository_impl.dart';
+import 'package:mobile/features/freelancer_my_work/domain/repositories/freelancer_my_work_repository.dart';
+import 'package:mobile/features/freelancer_my_work/domain/usecases/get_freelancer_applications_usecase.dart';
+import 'package:mobile/features/freelancer_my_work/domain/usecases/get_freelancer_jobs_usecase.dart';
+import 'package:mobile/features/freelancer_my_work/presentation/bloc/freelancer_my_work_bloc.dart';
 
 const authDioInstanceName = 'authDio';
 const apiDioInstanceName = 'apiDio';
@@ -157,6 +163,26 @@ Future<void> setupDependencyInjection() async {
     () => FreelancerServiceRequestDetailBloc(
       getOpenServiceRequestDetailUseCase: sl(),
       applyToOpenServiceRequestUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => FreelancerMyWorkRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<FreelancerMyWorkRepository>(
+    () => FreelancerMyWorkRepositoryImpl(remote: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetFreelancerApplicationsUseCase(sl()));
+  sl.registerLazySingleton(() => GetFreelancerJobsUseCase(sl()));
+
+  sl.registerFactory(
+    () => FreelancerMyWorkBloc(
+      getFreelancerApplicationsUseCase: sl(),
+      getFreelancerJobsUseCase: sl(),
     ),
   );
 }

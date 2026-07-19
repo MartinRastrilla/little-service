@@ -13,11 +13,26 @@ import 'package:mobile/features/service_requests/presentation/pages/my_service_o
 import 'package:mobile/features/freelancer_home/presentation/bloc/freelancer_home_bloc.dart';
 import 'package:mobile/features/freelancer_home/presentation/bloc/freelancer_home_event.dart';
 import 'package:mobile/features/freelancer_home/presentation/pages/freelancer_home_page.dart';
+import 'package:mobile/features/freelancer_my_work/domain/entities/freelancer_work_item.dart';
+import 'package:mobile/features/freelancer_my_work/presentation/pages/freelancer_my_work_page.dart';
 
 class ShellTabPage extends StatelessWidget {
   final ShellTabId tabId;
+  final String? initialSection;
 
-  const ShellTabPage({super.key, required this.tabId});
+  const ShellTabPage({
+    super.key,
+    required this.tabId,
+    this.initialSection,
+  });
+
+  FreelancerMyWorkTab? _resolveMyWorkInitialTab() {
+    return switch (initialSection) {
+      'jobs' => FreelancerMyWorkTab.jobs,
+      'applications' => FreelancerMyWorkTab.applications,
+      _ => null,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +52,13 @@ class ShellTabPage extends StatelessWidget {
               return BlocProvider(
                 create: (_) => sl<MyServiceRequestsBloc>(),
                 child: const MyServiceOrdersPage(),
+              );
+            }
+
+            if (tabId == ShellTabId.activity &&
+                resolveActiveRole(session.user) == ActiveAppRole.freelancer) {
+              return FreelancerMyWorkPage(
+                initialTab: _resolveMyWorkInitialTab(),
               );
             }
 

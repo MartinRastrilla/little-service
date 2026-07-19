@@ -44,4 +44,9 @@ public interface IServiceRequestRepository
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> CanAcceptApplicationsAsync(Guid serviceRequestId, CancellationToken cancellationToken = default);
     Task<int> CountByClientIdExcludingCancelledAsync(Guid clientId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FreelancerWorkItemSummaryReadModel>> GetFreelancerJobSummariesAsync(
+        Guid freelancerId,
+        Guid freelancerUserId,
+        string? filter,
+        CancellationToken cancellationToken = default);
 }

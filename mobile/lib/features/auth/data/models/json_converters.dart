@@ -11,3 +11,12 @@ DateTime dateTimeFromJson(Object? value) {
 }
 
 String dateTimeToJson(DateTime value) => value.toUtc().toIso8601String();
+
+DateTime? nullableDateTimeFromJson(Object? value) {
+  if (value == null) return null;
+  if (value is String && value.isEmpty) return null;
+  return dateTimeFromJson(value);
+}
+
+Object? nullableDateTimeToJson(DateTime? value) =>
+    value == null ? null : dateTimeToJson(value);

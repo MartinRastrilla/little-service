@@ -35,4 +35,8 @@ public interface IFreelancerApplicationRepository
         Guid serviceRequestId,
         int limit,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FreelancerWorkItemSummaryReadModel>> GetWorkItemSummariesByFreelancerIdAsync(
+        Guid freelancerId,
+        FreelancerApplicationStatus? statusFilter,
+        CancellationToken cancellationToken = default);
 }

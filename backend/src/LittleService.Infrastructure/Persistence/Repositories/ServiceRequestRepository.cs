@@ -265,4 +265,47 @@ public class ServiceRequestRepository : IServiceRequestRepository
                 sr => sr.ClientId == clientId && sr.Status != ServiceRequestStatus.Cancelled,
                 cancellationToken);
     }
+
+    public async Task<IReadOnlyList<FreelancerWorkItemSummaryReadModel>> GetFreelancerJobSummariesAsync(
+        Guid freelancerId,
+        Guid freelancerUserId,
+        string? filter,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.ServiceRequests
+            .AsNoTracking()
+            .Where(sr => sr.FreelancerPickedId == freelancerId);
+
+        var filterPredicate = FreelancerJobFilterPredicateBuilder.Build(filter);
+        if (filterPredicate != null)
+            query = query.Where(filterPredicate);
+
+        return await query
+            .OrderByDescending(sr => sr.CreatedAt)
+            .Select(sr => new FreelancerWorkItemSummaryReadModel
+            {
+                Id = sr.Id,
+                Title = sr.Title,
+                Location = sr.Location,
+                Status = sr.Status,
+                Price = sr.Price,
+                PhotosCount = sr.Photos.Count,
+                ApplicationsCount = sr.FreelancerApplications.Count,
+                CoverPhotoPath = sr.Photos
+                    .OrderBy(p => p.CreatedAt)
+                    .Select(p => p.FilePath)
+                    .FirstOrDefault(),
+                CreatedAt = sr.CreatedAt,
+                ContractStatus = sr.Contract != null ? sr.Contract.Status : null,
+                ClientName = sr.Client.User.Name,
+                ContractAmount = sr.Contract != null ? sr.Contract.Amount : null,
+                ContractStartDate = sr.Contract != null ? sr.Contract.StartDate : null,
+                HasContract = sr.Contract != null,
+                UnreadMessagesCount = _context.Messages.Count(m =>
+                    m.ServiceRequestId == sr.Id &&
+                    m.ToUserId == freelancerUserId &&
+                    !m.IsRead),
+            })
+            .ToListAsync(cancellationToken);
+    }
 }

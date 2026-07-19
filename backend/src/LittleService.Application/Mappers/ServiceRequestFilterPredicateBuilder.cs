@@ -24,8 +24,8 @@ public static class ServiceRequestFilterPredicateBuilder
             "open" => sr => sr.Status == ServiceRequestStatus.Opened && sr.FreelancerPickedId == null,
             "inprogress" => sr => sr.FreelancerPickedId != null &&
                 (sr.Contract == null || InProgressContractStatuses.Contains(sr.Contract.Status)),
-            "completed" => sr => sr.Status == ServiceRequestStatus.Closed ||
-                (sr.Contract != null && sr.Contract.Status == ContractStatus.Completed),
+            "completed" => sr => sr.Contract != null &&
+                sr.Contract.Status == ContractStatus.Completed,
             "cancelled" => sr => sr.Status == ServiceRequestStatus.Cancelled ||
                 (sr.Contract != null && sr.Contract.Status == ContractStatus.Cancelled),
             _ => null
