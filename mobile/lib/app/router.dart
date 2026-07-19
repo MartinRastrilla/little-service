@@ -12,6 +12,7 @@ import 'package:mobile/features/auth/presentation/pages/login_page.dart';
 import 'package:mobile/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/create_service_request_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/service_request_detail_page.dart';
+import 'package:mobile/features/freelancer_service_request_detail/presentation/pages/freelancer_service_request_detail_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -59,6 +60,12 @@ class AppRouter {
           GoRoute(
             path: '/service-requests/create',
             builder: (context, state) => const CreateServiceRequestPage(),
+          ),
+          GoRoute(
+            path: '/freelancer/service-requests/:id',
+            builder: (context, state) => FreelancerServiceRequestDetailPage(
+              serviceRequestId: state.pathParameters['id']!,
+            ),
           ),
           GoRoute(
             path: '/service-requests/:id',

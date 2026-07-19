@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
 import 'package:mobile/features/freelancer_home/domain/entities/open_service_request_summary.dart';
@@ -155,12 +156,10 @@ class OpenServiceRequestCard extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: FilledButton(
-                      onPressed: null,
+                      onPressed: () => context.push(
+                        '/freelancer/service-requests/${request.id}',
+                      ),
                       style: FilledButton.styleFrom(
-                        disabledBackgroundColor:
-                            context.colors.primary.withValues(alpha: 0.4),
-                        disabledForegroundColor:
-                            context.colors.onPrimary.withValues(alpha: 0.7),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 8,

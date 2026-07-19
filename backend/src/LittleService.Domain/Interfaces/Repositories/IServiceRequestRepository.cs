@@ -43,4 +43,5 @@ public interface IServiceRequestRepository
     //? Queries for validations
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> CanAcceptApplicationsAsync(Guid serviceRequestId, CancellationToken cancellationToken = default);
+    Task<int> CountByClientIdExcludingCancelledAsync(Guid clientId, CancellationToken cancellationToken = default);
 }

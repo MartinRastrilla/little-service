@@ -100,6 +100,7 @@ public class FreelancerApplication : BaseEntity
 
         // Assign the freelancer to the ServiceRequest
         serviceRequest.AssignFreelancer(FreelancerId);
+        serviceRequest.Close();
 
         // Change application status
         Status = FreelancerApplicationStatus.Accepted;

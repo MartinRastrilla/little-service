@@ -30,6 +30,12 @@ import 'package:mobile/features/freelancer_home/data/repositories/freelancer_hom
 import 'package:mobile/features/freelancer_home/domain/repositories/freelancer_home_repository.dart';
 import 'package:mobile/features/freelancer_home/domain/usecases/get_open_service_requests_usecase.dart';
 import 'package:mobile/features/freelancer_home/presentation/bloc/freelancer_home_bloc.dart';
+import 'package:mobile/features/freelancer_service_request_detail/data/datasources/freelancer_service_request_detail_remote_datasource.dart';
+import 'package:mobile/features/freelancer_service_request_detail/data/repositories/freelancer_service_request_detail_repository_impl.dart';
+import 'package:mobile/features/freelancer_service_request_detail/domain/repositories/freelancer_service_request_detail_repository.dart';
+import 'package:mobile/features/freelancer_service_request_detail/domain/usecases/apply_to_open_service_request_usecase.dart';
+import 'package:mobile/features/freelancer_service_request_detail/domain/usecases/get_open_service_request_detail_usecase.dart';
+import 'package:mobile/features/freelancer_service_request_detail/presentation/bloc/freelancer_service_request_detail_bloc.dart';
 
 const authDioInstanceName = 'authDio';
 const apiDioInstanceName = 'apiDio';
@@ -132,5 +138,25 @@ Future<void> setupDependencyInjection() async {
 
   sl.registerFactory(
     () => FreelancerHomeBloc(getOpenServiceRequestsUseCase: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => FreelancerServiceRequestDetailRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<FreelancerServiceRequestDetailRepository>(
+    () => FreelancerServiceRequestDetailRepositoryImpl(remote: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetOpenServiceRequestDetailUseCase(sl()));
+  sl.registerLazySingleton(() => ApplyToOpenServiceRequestUseCase(sl()));
+
+  sl.registerFactory(
+    () => FreelancerServiceRequestDetailBloc(
+      getOpenServiceRequestDetailUseCase: sl(),
+      applyToOpenServiceRequestUseCase: sl(),
+    ),
   );
 }

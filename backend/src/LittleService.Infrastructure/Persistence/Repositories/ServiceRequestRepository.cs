@@ -254,4 +254,15 @@ public class ServiceRequestRepository : IServiceRequestRepository
     {
         return await _context.ServiceRequests.AnyAsync(sr => sr.Id == serviceRequestId && sr.CanAcceptApplications(), cancellationToken);
     }
+
+    public async Task<int> CountByClientIdExcludingCancelledAsync(
+        Guid clientId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ServiceRequests
+            .AsNoTracking()
+            .CountAsync(
+                sr => sr.ClientId == clientId && sr.Status != ServiceRequestStatus.Cancelled,
+                cancellationToken);
+    }
 }
