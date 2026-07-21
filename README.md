@@ -1,11 +1,12 @@
 # 🎯 Little Service App (Flutter + .NET 8)
 
 Un proyecto universitario y de portfolio que replica la experiencia de **Fiverr**:  
-una plataforma donde usuarios pueden **ofrecer servicios** y otros pueden **contratarlos**.  
+una plataforma donde usuarios pueden **ofrecer servicios** y otros pueden **contratarlos**.
 
 Este monorepo incluye:
-- 📱 **Mobile App (Flutter)** → Aplicación multiplataforma (Android/iOS).  
-- ⚙️ **Backend API (.NET 8)** → API REST con autenticación, servicios y mensajería.  
+
+- 📱 **Mobile App (Flutter)** → Aplicación multiplataforma (Android/iOS).
+- ⚙️ **Backend API (.NET 8)** → API REST con autenticación, servicios y mensajería.
 
 ---
 
@@ -15,60 +16,59 @@ Este monorepo incluye:
 /little-service/
 │── backend/              # API en .NET 8
 │   ├── src/              # Código fuente
-│   ├── tests/            # Tests unitarios/integración
-│   └── MiApp.sln         # Solution principal
+│   └── LittleService.sln         # Solution principal
 │
 │── mobile/               # App Flutter
 │   ├── lib/              # Código fuente
-│   ├── test/             # Tests unitarios/widget
 │   └── pubspec.yaml      # Dependencias Flutter
 │
 │── docs/                 # Documentación adicional
 │
 │── .github/workflows/    # CI con GitHub Actions
 │── README.md             # Este archivo
-│── LICENSE               # Licencia (MIT recomendada)
 ```
-
 
 ---
 
 ## 🚀 Tecnologías principales
 
-- **Frontend (Mobile)**  
-  - [Flutter 3.x](https://flutter.dev/)  
-  - Riverpod (state management)  
-  - Freezed + JsonSerializable (modelos inmutables)  
-  - GoRouter (navegación declarativa)  
+- **Frontend (Mobile)**
+    - [Flutter 3.x](https://flutter.dev/)
+    - Riverpod (state management)
+    - Freezed + JsonSerializable (modelos inmutables)
+    - GoRouter (navegación declarativa)
 
-- **Backend (API)**  
-  - [.NET 8 Web API](https://dotnet.microsoft.com/)  
-  - Entity Framework Core + SQL Server
-  - MediatR (CQRS)  
-  - FluentValidation (validaciones)  
-  - Serilog (logging estructurado)  
-  - Swagger / OpenAPI (documentación)  
+- **Backend (API)**
+    - [.NET 8 Web API](https://dotnet.microsoft.com/)
+    - Entity Framework Core + SQL Server
+    - Mediator (CQRS)
+    - FluentValidation (validaciones)
+    - Serilog (logging estructurado)
+    - Swagger / OpenAPI (documentación)
 
-- **Infraestructura**  
-  - Docker (contenedores para DB y API)  
-  - GitHub Actions (CI/CD)  
+- **Infraestructura**
+    - Docker (contenedores para DB y API)
+    - GitHub Actions (CI/CD)
 
 ---
 
 ## 🔧 Cómo correr el proyecto
 
 ### 1 Clonar el repo
+
 ```bash
 git clone https://github.com/TU-USUARIO/little-service.git
 cd little-service
 ```
 
 ### 2. Backend (.NET 8)
+
 - **Requisitos**
     - .NET 8 SDK
     - Docker Desktop (para la base de datos)
 
 **Pasos**
+
 ```bash
 cd backend
 dotnet restore
@@ -80,11 +80,13 @@ dotnet run --project src/LittleService.Api
     - Swagger UI: https://localhost:5001/swagger
 
 ### 3. Mobile (Flutter)
+
 - **Requisitos**
     - Flutter SDK 3.x
     - Android Studio o Xcode
 
 **Pasos**
+
 ```bash
 cd mobile
 flutter pub get
@@ -113,6 +115,6 @@ flutter run
 
 - Notificaciones push.
 
- ## 👨‍💻 Autor
+## 👨‍💻 Autor
 
 - **Proyecto desarrollado por Martin Rastrilla como iniciativa universitaria y de portfolio.**
