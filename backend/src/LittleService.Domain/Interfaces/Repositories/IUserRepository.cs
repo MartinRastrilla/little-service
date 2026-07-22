@@ -9,4 +9,7 @@ public interface IUserRepository
     Task<User> AddAsync(User user, CancellationToken cancellationToken = default);
     Task UpdateAsync(User user, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<string>> GetSkillNamesByFreelancerIdAsync(
+        Guid freelancerId,
+        CancellationToken cancellationToken = default);
 }

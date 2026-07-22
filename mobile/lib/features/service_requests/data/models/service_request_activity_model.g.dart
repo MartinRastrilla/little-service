@@ -30,6 +30,7 @@ _ServiceRequestRecentApplicationModel
 _$ServiceRequestRecentApplicationModelFromJson(Map<String, dynamic> json) =>
     _ServiceRequestRecentApplicationModel(
       id: stringFromJson(json['id']),
+      freelancerId: stringFromJson(json['freelancerId']),
       freelancerName: json['freelancerName'] as String,
       freelancerProfilePicture: json['freelancerProfilePicture'] as String?,
       ratingAverage: (json['ratingAverage'] as num).toDouble(),
@@ -41,6 +42,7 @@ Map<String, dynamic> _$ServiceRequestRecentApplicationModelToJson(
   _ServiceRequestRecentApplicationModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
+  'freelancerId': instance.freelancerId,
   'freelancerName': instance.freelancerName,
   'freelancerProfilePicture': instance.freelancerProfilePicture,
   'ratingAverage': instance.ratingAverage,

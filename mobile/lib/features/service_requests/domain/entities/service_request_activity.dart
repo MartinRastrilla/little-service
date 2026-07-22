@@ -16,6 +16,7 @@ class ServiceRequestTimelineStep {
 
 class ServiceRequestRecentApplication {
   final String id;
+  final String freelancerId;
   final String freelancerName;
   final String? profilePictureUrl;
   final double ratingAverage;
@@ -24,6 +25,7 @@ class ServiceRequestRecentApplication {
 
   const ServiceRequestRecentApplication({
     required this.id,
+    required this.freelancerId,
     required this.freelancerName,
     required this.profilePictureUrl,
     required this.ratingAverage,

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/constants/app_assets.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
@@ -7,10 +8,12 @@ import 'package:mobile/features/service_requests/domain/entities/service_request
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/activity/freelancer_rating_stars.dart';
 
 class ServiceRequestRecentApplicationTile extends StatelessWidget {
+  final String serviceRequestId;
   final ServiceRequestRecentApplication application;
 
   const ServiceRequestRecentApplicationTile({
     super.key,
+    required this.serviceRequestId,
     required this.application,
   });
 
@@ -22,8 +25,9 @@ class ServiceRequestRecentApplicationTile extends StatelessWidget {
       color: context.colors.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        // TODO(iter-3): navigate to freelancer application detail.
-        onTap: null,
+        onTap: () => context.push(
+          '/clients/freelancers/${application.freelancerId}?serviceRequestId=$serviceRequestId',
+        ),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

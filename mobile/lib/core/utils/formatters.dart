@@ -52,6 +52,11 @@ String formatArsPrice(num price) {
   return '\$ ${_arsPriceFormat.format(price)}';
 }
 
+String formatYearsOnPlatform(int years) {
+  if (years == 1) return '1 año';
+  return '$years años';
+}
+
 String resolveMediaUrl(String? relativeUrl) {
   if (relativeUrl == null || relativeUrl.isEmpty) {
     return '';

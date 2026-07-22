@@ -47,6 +47,11 @@ import 'package:mobile/features/client_public_profile/data/repositories/client_p
 import 'package:mobile/features/client_public_profile/domain/repositories/client_public_profile_repository.dart';
 import 'package:mobile/features/client_public_profile/domain/usecases/get_public_client_profile_usecase.dart';
 import 'package:mobile/features/client_public_profile/presentation/bloc/client_public_profile_bloc.dart';
+import 'package:mobile/features/freelancer_public_profile/data/datasources/freelancer_public_profile_remote_datasource.dart';
+import 'package:mobile/features/freelancer_public_profile/data/repositories/freelancer_public_profile_repository_impl.dart';
+import 'package:mobile/features/freelancer_public_profile/domain/repositories/freelancer_public_profile_repository.dart';
+import 'package:mobile/features/freelancer_public_profile/domain/usecases/get_public_freelancer_profile_usecase.dart';
+import 'package:mobile/features/freelancer_public_profile/presentation/bloc/freelancer_public_profile_bloc.dart';
 
 const authDioInstanceName = 'authDio';
 const apiDioInstanceName = 'apiDio';
@@ -206,6 +211,24 @@ Future<void> setupDependencyInjection() async {
   sl.registerFactory(
     () => ClientPublicProfileBloc(
       getPublicClientProfileUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => FreelancerPublicProfileRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<FreelancerPublicProfileRepository>(
+    () => FreelancerPublicProfileRepositoryImpl(remote: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetPublicFreelancerProfileUseCase(sl()));
+
+  sl.registerFactory(
+    () => FreelancerPublicProfileBloc(
+      getPublicFreelancerProfileUseCase: sl(),
     ),
   );
 }

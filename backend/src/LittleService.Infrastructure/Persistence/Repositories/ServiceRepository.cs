@@ -68,6 +68,38 @@ public class ServiceRepository : IServiceRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<int> CountActiveByFreelancerIdAsync(
+        Guid freelancerId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Services
+            .AsNoTracking()
+            .CountAsync(s => s.FreelancerId == freelancerId && s.IsActive, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ServiceSummaryReadModel>> GetActiveSummariesByFreelancerIdAsync(
+        Guid freelancerId,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Services
+            .AsNoTracking()
+            .Where(s => s.FreelancerId == freelancerId && s.IsActive)
+            .OrderByDescending(s => s.CreatedAt)
+            .Take(limit)
+            .Select(s => new ServiceSummaryReadModel
+            {
+                Id = s.Id,
+                FreelancerId = s.FreelancerId,
+                Title = s.Title,
+                Description = s.Description,
+                Price = s.Price,
+                IsActive = s.IsActive,
+                CreatedAt = s.CreatedAt
+            })
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Service>> GetActiveByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default)
     {
         return await _context.Services

@@ -11,7 +11,12 @@ import 'package:mobile/features/service_requests/presentation/widgets/service_re
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/activity/service_request_recent_application_tile.dart';
 
 class ServiceRequestDetailActivityTab extends StatelessWidget {
-  const ServiceRequestDetailActivityTab({super.key});
+  final String serviceRequestId;
+
+  const ServiceRequestDetailActivityTab({
+    super.key,
+    required this.serviceRequestId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,10 @@ class ServiceRequestDetailActivityTab extends StatelessWidget {
             ),
           ),
           ActivityLoadStatus.loaded when state.activity != null =>
-            _ActivityContent(activity: state.activity!),
+            _ActivityContent(
+              serviceRequestId: serviceRequestId,
+              activity: state.activity!,
+            ),
           ActivityLoadStatus.loaded => const SizedBox.shrink(),
         };
       },
@@ -42,9 +50,13 @@ class ServiceRequestDetailActivityTab extends StatelessWidget {
 }
 
 class _ActivityContent extends StatelessWidget {
+  final String serviceRequestId;
   final ServiceRequestActivity activity;
 
-  const _ActivityContent({required this.activity});
+  const _ActivityContent({
+    required this.serviceRequestId,
+    required this.activity,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +104,7 @@ class _ActivityContent extends StatelessWidget {
                 (application) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: ServiceRequestRecentApplicationTile(
+                    serviceRequestId: serviceRequestId,
                     application: application,
                   ),
                 ),

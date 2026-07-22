@@ -291,7 +291,7 @@ as DateTime?,
 /// @nodoc
 mixin _$ServiceRequestRecentApplicationModel {
 
-@JsonKey(fromJson: stringFromJson) String get id; String get freelancerName; String? get freelancerProfilePicture; double get ratingAverage; int get ratingCount;@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime get createdAt;
+@JsonKey(fromJson: stringFromJson) String get id;@JsonKey(fromJson: stringFromJson) String get freelancerId; String get freelancerName; String? get freelancerProfilePicture; double get ratingAverage; int get ratingCount;@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime get createdAt;
 /// Create a copy of ServiceRequestRecentApplicationModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -304,16 +304,16 @@ $ServiceRequestRecentApplicationModelCopyWith<ServiceRequestRecentApplicationMod
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestRecentApplicationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.freelancerName, freelancerName) || other.freelancerName == freelancerName)&&(identical(other.freelancerProfilePicture, freelancerProfilePicture) || other.freelancerProfilePicture == freelancerProfilePicture)&&(identical(other.ratingAverage, ratingAverage) || other.ratingAverage == ratingAverage)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestRecentApplicationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.freelancerId, freelancerId) || other.freelancerId == freelancerId)&&(identical(other.freelancerName, freelancerName) || other.freelancerName == freelancerName)&&(identical(other.freelancerProfilePicture, freelancerProfilePicture) || other.freelancerProfilePicture == freelancerProfilePicture)&&(identical(other.ratingAverage, ratingAverage) || other.ratingAverage == ratingAverage)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,freelancerName,freelancerProfilePicture,ratingAverage,ratingCount,createdAt);
+int get hashCode => Object.hash(runtimeType,id,freelancerId,freelancerName,freelancerProfilePicture,ratingAverage,ratingCount,createdAt);
 
 @override
 String toString() {
-  return 'ServiceRequestRecentApplicationModel(id: $id, freelancerName: $freelancerName, freelancerProfilePicture: $freelancerProfilePicture, ratingAverage: $ratingAverage, ratingCount: $ratingCount, createdAt: $createdAt)';
+  return 'ServiceRequestRecentApplicationModel(id: $id, freelancerId: $freelancerId, freelancerName: $freelancerName, freelancerProfilePicture: $freelancerProfilePicture, ratingAverage: $ratingAverage, ratingCount: $ratingCount, createdAt: $createdAt)';
 }
 
 
@@ -324,7 +324,7 @@ abstract mixin class $ServiceRequestRecentApplicationModelCopyWith<$Res>  {
   factory $ServiceRequestRecentApplicationModelCopyWith(ServiceRequestRecentApplicationModel value, $Res Function(ServiceRequestRecentApplicationModel) _then) = _$ServiceRequestRecentApplicationModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: stringFromJson) String id, String freelancerName, String? freelancerProfilePicture, double ratingAverage, int ratingCount,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
+@JsonKey(fromJson: stringFromJson) String id,@JsonKey(fromJson: stringFromJson) String freelancerId, String freelancerName, String? freelancerProfilePicture, double ratingAverage, int ratingCount,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
 });
 
 
@@ -341,9 +341,10 @@ class _$ServiceRequestRecentApplicationModelCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestRecentApplicationModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? freelancerName = null,Object? freelancerProfilePicture = freezed,Object? ratingAverage = null,Object? ratingCount = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? freelancerId = null,Object? freelancerName = null,Object? freelancerProfilePicture = freezed,Object? ratingAverage = null,Object? ratingCount = null,Object? createdAt = null,}) {
   return _then(ServiceRequestRecentApplicationModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,freelancerId: null == freelancerId ? _self.freelancerId : freelancerId // ignore: cast_nullable_to_non_nullable
 as String,freelancerName: null == freelancerName ? _self.freelancerName : freelancerName // ignore: cast_nullable_to_non_nullable
 as String,freelancerProfilePicture: freezed == freelancerProfilePicture ? _self.freelancerProfilePicture : freelancerProfilePicture // ignore: cast_nullable_to_non_nullable
 as String?,ratingAverage: null == ratingAverage ? _self.ratingAverage : ratingAverage // ignore: cast_nullable_to_non_nullable
@@ -434,10 +435,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id,  String freelancerName,  String? freelancerProfilePicture,  double ratingAverage,  int ratingCount, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id, @JsonKey(fromJson: stringFromJson)  String freelancerId,  String freelancerName,  String? freelancerProfilePicture,  double ratingAverage,  int ratingCount, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ServiceRequestRecentApplicationModel() when $default != null:
-return $default(_that.id,_that.freelancerName,_that.freelancerProfilePicture,_that.ratingAverage,_that.ratingCount,_that.createdAt);case _:
+return $default(_that.id,_that.freelancerId,_that.freelancerName,_that.freelancerProfilePicture,_that.ratingAverage,_that.ratingCount,_that.createdAt);case _:
   return orElse();
 
 }
@@ -455,10 +456,10 @@ return $default(_that.id,_that.freelancerName,_that.freelancerProfilePicture,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id,  String freelancerName,  String? freelancerProfilePicture,  double ratingAverage,  int ratingCount, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id, @JsonKey(fromJson: stringFromJson)  String freelancerId,  String freelancerName,  String? freelancerProfilePicture,  double ratingAverage,  int ratingCount, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ServiceRequestRecentApplicationModel():
-return $default(_that.id,_that.freelancerName,_that.freelancerProfilePicture,_that.ratingAverage,_that.ratingCount,_that.createdAt);case _:
+return $default(_that.id,_that.freelancerId,_that.freelancerName,_that.freelancerProfilePicture,_that.ratingAverage,_that.ratingCount,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -475,10 +476,10 @@ return $default(_that.id,_that.freelancerName,_that.freelancerProfilePicture,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: stringFromJson)  String id,  String freelancerName,  String? freelancerProfilePicture,  double ratingAverage,  int ratingCount, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: stringFromJson)  String id, @JsonKey(fromJson: stringFromJson)  String freelancerId,  String freelancerName,  String? freelancerProfilePicture,  double ratingAverage,  int ratingCount, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ServiceRequestRecentApplicationModel() when $default != null:
-return $default(_that.id,_that.freelancerName,_that.freelancerProfilePicture,_that.ratingAverage,_that.ratingCount,_that.createdAt);case _:
+return $default(_that.id,_that.freelancerId,_that.freelancerName,_that.freelancerProfilePicture,_that.ratingAverage,_that.ratingCount,_that.createdAt);case _:
   return null;
 
 }
@@ -490,10 +491,11 @@ return $default(_that.id,_that.freelancerName,_that.freelancerProfilePicture,_th
 @JsonSerializable()
 
 class _ServiceRequestRecentApplicationModel implements ServiceRequestRecentApplicationModel {
-  const _ServiceRequestRecentApplicationModel({@JsonKey(fromJson: stringFromJson) required this.id, required this.freelancerName, this.freelancerProfilePicture, required this.ratingAverage, this.ratingCount = 0, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) required this.createdAt});
+  const _ServiceRequestRecentApplicationModel({@JsonKey(fromJson: stringFromJson) required this.id, @JsonKey(fromJson: stringFromJson) required this.freelancerId, required this.freelancerName, this.freelancerProfilePicture, required this.ratingAverage, this.ratingCount = 0, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) required this.createdAt});
   factory _ServiceRequestRecentApplicationModel.fromJson(Map<String, dynamic> json) => _$ServiceRequestRecentApplicationModelFromJson(json);
 
 @override@JsonKey(fromJson: stringFromJson) final  String id;
+@override@JsonKey(fromJson: stringFromJson) final  String freelancerId;
 @override final  String freelancerName;
 @override final  String? freelancerProfilePicture;
 @override final  double ratingAverage;
@@ -513,16 +515,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServiceRequestRecentApplicationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.freelancerName, freelancerName) || other.freelancerName == freelancerName)&&(identical(other.freelancerProfilePicture, freelancerProfilePicture) || other.freelancerProfilePicture == freelancerProfilePicture)&&(identical(other.ratingAverage, ratingAverage) || other.ratingAverage == ratingAverage)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServiceRequestRecentApplicationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.freelancerId, freelancerId) || other.freelancerId == freelancerId)&&(identical(other.freelancerName, freelancerName) || other.freelancerName == freelancerName)&&(identical(other.freelancerProfilePicture, freelancerProfilePicture) || other.freelancerProfilePicture == freelancerProfilePicture)&&(identical(other.ratingAverage, ratingAverage) || other.ratingAverage == ratingAverage)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,freelancerName,freelancerProfilePicture,ratingAverage,ratingCount,createdAt);
+int get hashCode => Object.hash(runtimeType,id,freelancerId,freelancerName,freelancerProfilePicture,ratingAverage,ratingCount,createdAt);
 
 @override
 String toString() {
-  return 'ServiceRequestRecentApplicationModel(id: $id, freelancerName: $freelancerName, freelancerProfilePicture: $freelancerProfilePicture, ratingAverage: $ratingAverage, ratingCount: $ratingCount, createdAt: $createdAt)';
+  return 'ServiceRequestRecentApplicationModel(id: $id, freelancerId: $freelancerId, freelancerName: $freelancerName, freelancerProfilePicture: $freelancerProfilePicture, ratingAverage: $ratingAverage, ratingCount: $ratingCount, createdAt: $createdAt)';
 }
 
 
@@ -533,7 +535,7 @@ abstract mixin class _$ServiceRequestRecentApplicationModelCopyWith<$Res> implem
   factory _$ServiceRequestRecentApplicationModelCopyWith(_ServiceRequestRecentApplicationModel value, $Res Function(_ServiceRequestRecentApplicationModel) _then) = __$ServiceRequestRecentApplicationModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: stringFromJson) String id, String freelancerName, String? freelancerProfilePicture, double ratingAverage, int ratingCount,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
+@JsonKey(fromJson: stringFromJson) String id,@JsonKey(fromJson: stringFromJson) String freelancerId, String freelancerName, String? freelancerProfilePicture, double ratingAverage, int ratingCount,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
 });
 
 
@@ -550,9 +552,10 @@ class __$ServiceRequestRecentApplicationModelCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestRecentApplicationModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? freelancerName = null,Object? freelancerProfilePicture = freezed,Object? ratingAverage = null,Object? ratingCount = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? freelancerId = null,Object? freelancerName = null,Object? freelancerProfilePicture = freezed,Object? ratingAverage = null,Object? ratingCount = null,Object? createdAt = null,}) {
   return _then(_ServiceRequestRecentApplicationModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,freelancerId: null == freelancerId ? _self.freelancerId : freelancerId // ignore: cast_nullable_to_non_nullable
 as String,freelancerName: null == freelancerName ? _self.freelancerName : freelancerName // ignore: cast_nullable_to_non_nullable
 as String,freelancerProfilePicture: freezed == freelancerProfilePicture ? _self.freelancerProfilePicture : freelancerProfilePicture // ignore: cast_nullable_to_non_nullable
 as String?,ratingAverage: null == ratingAverage ? _self.ratingAverage : ratingAverage // ignore: cast_nullable_to_non_nullable

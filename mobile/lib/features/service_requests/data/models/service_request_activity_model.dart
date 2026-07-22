@@ -25,6 +25,7 @@ abstract class ServiceRequestRecentApplicationModel
     with _$ServiceRequestRecentApplicationModel {
   const factory ServiceRequestRecentApplicationModel({
     @JsonKey(fromJson: stringFromJson) required String id,
+    @JsonKey(fromJson: stringFromJson) required String freelancerId,
     required String freelancerName,
     String? freelancerProfilePicture,
     required double ratingAverage,
@@ -74,6 +75,7 @@ abstract class ServiceRequestActivityModel with _$ServiceRequestActivityModel {
         .map(
           (application) => ServiceRequestRecentApplication(
             id: application.id,
+            freelancerId: application.freelancerId,
             freelancerName: application.freelancerName,
             profilePictureUrl: application.freelancerProfilePicture,
             ratingAverage: application.ratingAverage,

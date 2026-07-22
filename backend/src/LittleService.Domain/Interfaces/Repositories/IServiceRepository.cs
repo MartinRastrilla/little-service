@@ -14,6 +14,11 @@ public interface IServiceRepository
     //? Query for Freelancer (1:N)
     Task<IEnumerable<Service>> GetByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ServiceSummaryReadModel>> GetSummariesByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
+    Task<int> CountActiveByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ServiceSummaryReadModel>> GetActiveSummariesByFreelancerIdAsync(
+        Guid freelancerId,
+        int limit,
+        CancellationToken cancellationToken = default);
     Task<IEnumerable<Service>> GetActiveByFreelancerIdAsync(Guid freelancerId, CancellationToken cancellationToken = default);
 
     //? Query for status

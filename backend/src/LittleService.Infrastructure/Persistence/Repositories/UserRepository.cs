@@ -55,4 +55,16 @@ public class UserRepository : IUserRepository
         _context.Users.Remove(user);
         return true;
     }
+
+    public async Task<IReadOnlyList<string>> GetSkillNamesByFreelancerIdAsync(
+        Guid freelancerId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.FreelancerSkills
+            .AsNoTracking()
+            .Where(fs => fs.FreelancerId == freelancerId)
+            .OrderBy(fs => fs.Skill.Name)
+            .Select(fs => fs.Skill.Name)
+            .ToListAsync(cancellationToken);
+    }
 }

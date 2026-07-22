@@ -14,6 +14,7 @@ import 'package:mobile/features/service_requests/presentation/pages/create_servi
 import 'package:mobile/features/service_requests/presentation/pages/service_request_detail_page.dart';
 import 'package:mobile/features/freelancer_service_request_detail/presentation/pages/freelancer_service_request_detail_page.dart';
 import 'package:mobile/features/client_public_profile/presentation/pages/client_public_profile_page.dart';
+import 'package:mobile/features/freelancer_public_profile/presentation/pages/freelancer_public_profile_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -72,6 +73,13 @@ class AppRouter {
             path: '/freelancer/clients/:clientId',
             builder: (context, state) => ClientPublicProfilePage(
               clientId: state.pathParameters['clientId']!,
+              serviceRequestId: state.uri.queryParameters['serviceRequestId'],
+            ),
+          ),
+          GoRoute(
+            path: '/clients/freelancers/:freelancerId',
+            builder: (context, state) => FreelancerPublicProfilePage(
+              freelancerId: state.pathParameters['freelancerId']!,
               serviceRequestId: state.uri.queryParameters['serviceRequestId'],
             ),
           ),

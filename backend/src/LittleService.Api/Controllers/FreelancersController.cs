@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using LittleService.Api.Models;
 using LittleService.Application.UseCases.Freelancer.GetFreelancerProfile;
+using LittleService.Application.UseCases.Freelancer.GetPublicFreelancerProfile;
 using LittleService.Application.UseCases.Freelancer.GetMyApplications;
 using LittleService.Application.UseCases.Freelancer.UpdateFreelancer;
 using Mediator;
@@ -39,6 +40,33 @@ public class FreelancersController : ControllerBase
         }
 
         return Ok(result.Value!.User);
+    }
+
+    [HttpGet("{freelancerId:guid}/public-profile")]
+    public async Task<IActionResult> GetPublicProfile(Guid freelancerId, CancellationToken cancellationToken)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var viewerUserId))
+            return Unauthorized();
+
+        var query = new GetPublicFreelancerProfileQuery
+        {
+            ViewerUserId = viewerUserId,
+            FreelancerId = freelancerId
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "FREELANCER_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Profile);
     }
 
     [HttpPut("me")]

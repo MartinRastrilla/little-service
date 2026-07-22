@@ -81,6 +81,7 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
               loading: () => const Center(child: CircularProgressIndicator()),
               loaded: (info, activity, activityStatus, activityErrorMessage) =>
                   _DetailBody(
+                serviceRequestId: widget.serviceRequestId,
                 info: info,
                 tabController: _tabController,
               ),
@@ -99,10 +100,12 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
 }
 
 class _DetailBody extends StatelessWidget {
+  final String serviceRequestId;
   final ServiceRequestInfo info;
   final TabController tabController;
 
   const _DetailBody({
+    required this.serviceRequestId,
     required this.info,
     required this.tabController,
   });
@@ -159,7 +162,7 @@ class _DetailBody extends StatelessWidget {
             controller: tabController,
             children: [
               ServiceRequestDetailInfoTab(info: info),
-              const ServiceRequestDetailActivityTab(),
+              ServiceRequestDetailActivityTab(serviceRequestId: serviceRequestId),
             ],
           ),
         ),
