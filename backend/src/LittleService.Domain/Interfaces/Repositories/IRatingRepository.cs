@@ -1,5 +1,6 @@
 using LittleService.Domain.Entities;
 using LittleService.Domain.Entities.Enums;
+using LittleService.Domain.Queries;
 
 namespace LittleService.Domain.Interfaces.Repositories;
 
@@ -41,6 +42,11 @@ public interface IRatingRepository
     //? Queries for statistics
     Task<double> GetAverageRatingByUserRevieweeIdAsync(Guid userRevieweeId, RatingReceiverRole receiverRole, CancellationToken cancellationToken = default);
     Task<int> GetRatingCountByUserRevieweeIdAsync(Guid userRevieweeId, RatingReceiverRole receiverRole, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ClientReviewPreviewReadModel>> GetRecentActiveReviewsAsync(
+        Guid clientUserId,
+        RatingReceiverRole receiverRole,
+        int limit,
+        CancellationToken cancellationToken = default);
 
     //? Queries for validations
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);

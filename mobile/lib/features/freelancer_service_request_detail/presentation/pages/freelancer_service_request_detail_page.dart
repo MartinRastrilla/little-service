@@ -117,11 +117,13 @@ class _FreelancerServiceRequestDetailView extends StatelessWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             loaded: (detail) => _DetailContent(
               detail: detail,
+              serviceRequestId: serviceRequestId,
               isApplying: false,
               onApplyPressed: () => _onApplyPressed(context),
             ),
             applying: (detail) => _DetailContent(
               detail: detail,
+              serviceRequestId: serviceRequestId,
               isApplying: true,
               onApplyPressed: null,
             ),
@@ -130,6 +132,7 @@ class _FreelancerServiceRequestDetailView extends StatelessWidget {
               if (detail != null) {
                 return _DetailContent(
                   detail: detail,
+                  serviceRequestId: serviceRequestId,
                   isApplying: false,
                   onApplyPressed: () => _onApplyPressed(context),
                 );
@@ -155,11 +158,13 @@ class _FreelancerServiceRequestDetailView extends StatelessWidget {
 
 class _DetailContent extends StatelessWidget {
   final OpenServiceRequestDetail detail;
+  final String serviceRequestId;
   final bool isApplying;
   final VoidCallback? onApplyPressed;
 
   const _DetailContent({
     required this.detail,
+    required this.serviceRequestId,
     required this.isApplying,
     required this.onApplyPressed,
   });
@@ -209,7 +214,10 @@ class _DetailContent extends StatelessWidget {
                   applicationsCount: detail.applicationsCount,
                 ),
                 const SizedBox(height: 20),
-                DetailClientCard(client: detail.client),
+                DetailClientCard(
+                  client: detail.client,
+                  serviceRequestId: serviceRequestId,
+                ),
               ],
             ),
           ),

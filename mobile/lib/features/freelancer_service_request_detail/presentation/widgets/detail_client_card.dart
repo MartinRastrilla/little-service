@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
 import 'package:mobile/features/freelancer_service_request_detail/domain/entities/open_service_request_detail.dart';
@@ -7,10 +8,12 @@ import 'package:mobile/features/freelancer_service_request_detail/presentation/m
 
 class DetailClientCard extends StatelessWidget {
   final OpenServiceRequestClientSummary client;
+  final String serviceRequestId;
 
   const DetailClientCard({
     super.key,
     required this.client,
+    required this.serviceRequestId,
   });
 
   @override
@@ -26,8 +29,9 @@ class DetailClientCard extends StatelessWidget {
         side: BorderSide(color: context.colors.outline.withValues(alpha: 0.4)),
       ),
       child: InkWell(
-        // TODO(future): navigate to public client profile.
-        onTap: null,
+        onTap: () => context.push(
+          '/freelancer/clients/${client.clientId}?serviceRequestId=$serviceRequestId',
+        ),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),

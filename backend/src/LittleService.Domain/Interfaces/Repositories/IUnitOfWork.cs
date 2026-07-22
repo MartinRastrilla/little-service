@@ -11,6 +11,7 @@ public interface IUnitOfWork : IDisposable
     IServiceRepository Services { get; }
     INotificationRepository Notifications { get; }
     IRatingRepository Ratings { get; }
+    IReportRepository Reports { get; }
     IMessageRepository Messages { get; }
     IRefreshTokenRepository RefreshTokens { get; }
 

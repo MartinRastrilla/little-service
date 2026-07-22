@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
         Services = new ServiceRepository(context);
         Notifications = new NotificationRepository(context);
         Ratings = new RatingRepository(context);
+        Reports = new ReportRepository(context);
         Messages = new MessageRepository(context);
         RefreshTokens = new RefreshTokenRepository(context);
     }
@@ -34,6 +35,7 @@ public class UnitOfWork : IUnitOfWork
     public IServiceRepository Services { get; private set; }
     public INotificationRepository Notifications { get; private set; }
     public IRatingRepository Ratings { get; private set; }
+    public IReportRepository Reports { get; private set; }
     public IMessageRepository Messages { get; private set; }
     public IRefreshTokenRepository RefreshTokens { get; private set; }
 

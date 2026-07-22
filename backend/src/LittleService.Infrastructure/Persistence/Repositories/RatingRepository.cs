@@ -1,6 +1,7 @@
 using LittleService.Domain.Entities;
 using LittleService.Domain.Entities.Enums;
 using LittleService.Domain.Interfaces.Repositories;
+using LittleService.Domain.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleService.Infrastructure.Persistence.Repositories;
@@ -230,30 +231,56 @@ public class RatingRepository : IRatingRepository
 
     public async Task<double> GetAverageRatingByUserRevieweeIdAsync(Guid userRevieweeId, RatingReceiverRole receiverRole, CancellationToken cancellationToken = default)
     {
-        return await _context.Ratings
-            .Include(r => r.ServiceRequest)
-                .ThenInclude(sr => sr.Client)
-            .Include(r => r.ServiceRequest)
-                .ThenInclude(sr => sr.FreelancerPicked)
-            .Include(r => r.UserReviewee)
-            .Include(r => r.UserReviewer)
-            .Include(r => r.DeactivatedBy)
-            .Where(r => r.UserRevieweeId == userRevieweeId && r.ReceiverRole == receiverRole)
-            .AverageAsync(r => r.Score, cancellationToken);
+        var query = _context.Ratings
+            .AsNoTracking()
+            .Where(r =>
+                r.UserRevieweeId == userRevieweeId &&
+                r.ReceiverRole == receiverRole &&
+                r.IsActive);
+
+        if (!await query.AnyAsync(cancellationToken))
+            return 0.0;
+
+        return await query.AverageAsync(r => r.Score, cancellationToken);
     }
 
     public async Task<int> GetRatingCountByUserRevieweeIdAsync(Guid userRevieweeId, RatingReceiverRole receiverRole, CancellationToken cancellationToken = default)
     {
         return await _context.Ratings
-            .Include(r => r.ServiceRequest)
-                .ThenInclude(sr => sr.Client)
-            .Include(r => r.ServiceRequest)
-                .ThenInclude(sr => sr.FreelancerPicked)
-            .Include(r => r.UserReviewee)
-            .Include(r => r.UserReviewer)
-            .Include(r => r.DeactivatedBy)
-            .Where(r => r.UserRevieweeId == userRevieweeId && r.ReceiverRole == receiverRole)
-            .CountAsync(cancellationToken);
+            .AsNoTracking()
+            .CountAsync(
+                r =>
+                    r.UserRevieweeId == userRevieweeId &&
+                    r.ReceiverRole == receiverRole &&
+                    r.IsActive,
+                cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ClientReviewPreviewReadModel>> GetRecentActiveReviewsAsync(
+        Guid clientUserId,
+        RatingReceiverRole receiverRole,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Ratings
+            .AsNoTracking()
+            .Where(r =>
+                r.UserRevieweeId == clientUserId &&
+                r.ReceiverRole == receiverRole &&
+                r.IsActive)
+            .OrderByDescending(r => r.CreatedAt)
+            .Take(limit)
+            .Select(r => new ClientReviewPreviewReadModel
+            {
+                Id = r.Id,
+                ReviewerName = r.UserReviewer.Name,
+                ReviewerProfilePictureUrl = r.UserReviewer.ProfilePictureUrl,
+                Rating = r.Score,
+                Comment = r.Comment,
+                ServiceRequestTitle = r.ServiceRequest.Title,
+                CreatedAt = r.CreatedAt
+            })
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)

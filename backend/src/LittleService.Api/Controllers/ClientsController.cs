@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using LittleService.Api.Models;
 using LittleService.Application.UseCases.Client.GetClientProfile;
+using LittleService.Application.UseCases.Client.GetPublicClientProfile;
 using LittleService.Application.UseCases.Client.UpdateClient;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -38,6 +39,33 @@ public class ClientsController : ControllerBase
         }
 
         return Ok(result.Value!.User);
+    }
+
+    [HttpGet("{clientId:guid}/public-profile")]
+    public async Task<IActionResult> GetPublicProfile(Guid clientId, CancellationToken cancellationToken)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var viewerUserId))
+            return Unauthorized();
+
+        var query = new GetPublicClientProfileQuery
+        {
+            ViewerUserId = viewerUserId,
+            ClientId = clientId
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "USER_NOT_FOUND" or "FREELANCER_NOT_FOUND" or "CLIENT_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Profile);
     }
 
     [HttpPut("me")]
