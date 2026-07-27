@@ -9,10 +9,12 @@ import 'package:share_plus/share_plus.dart';
 
 class ServiceRequestDetailInfoTab extends StatelessWidget {
   final ServiceRequestInfo info;
+  final VoidCallback? onApplicationsPressed;
 
   const ServiceRequestDetailInfoTab({
     super.key,
     required this.info,
+    this.onApplicationsPressed,
   });
 
   Future<void> _share(BuildContext context) async {
@@ -117,6 +119,7 @@ class ServiceRequestDetailInfoTab extends StatelessWidget {
           ServiceRequestDetailQuickActions(
             messagesCount: info.messagesCount,
             applicationsCount: info.applicationsCount,
+            onApplicationsPressed: onApplicationsPressed,
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
+using LittleService.Application.Mappers;
 using LittleService.Domain.Exceptions;
 using LittleService.Domain.Interfaces.Repositories;
 using Mediator;
@@ -40,12 +41,6 @@ public class AcceptApplicationCommandHandler : IRequestHandler<AcceptApplication
         try
         {
             application.Accept(serviceRequest);
-
-            foreach (var pending in serviceRequest.FreelancerApplications
-                .Where(fa => fa.Id != command.ApplicationId && fa.IsPending()))
-            {
-                pending.Reject();
-            }
         }
         catch (DomainException ex)
         {
@@ -78,6 +73,9 @@ public class AcceptApplicationCommandHandler : IRequestHandler<AcceptApplication
             RatingCount = application.Freelancer?.RatingCount ?? 0,
             Bio = application.Freelancer?.Bio,
             Status = application.Status.ToString(),
+            DisplayStatus = FreelancerApplicationDisplayStatusResolver.ResolveForClientView(
+                application.Status,
+                serviceRequest.CanAcceptApplications()),
             CreatedAt = application.CreatedAt
         };
         return Result<AcceptApplicationResult>.Success(new AcceptApplicationResult { Application = dto });

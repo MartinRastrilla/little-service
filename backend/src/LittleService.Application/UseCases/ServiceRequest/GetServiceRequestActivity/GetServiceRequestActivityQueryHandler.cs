@@ -106,6 +106,9 @@ public class GetServiceRequestActivityQueryHandler
             RatingCount = summary.RatingCount,
             Bio = summary.Bio,
             Status = summary.Status.ToString(),
+            DisplayStatus = FreelancerApplicationDisplayStatusResolver.ResolveForClientView(
+                summary.Status,
+                canManageApplications: true),
             CreatedAt = summary.CreatedAt,
         };
     }

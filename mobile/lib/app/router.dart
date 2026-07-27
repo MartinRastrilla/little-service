@@ -12,6 +12,7 @@ import 'package:mobile/features/auth/presentation/pages/login_page.dart';
 import 'package:mobile/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/create_service_request_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/service_request_detail_page.dart';
+import 'package:mobile/features/service_requests/presentation/pages/service_request_applications_page.dart';
 import 'package:mobile/features/freelancer_service_request_detail/presentation/pages/freelancer_service_request_detail_page.dart';
 import 'package:mobile/features/client_public_profile/presentation/pages/client_public_profile_page.dart';
 import 'package:mobile/features/freelancer_public_profile/presentation/pages/freelancer_public_profile_page.dart';
@@ -81,6 +82,12 @@ class AppRouter {
             builder: (context, state) => FreelancerPublicProfilePage(
               freelancerId: state.pathParameters['freelancerId']!,
               serviceRequestId: state.uri.queryParameters['serviceRequestId'],
+            ),
+          ),
+          GoRoute(
+            path: '/service-requests/:id/applications',
+            builder: (context, state) => ServiceRequestApplicationsPage(
+              serviceRequestId: state.pathParameters['id']!,
             ),
           ),
           GoRoute(

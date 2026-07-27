@@ -310,7 +310,7 @@ public class ServiceRequestsController : ControllerBase
             };
         }
 
-        return Ok(result.Value!.Applications);
+        return Ok(result.Value);
     }
 
     [HttpPost("{id:guid}/applications/{applicationId:guid}/accept")]

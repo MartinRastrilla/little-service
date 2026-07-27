@@ -1,5 +1,6 @@
 using LittleService.Application.Common;
 using LittleService.Application.DTOs.ServiceRequests;
+using LittleService.Application.Mappers;
 using LittleService.Domain.Exceptions;
 using LittleService.Domain.Interfaces.Repositories;
 using Mediator;
@@ -72,6 +73,9 @@ public class RejectApplicationCommandHandler : IRequestHandler<RejectApplication
             RatingCount = application.Freelancer?.RatingCount ?? 0,
             Bio = application.Freelancer?.Bio,
             Status = application.Status.ToString(),
+            DisplayStatus = FreelancerApplicationDisplayStatusResolver.ResolveForClientView(
+                application.Status,
+                serviceRequest.CanAcceptApplications()),
             CreatedAt = application.CreatedAt
         };
         return Result<RejectApplicationResult>.Success(new RejectApplicationResult { Application = dto });

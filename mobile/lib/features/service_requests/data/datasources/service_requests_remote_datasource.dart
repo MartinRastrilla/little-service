@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:mobile/core/error/exceptions.dart';
 import 'package:mobile/features/service_requests/data/models/paged_service_requests_result_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_activity_model.dart';
+import 'package:mobile/features/service_requests/data/models/service_request_application_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_detail_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_info_model.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
@@ -114,6 +115,75 @@ class ServiceRequestsRemoteDataSource {
       }
 
       return ServiceRequestActivityModel.fromJson(data);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestApplicationsResultModel> getServiceRequestApplications(
+    String id,
+  ) async {
+    try {
+      final response = await dio.get('/service-requests/$id/applications');
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Formato de respuesta inválido',
+          code: 'INVALID_RESPONSE',
+        );
+      }
+
+      return ServiceRequestApplicationsResultModel.fromJson(data);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestApplicationModel> acceptServiceRequestApplication({
+    required String serviceRequestId,
+    required String applicationId,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/service-requests/$serviceRequestId/applications/$applicationId/accept',
+      );
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Formato de respuesta inválido',
+          code: 'INVALID_RESPONSE',
+        );
+      }
+
+      return ServiceRequestApplicationModel.fromJson(data);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestApplicationModel> rejectServiceRequestApplication({
+    required String serviceRequestId,
+    required String applicationId,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/service-requests/$serviceRequestId/applications/$applicationId/reject',
+      );
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Formato de respuesta inválido',
+          code: 'INVALID_RESPONSE',
+        );
+      }
+
+      return ServiceRequestApplicationModel.fromJson(data);
     } on DioException catch (error) {
       throw _mapDioException(error);
     }

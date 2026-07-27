@@ -60,6 +60,7 @@ public class FreelancerApplicationRepository : IFreelancerApplicationRepository
         return await _context.FreelancerApplications
             .AsNoTracking()
             .Where(fa => fa.ServiceRequestId == serviceRequestId)
+            .OrderByDescending(fa => fa.CreatedAt)
             .Select(fa => new FreelancerApplicationSummaryReadModel
             {
                 Id = fa.Id,

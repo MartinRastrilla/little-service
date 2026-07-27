@@ -14,7 +14,7 @@ public class User : BaseEntity
     public const int MAX_NAME_LENGTH = 200;
     public const int MAX_EMAIL_LENGTH = 100;
     public const int MAX_PROFILE_PICTURE_URL_LENGTH = 255;
-    public const string DEFAULT_PROFILE_PICTURE_URL = "/uploads/images/default_profile_pic.png";
+    public const string DEFAULT_PROFILE_PICTURE_URL = "images/default_profile_pic.png";
 
     //? Image formats allowed (extensions)
     private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)

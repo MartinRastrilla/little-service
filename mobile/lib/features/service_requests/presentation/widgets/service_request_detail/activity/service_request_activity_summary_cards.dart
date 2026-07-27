@@ -4,11 +4,13 @@ import 'package:mobile/core/theme/theme_context.dart';
 class ServiceRequestActivitySummaryCards extends StatelessWidget {
   final int messagesCount;
   final int applicationsCount;
+  final VoidCallback? onApplicationsTap;
 
   const ServiceRequestActivitySummaryCards({
     super.key,
     required this.messagesCount,
     required this.applicationsCount,
+    this.onApplicationsTap,
   });
 
   @override
@@ -34,8 +36,7 @@ class ServiceRequestActivitySummaryCards extends StatelessWidget {
             count: applicationsCount,
             title: 'Postulaciones',
             subtitle: 'Profesionales interesados',
-            // TODO(iter-3): navigate to applications list for this service request.
-            onTap: null,
+            onTap: onApplicationsTap,
           ),
         ),
       ],

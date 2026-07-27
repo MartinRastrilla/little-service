@@ -4,11 +4,13 @@ import 'package:mobile/core/theme/theme_context.dart';
 class ServiceRequestDetailQuickActions extends StatelessWidget {
   final int messagesCount;
   final int applicationsCount;
+  final VoidCallback? onApplicationsPressed;
 
   const ServiceRequestDetailQuickActions({
     super.key,
     required this.messagesCount,
     required this.applicationsCount,
+    this.onApplicationsPressed,
   });
 
   @override
@@ -56,8 +58,7 @@ class ServiceRequestDetailQuickActions extends StatelessWidget {
                   icon: Icons.groups_outlined,
                   label: 'Ver\npostulaciones',
                   badgeCount: applicationsCount,
-                  // TODO(iter-2): navigate to applications list for this service request.
-                  onPressed: null,
+                  onPressed: onApplicationsPressed,
                 ),
               ),
             ],

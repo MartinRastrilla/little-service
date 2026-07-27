@@ -12,10 +12,12 @@ import 'package:mobile/features/service_requests/presentation/widgets/service_re
 
 class ServiceRequestDetailActivityTab extends StatelessWidget {
   final String serviceRequestId;
+  final VoidCallback? onApplicationsPressed;
 
   const ServiceRequestDetailActivityTab({
     super.key,
     required this.serviceRequestId,
+    this.onApplicationsPressed,
   });
 
   @override
@@ -41,6 +43,7 @@ class ServiceRequestDetailActivityTab extends StatelessWidget {
             _ActivityContent(
               serviceRequestId: serviceRequestId,
               activity: state.activity!,
+              onApplicationsPressed: onApplicationsPressed,
             ),
           ActivityLoadStatus.loaded => const SizedBox.shrink(),
         };
@@ -52,10 +55,12 @@ class ServiceRequestDetailActivityTab extends StatelessWidget {
 class _ActivityContent extends StatelessWidget {
   final String serviceRequestId;
   final ServiceRequestActivity activity;
+  final VoidCallback? onApplicationsPressed;
 
   const _ActivityContent({
     required this.serviceRequestId,
     required this.activity,
+    this.onApplicationsPressed,
   });
 
   @override
@@ -70,6 +75,7 @@ class _ActivityContent extends StatelessWidget {
           ServiceRequestActivitySummaryCards(
             messagesCount: activity.messagesCount,
             applicationsCount: activity.applicationsCount,
+            onApplicationsTap: onApplicationsPressed,
           ),
           if (activity.showRecentApplications) ...[
             const SizedBox(height: 24),
@@ -85,8 +91,7 @@ class _ActivityContent extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  // TODO(iter-3): navigate to full applications list.
-                  onPressed: null,
+                  onPressed: onApplicationsPressed,
                   child: const Text('Ver todas'),
                 ),
               ],
@@ -111,8 +116,7 @@ class _ActivityContent extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               OutlinedButton(
-                // TODO(iter-3): navigate to full applications list.
-                onPressed: null,
+                onPressed: onApplicationsPressed,
                 child: Text(
                   'Ver todas las postulaciones (${activity.applicationsCount})',
                 ),

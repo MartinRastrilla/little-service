@@ -8,6 +8,7 @@ import 'package:mobile/features/service_requests/domain/entities/service_request
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_event.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_state.dart';
+import 'package:mobile/features/service_requests/presentation/navigation/service_request_applications_navigation.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/activity/service_request_detail_activity_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/service_request_detail_info_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_status_badge.dart';
@@ -84,6 +85,7 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
                 serviceRequestId: widget.serviceRequestId,
                 info: info,
                 tabController: _tabController,
+                onOpenApplications: () => _openApplications(context),
               ),
               failure: (message) => _FailureView(
                 message: message,
@@ -97,17 +99,40 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
       ),
     );
   }
+
+  Future<void> _openApplications(BuildContext context) async {
+    final accepted = await navigateToServiceRequestApplications(
+      context,
+      serviceRequestId: widget.serviceRequestId,
+    );
+
+    if (accepted != true || !context.mounted) return;
+
+    _tabController.animateTo(1);
+    context.read<ServiceRequestDetailBloc>().add(
+      const ServiceRequestDetailEvent.refreshRequested(),
+    );
+    context.read<ServiceRequestDetailBloc>().add(
+      const ServiceRequestDetailEvent.activityRefreshRequested(),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profesional elegido con éxito')),
+    );
+  }
 }
 
 class _DetailBody extends StatelessWidget {
   final String serviceRequestId;
   final ServiceRequestInfo info;
   final TabController tabController;
+  final Future<void> Function() onOpenApplications;
 
   const _DetailBody({
     required this.serviceRequestId,
     required this.info,
     required this.tabController,
+    required this.onOpenApplications,
   });
 
   @override
@@ -161,8 +186,14 @@ class _DetailBody extends StatelessWidget {
           child: TabBarView(
             controller: tabController,
             children: [
-              ServiceRequestDetailInfoTab(info: info),
-              ServiceRequestDetailActivityTab(serviceRequestId: serviceRequestId),
+              ServiceRequestDetailInfoTab(
+                info: info,
+                onApplicationsPressed: () => onOpenApplications(),
+              ),
+              ServiceRequestDetailActivityTab(
+                serviceRequestId: serviceRequestId,
+                onApplicationsPressed: () => onOpenApplications(),
+              ),
             ],
           ),
         ),
