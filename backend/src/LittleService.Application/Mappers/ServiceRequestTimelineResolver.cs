@@ -73,9 +73,8 @@ public static class ServiceRequestTimelineResolver
     {
         var contract = serviceRequest.Contract;
         var hasFreelancer = serviceRequest.FreelancerPickedId.HasValue;
-        var contractSigned = contract?.Status >= ContractStatus.Signed;
-        var workCompleted = serviceRequest.Status == ServiceRequestStatus.Closed
-            || contract?.Status == ContractStatus.Completed;
+        var contractSigned = contract?.Status is ContractStatus.Signed or ContractStatus.Completed;
+        var workCompleted = contract?.Status == ContractStatus.Completed;
 
         var createdCompleted = true;
         var receivingCompleted = hasFreelancer
