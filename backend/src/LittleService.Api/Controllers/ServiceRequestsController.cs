@@ -5,6 +5,7 @@ using LittleService.Application.Common;
 using LittleService.Application.UseCases.ServiceRequest.AcceptApplication;
 using LittleService.Application.UseCases.ServiceRequest.ApplyToServiceRequest;
 using LittleService.Application.UseCases.ServiceRequest.CancelServiceRequest;
+using LittleService.Application.UseCases.ServiceRequest.CancelServiceRequestEngagement;
 using LittleService.Application.UseCases.ServiceRequest.CreateServiceRequest;
 using LittleService.Application.UseCases.ServiceRequest.GetApplicationsByServiceRequest;
 using LittleService.Application.UseCases.ServiceRequest.GetMyServiceRequests;
@@ -12,6 +13,7 @@ using LittleService.Application.UseCases.ServiceRequest.GetOpenServiceRequestDet
 using LittleService.Application.UseCases.ServiceRequest.GetOpenServiceRequests;
 using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestById;
 using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestInfo;
+using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestProfessional;
 using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestActivity;
 using LittleService.Application.UseCases.ServiceRequest.RejectApplication;
 using LittleService.Application.UseCases.ServiceRequest.UpdateServiceRequest;
@@ -201,6 +203,65 @@ public class ServiceRequestsController : ControllerBase
         }
 
         return Ok(result.Value!.ServiceRequest);
+    }
+
+    [HttpGet("{id:guid}/professional")]
+    public async Task<IActionResult> GetProfessional(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var query = new GetServiceRequestProfessionalQuery
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" => Forbid(),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Professional);
+    }
+
+    [HttpPost("{id:guid}/cancel-engagement")]
+    public async Task<IActionResult> CancelEngagement(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var command = new CancelServiceRequestEngagementCommand
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id
+        };
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" or
+                "NO_ASSIGNED_PROFESSIONAL" or "ACCEPTED_APPLICATION_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" => Forbid(),
+                "ACTIVE_CONTRACT_BLOCKS_REVOKE_ENGAGEMENT" or "SERVICE_REQUEST_CANCELLED" or
+                "APPLICATION_NOT_ACCEPTED" or "APPLICATION_FREELANCER_MISMATCH" or
+                "SERVICE_REQUEST_MISMATCH" =>
+                    BadRequest(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Professional);
     }
 
     [HttpGet("{id:guid}/activity")]

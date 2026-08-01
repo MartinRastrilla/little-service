@@ -11,6 +11,7 @@ import 'package:mobile/features/service_requests/presentation/bloc/service_reque
 import 'package:mobile/features/service_requests/presentation/navigation/service_request_applications_navigation.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/edit_service_request/cancel_service_request_dialog.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/activity/service_request_detail_activity_tab.dart';
+import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/professional/service_request_detail_professional_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/service_request_detail_info_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_status_badge.dart';
 
@@ -34,7 +35,7 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -76,12 +77,47 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
             ),
           ],
         ),
-        body: BlocBuilder<ServiceRequestDetailBloc, ServiceRequestDetailState>(
+        body: BlocConsumer<ServiceRequestDetailBloc, ServiceRequestDetailState>(
+          listenWhen: (previous, current) {
+            if (previous is! ServiceRequestDetailLoaded ||
+                current is! ServiceRequestDetailLoaded) {
+              return false;
+            }
+            final hadProfessional =
+                previous.professional?.hasAssignedProfessional == true;
+            final hasProfessional =
+                current.professional?.hasAssignedProfessional == true;
+            return hadProfessional &&
+                !hasProfessional &&
+                !current.isRevokingEngagement;
+          },
+          listener: (context, state) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  content: Text('Contratación cancelada. Podés volver a recibir postulaciones.'),
+                ),
+              );
+            context.read<ServiceRequestDetailBloc>().add(
+              const ServiceRequestDetailEvent.activityRefreshRequested(),
+            );
+          },
           builder: (context, state) {
             return state.when(
               initial: () => const SizedBox.shrink(),
               loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (info, activity, activityStatus, activityErrorMessage) =>
+              loaded: (
+                info,
+                activity,
+                activityStatus,
+                activityErrorMessage,
+                professional,
+                freelancerProfile,
+                professionalStatus,
+                professionalErrorMessage,
+                isRevokingEngagement,
+              ) =>
                   _DetailBody(
                 serviceRequestId: widget.serviceRequestId,
                 info: info,
@@ -116,6 +152,9 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
     );
     context.read<ServiceRequestDetailBloc>().add(
       const ServiceRequestDetailEvent.activityRefreshRequested(),
+    );
+    context.read<ServiceRequestDetailBloc>().add(
+      const ServiceRequestDetailEvent.professionalRefreshRequested(),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -191,9 +230,14 @@ class _DetailBody extends StatelessWidget {
               TabBar(
                 controller: tabController,
                 onTap: (index) {
+                  final bloc = context.read<ServiceRequestDetailBloc>();
                   if (index == 1) {
-                    context.read<ServiceRequestDetailBloc>().add(
+                    bloc.add(
                       const ServiceRequestDetailEvent.activityRequested(),
+                    );
+                  } else if (index == 2) {
+                    bloc.add(
+                      const ServiceRequestDetailEvent.professionalRequested(),
                     );
                   }
                 },
@@ -205,6 +249,10 @@ class _DetailBody extends StatelessWidget {
                   Tab(
                     icon: Icon(Icons.timeline_outlined, size: 20),
                     text: 'Actividad',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.person_outline, size: 20),
+                    text: 'Profesional',
                   ),
                 ],
               ),
@@ -224,6 +272,9 @@ class _DetailBody extends StatelessWidget {
               ServiceRequestDetailActivityTab(
                 serviceRequestId: serviceRequestId,
                 onApplicationsPressed: () => onOpenApplications(),
+              ),
+              ServiceRequestDetailProfessionalTab(
+                serviceRequestId: serviceRequestId,
               ),
             ],
           ),

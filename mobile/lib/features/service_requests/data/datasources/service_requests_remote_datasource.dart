@@ -7,6 +7,7 @@ import 'package:mobile/features/service_requests/data/models/service_request_act
 import 'package:mobile/features/service_requests/data/models/service_request_application_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_detail_model.dart';
 import 'package:mobile/features/service_requests/data/models/service_request_info_model.dart';
+import 'package:mobile/features/service_requests/data/models/service_request_professional_model.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
 import 'package:mobile/features/service_requests/domain/entities/update_service_request_params.dart';
@@ -127,6 +128,48 @@ class ServiceRequestsRemoteDataSource {
   Future<void> cancelServiceRequest(String id) async {
     try {
       await dio.post('/service-requests/$id/cancel');
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestProfessionalModel> getServiceRequestProfessional(
+    String id,
+  ) async {
+    try {
+      final response = await dio.get('/service-requests/$id/professional');
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Formato de respuesta inválido',
+          code: 'INVALID_RESPONSE',
+        );
+      }
+
+      return ServiceRequestProfessionalModel.fromJson(data);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestProfessionalModel> cancelServiceRequestEngagement(
+    String id,
+  ) async {
+    try {
+      final response = await dio.post('/service-requests/$id/cancel-engagement');
+
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Formato de respuesta inválido',
+          code: 'INVALID_RESPONSE',
+        );
+      }
+
+      return ServiceRequestProfessionalModel.fromJson(data);
     } on DioException catch (error) {
       throw _mapDioException(error);
     }

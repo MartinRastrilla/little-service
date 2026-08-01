@@ -29,6 +29,8 @@ import 'package:mobile/features/service_requests/presentation/bloc/service_reque
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_applications/service_request_applications_bloc.dart';
 import 'package:mobile/features/service_requests/domain/usecases/update_service_request_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/cancel_service_request_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/cancel_service_request_engagement_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/get_service_request_professional_usecase.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/create_service_request/create_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/edit_service_request/edit_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
@@ -136,6 +138,8 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton(() => RejectServiceRequestApplicationUseCase(sl()));
   sl.registerLazySingleton(() => UpdateServiceRequestUseCase(sl()));
   sl.registerLazySingleton(() => CancelServiceRequestUseCase(sl()));
+  sl.registerLazySingleton(() => GetServiceRequestProfessionalUseCase(sl()));
+  sl.registerLazySingleton(() => CancelServiceRequestEngagementUseCase(sl()));
 
   sl.registerFactory(
     () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
@@ -149,6 +153,9 @@ Future<void> setupDependencyInjection() async {
     () => ServiceRequestDetailBloc(
       getServiceRequestInfoUseCase: sl(),
       getServiceRequestActivityUseCase: sl(),
+      getServiceRequestProfessionalUseCase: sl(),
+      getPublicFreelancerProfileUseCase: sl(),
+      cancelServiceRequestEngagementUseCase: sl(),
     ),
   );
 

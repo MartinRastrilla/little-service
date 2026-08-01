@@ -38,6 +38,12 @@ public class ServiceRequestRepository : IServiceRequestRepository
         await Task.CompletedTask;
     }
 
+    public Task AddPhotoAsync(ServiceRequestPhoto photo, CancellationToken cancellationToken = default)
+    {
+        _context.Entry(photo).State = EntityState.Added;
+        return Task.CompletedTask;
+    }
+
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var serviceRequest = await GetByIdAsync(id, cancellationToken);

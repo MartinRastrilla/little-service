@@ -16,4 +16,13 @@ sealed class ServiceRequestDetailEvent with _$ServiceRequestDetailEvent {
 
   const factory ServiceRequestDetailEvent.activityRefreshRequested() =
       ServiceRequestDetailActivityRefreshRequested;
+
+  const factory ServiceRequestDetailEvent.professionalRequested() =
+      ServiceRequestDetailProfessionalRequested;
+
+  const factory ServiceRequestDetailEvent.professionalRefreshRequested() =
+      ServiceRequestDetailProfessionalRefreshRequested;
+
+  const factory ServiceRequestDetailEvent.revokeEngagementRequested() =
+      ServiceRequestDetailRevokeEngagementRequested;
 }

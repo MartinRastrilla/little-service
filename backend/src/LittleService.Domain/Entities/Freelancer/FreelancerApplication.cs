@@ -128,6 +128,26 @@ public class FreelancerApplication : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Revokes a previously accepted application when the client cancels the engagement.
+    /// Transitions: Accepted → Rejected
+    /// </summary>
+    public void RevokeAcceptance()
+    {
+        if (Status == FreelancerApplicationStatus.Rejected)
+            return;
+
+        if (Status != FreelancerApplicationStatus.Accepted)
+        {
+            throw new DomainException(
+                "Solo se puede revocar una aplicación aceptada",
+                "APPLICATION_NOT_ACCEPTED");
+        }
+
+        Status = FreelancerApplicationStatus.Rejected;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     // ====================================================================
     // QUERY METHODS - No side effects
     // ====================================================================

@@ -115,10 +115,10 @@ public class UpdateServiceRequestCommandHandler : IRequestHandler<UpdateServiceR
                     cancellationToken);
 
                 savedPhotoPaths.Add(filePath);
-                serviceRequest.AddPhoto(filePath);
+                var addedPhoto = serviceRequest.AddPhoto(filePath);
+                await _unitOfWork.ServiceRequests.AddPhotoAsync(addedPhoto, cancellationToken);
             }
 
-            await _unitOfWork.ServiceRequests.UpdateAsync(serviceRequest, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
         }

@@ -9,6 +9,7 @@ import 'package:mobile/features/service_requests/domain/entities/service_request
 import 'package:mobile/features/service_requests/domain/entities/service_request_detail.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_info.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_professional.dart';
 import 'package:mobile/features/service_requests/domain/entities/update_service_request_params.dart';
 import 'package:mobile/features/service_requests/domain/repositories/service_requests_repository.dart';
 
@@ -137,6 +138,30 @@ class ServiceRequestsRepositoryImpl implements ServiceRequestsRepository {
     try {
       await remote.cancelServiceRequest(serviceRequestId);
       return const Right(null);
+    } catch (error) {
+      return Left(mapExceptionToFailure(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ServiceRequestProfessional>> getServiceRequestProfessional(
+    String serviceRequestId,
+  ) async {
+    try {
+      final model = await remote.getServiceRequestProfessional(serviceRequestId);
+      return Right(model.toEntity());
+    } catch (error) {
+      return Left(mapExceptionToFailure(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ServiceRequestProfessional>> cancelServiceRequestEngagement(
+    String serviceRequestId,
+  ) async {
+    try {
+      final model = await remote.cancelServiceRequestEngagement(serviceRequestId);
+      return Right(model.toEntity());
     } catch (error) {
       return Left(mapExceptionToFailure(error));
     }

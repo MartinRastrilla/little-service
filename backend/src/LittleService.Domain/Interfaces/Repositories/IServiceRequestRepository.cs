@@ -10,6 +10,7 @@ public interface IServiceRequestRepository
     Task<ServiceRequest?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<ServiceRequest> AddAsync(ServiceRequest serviceRequest, CancellationToken cancellationToken = default);
     Task UpdateAsync(ServiceRequest serviceRequest, CancellationToken cancellationToken = default);
+    Task AddPhotoAsync(ServiceRequestPhoto photo, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
     //? Query Methods for relationships

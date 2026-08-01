@@ -56,14 +56,17 @@ extension ServiceRequestDetailEventPatterns on ServiceRequestDetailEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ServiceRequestDetailRequested value)?  requested,TResult Function( ServiceRequestDetailRefreshRequested value)?  refreshRequested,TResult Function( ServiceRequestDetailActivityRequested value)?  activityRequested,TResult Function( ServiceRequestDetailActivityRefreshRequested value)?  activityRefreshRequested,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ServiceRequestDetailRequested value)?  requested,TResult Function( ServiceRequestDetailRefreshRequested value)?  refreshRequested,TResult Function( ServiceRequestDetailActivityRequested value)?  activityRequested,TResult Function( ServiceRequestDetailActivityRefreshRequested value)?  activityRefreshRequested,TResult Function( ServiceRequestDetailProfessionalRequested value)?  professionalRequested,TResult Function( ServiceRequestDetailProfessionalRefreshRequested value)?  professionalRefreshRequested,TResult Function( ServiceRequestDetailRevokeEngagementRequested value)?  revokeEngagementRequested,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ServiceRequestDetailRequested() when requested != null:
 return requested(_that);case ServiceRequestDetailRefreshRequested() when refreshRequested != null:
 return refreshRequested(_that);case ServiceRequestDetailActivityRequested() when activityRequested != null:
 return activityRequested(_that);case ServiceRequestDetailActivityRefreshRequested() when activityRefreshRequested != null:
-return activityRefreshRequested(_that);case _:
+return activityRefreshRequested(_that);case ServiceRequestDetailProfessionalRequested() when professionalRequested != null:
+return professionalRequested(_that);case ServiceRequestDetailProfessionalRefreshRequested() when professionalRefreshRequested != null:
+return professionalRefreshRequested(_that);case ServiceRequestDetailRevokeEngagementRequested() when revokeEngagementRequested != null:
+return revokeEngagementRequested(_that);case _:
   return orElse();
 
 }
@@ -81,14 +84,17 @@ return activityRefreshRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ServiceRequestDetailRequested value)  requested,required TResult Function( ServiceRequestDetailRefreshRequested value)  refreshRequested,required TResult Function( ServiceRequestDetailActivityRequested value)  activityRequested,required TResult Function( ServiceRequestDetailActivityRefreshRequested value)  activityRefreshRequested,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ServiceRequestDetailRequested value)  requested,required TResult Function( ServiceRequestDetailRefreshRequested value)  refreshRequested,required TResult Function( ServiceRequestDetailActivityRequested value)  activityRequested,required TResult Function( ServiceRequestDetailActivityRefreshRequested value)  activityRefreshRequested,required TResult Function( ServiceRequestDetailProfessionalRequested value)  professionalRequested,required TResult Function( ServiceRequestDetailProfessionalRefreshRequested value)  professionalRefreshRequested,required TResult Function( ServiceRequestDetailRevokeEngagementRequested value)  revokeEngagementRequested,}){
 final _that = this;
 switch (_that) {
 case ServiceRequestDetailRequested():
 return requested(_that);case ServiceRequestDetailRefreshRequested():
 return refreshRequested(_that);case ServiceRequestDetailActivityRequested():
 return activityRequested(_that);case ServiceRequestDetailActivityRefreshRequested():
-return activityRefreshRequested(_that);}
+return activityRefreshRequested(_that);case ServiceRequestDetailProfessionalRequested():
+return professionalRequested(_that);case ServiceRequestDetailProfessionalRefreshRequested():
+return professionalRefreshRequested(_that);case ServiceRequestDetailRevokeEngagementRequested():
+return revokeEngagementRequested(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -102,14 +108,17 @@ return activityRefreshRequested(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ServiceRequestDetailRequested value)?  requested,TResult? Function( ServiceRequestDetailRefreshRequested value)?  refreshRequested,TResult? Function( ServiceRequestDetailActivityRequested value)?  activityRequested,TResult? Function( ServiceRequestDetailActivityRefreshRequested value)?  activityRefreshRequested,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ServiceRequestDetailRequested value)?  requested,TResult? Function( ServiceRequestDetailRefreshRequested value)?  refreshRequested,TResult? Function( ServiceRequestDetailActivityRequested value)?  activityRequested,TResult? Function( ServiceRequestDetailActivityRefreshRequested value)?  activityRefreshRequested,TResult? Function( ServiceRequestDetailProfessionalRequested value)?  professionalRequested,TResult? Function( ServiceRequestDetailProfessionalRefreshRequested value)?  professionalRefreshRequested,TResult? Function( ServiceRequestDetailRevokeEngagementRequested value)?  revokeEngagementRequested,}){
 final _that = this;
 switch (_that) {
 case ServiceRequestDetailRequested() when requested != null:
 return requested(_that);case ServiceRequestDetailRefreshRequested() when refreshRequested != null:
 return refreshRequested(_that);case ServiceRequestDetailActivityRequested() when activityRequested != null:
 return activityRequested(_that);case ServiceRequestDetailActivityRefreshRequested() when activityRefreshRequested != null:
-return activityRefreshRequested(_that);case _:
+return activityRefreshRequested(_that);case ServiceRequestDetailProfessionalRequested() when professionalRequested != null:
+return professionalRequested(_that);case ServiceRequestDetailProfessionalRefreshRequested() when professionalRefreshRequested != null:
+return professionalRefreshRequested(_that);case ServiceRequestDetailRevokeEngagementRequested() when revokeEngagementRequested != null:
+return revokeEngagementRequested(_that);case _:
   return null;
 
 }
@@ -126,13 +135,16 @@ return activityRefreshRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String serviceRequestId)?  requested,TResult Function()?  refreshRequested,TResult Function()?  activityRequested,TResult Function()?  activityRefreshRequested,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String serviceRequestId)?  requested,TResult Function()?  refreshRequested,TResult Function()?  activityRequested,TResult Function()?  activityRefreshRequested,TResult Function()?  professionalRequested,TResult Function()?  professionalRefreshRequested,TResult Function()?  revokeEngagementRequested,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ServiceRequestDetailRequested() when requested != null:
 return requested(_that.serviceRequestId);case ServiceRequestDetailRefreshRequested() when refreshRequested != null:
 return refreshRequested();case ServiceRequestDetailActivityRequested() when activityRequested != null:
 return activityRequested();case ServiceRequestDetailActivityRefreshRequested() when activityRefreshRequested != null:
-return activityRefreshRequested();case _:
+return activityRefreshRequested();case ServiceRequestDetailProfessionalRequested() when professionalRequested != null:
+return professionalRequested();case ServiceRequestDetailProfessionalRefreshRequested() when professionalRefreshRequested != null:
+return professionalRefreshRequested();case ServiceRequestDetailRevokeEngagementRequested() when revokeEngagementRequested != null:
+return revokeEngagementRequested();case _:
   return orElse();
 
 }
@@ -150,13 +162,16 @@ return activityRefreshRequested();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String serviceRequestId)  requested,required TResult Function()  refreshRequested,required TResult Function()  activityRequested,required TResult Function()  activityRefreshRequested,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String serviceRequestId)  requested,required TResult Function()  refreshRequested,required TResult Function()  activityRequested,required TResult Function()  activityRefreshRequested,required TResult Function()  professionalRequested,required TResult Function()  professionalRefreshRequested,required TResult Function()  revokeEngagementRequested,}) {final _that = this;
 switch (_that) {
 case ServiceRequestDetailRequested():
 return requested(_that.serviceRequestId);case ServiceRequestDetailRefreshRequested():
 return refreshRequested();case ServiceRequestDetailActivityRequested():
 return activityRequested();case ServiceRequestDetailActivityRefreshRequested():
-return activityRefreshRequested();}
+return activityRefreshRequested();case ServiceRequestDetailProfessionalRequested():
+return professionalRequested();case ServiceRequestDetailProfessionalRefreshRequested():
+return professionalRefreshRequested();case ServiceRequestDetailRevokeEngagementRequested():
+return revokeEngagementRequested();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -170,13 +185,16 @@ return activityRefreshRequested();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String serviceRequestId)?  requested,TResult? Function()?  refreshRequested,TResult? Function()?  activityRequested,TResult? Function()?  activityRefreshRequested,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String serviceRequestId)?  requested,TResult? Function()?  refreshRequested,TResult? Function()?  activityRequested,TResult? Function()?  activityRefreshRequested,TResult? Function()?  professionalRequested,TResult? Function()?  professionalRefreshRequested,TResult? Function()?  revokeEngagementRequested,}) {final _that = this;
 switch (_that) {
 case ServiceRequestDetailRequested() when requested != null:
 return requested(_that.serviceRequestId);case ServiceRequestDetailRefreshRequested() when refreshRequested != null:
 return refreshRequested();case ServiceRequestDetailActivityRequested() when activityRequested != null:
 return activityRequested();case ServiceRequestDetailActivityRefreshRequested() when activityRefreshRequested != null:
-return activityRefreshRequested();case _:
+return activityRefreshRequested();case ServiceRequestDetailProfessionalRequested() when professionalRequested != null:
+return professionalRequested();case ServiceRequestDetailProfessionalRefreshRequested() when professionalRefreshRequested != null:
+return professionalRefreshRequested();case ServiceRequestDetailRevokeEngagementRequested() when revokeEngagementRequested != null:
+return revokeEngagementRequested();case _:
   return null;
 
 }
@@ -338,6 +356,102 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'ServiceRequestDetailEvent.activityRefreshRequested()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ServiceRequestDetailProfessionalRequested implements ServiceRequestDetailEvent {
+  const ServiceRequestDetailProfessionalRequested();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestDetailProfessionalRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ServiceRequestDetailEvent.professionalRequested()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ServiceRequestDetailProfessionalRefreshRequested implements ServiceRequestDetailEvent {
+  const ServiceRequestDetailProfessionalRefreshRequested();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestDetailProfessionalRefreshRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ServiceRequestDetailEvent.professionalRefreshRequested()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ServiceRequestDetailRevokeEngagementRequested implements ServiceRequestDetailEvent {
+  const ServiceRequestDetailRevokeEngagementRequested();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestDetailRevokeEngagementRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ServiceRequestDetailEvent.revokeEngagementRequested()';
 }
 
 

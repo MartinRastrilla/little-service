@@ -253,6 +253,84 @@ public class ServiceRequest : BaseEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Reopens the ServiceRequest so it can receive applications again.
+    /// </summary>
+    public void ReopenForApplications()
+    {
+        if (Status == ServiceRequestStatus.Opened)
+            return;
+
+        if (Status == ServiceRequestStatus.Cancelled)
+        {
+            throw new DomainException(
+                "No se puede reabrir un pedido cancelado",
+                "SERVICE_REQUEST_CANCELLED");
+        }
+
+        if (FreelancerPickedId.HasValue)
+        {
+            throw new DomainException(
+                "No se puede reabrir un pedido con un profesional asignado",
+                "FREELANCER_ALREADY_ASSIGNED");
+        }
+
+        Status = ServiceRequestStatus.Opened;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Revokes the assigned professional and returns the service request to the applications phase.
+    /// </summary>
+    public void RevokeEngagement(Contract? contract, FreelancerApplication acceptedApplication)
+    {
+        if (Status == ServiceRequestStatus.Cancelled)
+        {
+            throw new DomainException(
+                "No podés modificar la contratación de un pedido cancelado.",
+                "SERVICE_REQUEST_CANCELLED");
+        }
+
+        if (!FreelancerPickedId.HasValue)
+        {
+            throw new DomainException(
+                "Este pedido no tiene un profesional asignado.",
+                "NO_ASSIGNED_PROFESSIONAL");
+        }
+
+        if (contract != null && !contract.IsDraft() && !contract.IsCancelled())
+        {
+            throw new DomainException(
+                "Tenés un contrato en curso. Para cambiar de profesional, primero cancelá el contrato vigente.",
+                "ACTIVE_CONTRACT_BLOCKS_REVOKE_ENGAGEMENT");
+        }
+
+        if (!acceptedApplication.IsAccepted())
+        {
+            throw new DomainException(
+                "La postulación del profesional no está aceptada",
+                "APPLICATION_NOT_ACCEPTED");
+        }
+
+        if (acceptedApplication.FreelancerId != FreelancerPickedId.Value)
+        {
+            throw new DomainException(
+                "La postulación no corresponde al profesional asignado",
+                "APPLICATION_FREELANCER_MISMATCH");
+        }
+
+        if (acceptedApplication.ServiceRequestId != Id)
+        {
+            throw new DomainException(
+                "La postulación no corresponde a este pedido",
+                "SERVICE_REQUEST_MISMATCH");
+        }
+
+        acceptedApplication.RevokeAcceptance();
+        FreelancerPickedId = null;
+        ReopenForApplications();
+    }
+
     // ====================================================================
     // QUERY METHODS - Without side effects
     // ====================================================================
@@ -351,6 +429,42 @@ public class ServiceRequest : BaseEntity
         if (contract != null && !contract.IsCancelled() && !contract.IsCompleted())
         {
             return "Tenés un contrato en curso con este pedido. Para cancelarlo, primero cancelá el contrato vigente.";
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Indicates if the client can revoke the assigned professional.
+    /// </summary>
+    public bool CanRevokeEngagement(Contract? contract)
+    {
+        if (Status == ServiceRequestStatus.Cancelled)
+            return false;
+
+        if (!FreelancerPickedId.HasValue)
+            return false;
+
+        if (contract != null && !contract.IsDraft() && !contract.IsCancelled())
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Returns a user-friendly reason when revoking engagement is blocked, or null if allowed.
+    /// </summary>
+    public string? GetRevokeEngagementBlockedReason(Contract? contract)
+    {
+        if (Status == ServiceRequestStatus.Cancelled)
+            return "No podés modificar la contratación de un pedido cancelado.";
+
+        if (!FreelancerPickedId.HasValue)
+            return "Este pedido no tiene un profesional asignado.";
+
+        if (contract != null && !contract.IsDraft() && !contract.IsCancelled())
+        {
+            return "Tenés un contrato en curso. Para cambiar de profesional, primero cancelá el contrato vigente.";
         }
 
         return null;
