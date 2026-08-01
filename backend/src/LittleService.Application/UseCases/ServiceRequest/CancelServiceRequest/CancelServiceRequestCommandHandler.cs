@@ -25,7 +25,9 @@ public class CancelServiceRequestCommandHandler : IRequestHandler<CancelServiceR
         if (user.Client == null)
             return Result<CancelServiceRequestResult>.Failure("Perfil de cliente no encontrado", "CLIENT_NOT_FOUND");
 
-        var serviceRequest = await _unitOfWork.ServiceRequests.GetByIdAsync(command.ServiceRequestId, cancellationToken);
+        var serviceRequest = await _unitOfWork.ServiceRequests.GetByIdWithApplicationsAsync(
+            command.ServiceRequestId,
+            cancellationToken);
         if (serviceRequest == null)
             return Result<CancelServiceRequestResult>.Failure("Solicitud de servicio no encontrada", "SERVICE_REQUEST_NOT_FOUND");
 
@@ -34,7 +36,7 @@ public class CancelServiceRequestCommandHandler : IRequestHandler<CancelServiceR
 
         try
         {
-            serviceRequest.Cancel();
+            serviceRequest.Cancel(serviceRequest.Contract, serviceRequest.FreelancerApplications);
         }
         catch (DomainException ex)
         {

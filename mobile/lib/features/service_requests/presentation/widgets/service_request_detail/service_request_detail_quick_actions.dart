@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 
 class ServiceRequestDetailQuickActions extends StatelessWidget {
+  final String serviceRequestId;
+  final bool isEditable;
+  final String? editBlockedReason;
   final int messagesCount;
   final int applicationsCount;
   final VoidCallback? onApplicationsPressed;
+  final VoidCallback? onEditPressed;
 
   const ServiceRequestDetailQuickActions({
     super.key,
+    required this.serviceRequestId,
+    required this.isEditable,
+    this.editBlockedReason,
     required this.messagesCount,
     required this.applicationsCount,
     this.onApplicationsPressed,
+    this.onEditPressed,
   });
 
   @override
@@ -38,8 +46,7 @@ class ServiceRequestDetailQuickActions extends StatelessWidget {
                 child: _QuickActionButton(
                   icon: Icons.edit_outlined,
                   label: 'Editar\npedido',
-                  // TODO(iter-2): navigate to edit service request flow.
-                  onPressed: null,
+                  onPressed: onEditPressed,
                 ),
               ),
               const SizedBox(width: 12),

@@ -11,6 +11,7 @@ import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mobile/features/auth/presentation/pages/login_page.dart';
 import 'package:mobile/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/create_service_request_page.dart';
+import 'package:mobile/features/service_requests/presentation/pages/edit_service_request_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/service_request_detail_page.dart';
 import 'package:mobile/features/service_requests/presentation/pages/service_request_applications_page.dart';
 import 'package:mobile/features/freelancer_service_request_detail/presentation/pages/freelancer_service_request_detail_page.dart';
@@ -87,6 +88,12 @@ class AppRouter {
           GoRoute(
             path: '/service-requests/:id/applications',
             builder: (context, state) => ServiceRequestApplicationsPage(
+              serviceRequestId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
+            path: '/service-requests/:id/edit',
+            builder: (context, state) => EditServiceRequestPage(
               serviceRequestId: state.pathParameters['id']!,
             ),
           ),

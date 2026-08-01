@@ -12,6 +12,9 @@ public class ServiceRequestInfoDto
     public decimal? Price { get; set; }
     public string PriceMode { get; set; } = string.Empty;
     public bool IsEditable { get; set; }
+    public bool CanCancel { get; set; }
+    public string? CancelBlockedReason { get; set; }
+    public string? EditBlockedReason { get; set; }
     public int MessagesCount { get; set; }
     public int ApplicationsCount { get; set; }
     public IList<ServiceRequestPhotoDto> Photos { get; set; } = new List<ServiceRequestPhotoDto>();

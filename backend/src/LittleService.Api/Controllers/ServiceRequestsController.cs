@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using LittleService.Api.Models;
 using LittleService.Application.Common;
 using LittleService.Application.UseCases.ServiceRequest.AcceptApplication;
@@ -248,25 +249,75 @@ public class ServiceRequestsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateServiceRequestRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, [FromForm] UpdateServiceRequestFormDto form, CancellationToken cancellationToken)
     {
         var userId = GetUserId();
         if (userId == null) return Unauthorized();
 
-        var command = new UpdateServiceRequestCommand { UserId = userId.Value, ServiceRequestId = id, Request = request };
+        var deletedPhotoIds = ParseDeletedPhotoIds(form.DeletedPhotoIds);
+        var photos = new List<ServiceRequestPhotoUploadInput>();
+        if (form.Photos != null)
+        {
+            foreach (var photo in form.Photos)
+            {
+                photos.Add(new ServiceRequestPhotoUploadInput
+                {
+                    Content = photo.OpenReadStream(),
+                    FileName = photo.FileName,
+                    ContentType = photo.ContentType,
+                    Length = photo.Length
+                });
+            }
+        }
+
+        var command = new UpdateServiceRequestCommand
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id,
+            Request = new UpdateServiceRequestRequest
+            {
+                Title = form.Title,
+                Description = form.Description,
+                Location = form.Location,
+                Price = form.Price,
+                ClearPrice = form.ClearPrice,
+                DeletedPhotoIds = deletedPhotoIds
+            },
+            NewPhotos = photos
+        };
+
         var result = await _mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)
         {
             return result.ErrorCode switch
             {
-                "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" => NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" or "PHOTO_NOT_FOUND" => NotFound(new { message = result.Error, code = result.ErrorCode }),
                 "FORBIDDEN" => Forbid(),
                 _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
             };
         }
 
         return Ok(result.Value!.ServiceRequest);
+    }
+
+    private static IList<Guid> ParseDeletedPhotoIds(string? deletedPhotoIdsJson)
+    {
+        if (string.IsNullOrWhiteSpace(deletedPhotoIdsJson))
+            return new List<Guid>();
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<Guid>>(deletedPhotoIdsJson) ?? new List<Guid>();
+        }
+        catch (JsonException)
+        {
+            return deletedPhotoIdsJson
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(value => Guid.TryParse(value, out _))
+                .Select(Guid.Parse)
+                .ToList();
+        }
     }
 
     [HttpPost("{id:guid}/cancel")]
@@ -284,6 +335,7 @@ public class ServiceRequestsController : ControllerBase
             {
                 "USER_NOT_FOUND" or "CLIENT_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" => NotFound(new { message = result.Error, code = result.ErrorCode }),
                 "FORBIDDEN" => Forbid(),
+                "ACTIVE_CONTRACT_BLOCKS_CANCEL" or "SERVICE_REQUEST_NOT_OPENED" => BadRequest(new { message = result.Error, code = result.ErrorCode }),
                 _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
             };
         }

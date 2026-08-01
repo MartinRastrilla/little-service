@@ -1,26 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/app_colors.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_info.dart';
+import 'package:mobile/features/service_requests/presentation/widgets/edit_service_request/cancel_service_request_dialog.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/service_request_detail_photo_gallery.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/service_request_detail_quick_actions.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ServiceRequestDetailInfoTab extends StatelessWidget {
+  final String serviceRequestId;
   final ServiceRequestInfo info;
   final VoidCallback? onApplicationsPressed;
+  final Future<void> Function()? onEditPressed;
 
   const ServiceRequestDetailInfoTab({
     super.key,
+    required this.serviceRequestId,
     required this.info,
     this.onApplicationsPressed,
+    this.onEditPressed,
   });
 
   Future<void> _share(BuildContext context) async {
     final message =
         '${info.title}\n${info.location.trim()}\nPedido #${info.id}';
     await SharePlus.instance.share(ShareParams(text: message));
+  }
+
+  Future<void> _handleEdit(BuildContext context) async {
+    if (onEditPressed != null) {
+      await onEditPressed!();
+      return;
+    }
+
+    if (!info.isEditable) {
+      await showEditBlockedDialog(
+        context,
+        message: info.editBlockedReason ??
+            'Este pedido ya no se puede modificar',
+      );
+      return;
+    }
+
+    await context.push<bool>(
+      '/service-requests/$serviceRequestId/edit',
+    );
   }
 
   @override
@@ -117,9 +143,13 @@ class ServiceRequestDetailInfoTab extends StatelessWidget {
           _ExpandableDescription(text: info.description),
           const SizedBox(height: 24),
           ServiceRequestDetailQuickActions(
+            serviceRequestId: serviceRequestId,
+            isEditable: info.isEditable,
+            editBlockedReason: info.editBlockedReason,
             messagesCount: info.messagesCount,
             applicationsCount: info.applicationsCount,
             onApplicationsPressed: onApplicationsPressed,
+            onEditPressed: () => _handleEdit(context),
           ),
         ],
       ),

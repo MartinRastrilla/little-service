@@ -50,6 +50,25 @@ public static class ServiceRequestPhotoValidator
 
         return Result.Success();
     }
+
+    public static Result ValidatePhotoCount(int existingCount, int deletedCount, int newCount)
+    {
+        if (deletedCount < 0 || newCount < 0)
+            return Result.Failure("Cantidad de fotos inválida", "INVALID_PHOTO_COUNT");
+
+        if (deletedCount > existingCount)
+            return Result.Failure("Una o más fotos a eliminar no existen", "PHOTO_NOT_FOUND");
+
+        var finalCount = existingCount - deletedCount + newCount;
+        if (finalCount > MaxPhotos)
+        {
+            return Result.Failure(
+                $"Se permiten como máximo {MaxPhotos} fotos",
+                "TOO_MANY_PHOTOS");
+        }
+
+        return Result.Success();
+    }
 }
 
 public class ServiceRequestPhotoUploadInput

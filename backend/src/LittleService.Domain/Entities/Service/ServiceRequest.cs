@@ -122,6 +122,49 @@ public class ServiceRequest : BaseEntity
     }
 
     /// <summary>
+    /// Clears the price so the service request uses "price to be agreed".
+    /// </summary>
+    public void ClearPrice()
+    {
+        EnsureIsEditable();
+        Price = null;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Removes a photo from the service request.
+    /// </summary>
+    public ServiceRequestPhoto RemovePhoto(Guid photoId)
+    {
+        EnsureIsEditable();
+
+        var photo = Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo == null)
+        {
+            throw new DomainException(
+                "La foto no pertenece a este pedido",
+                "PHOTO_NOT_FOUND");
+        }
+
+        Photos.Remove(photo);
+        UpdatedAt = DateTime.UtcNow;
+        return photo;
+    }
+
+    /// <summary>
+    /// Adds a photo to the service request.
+    /// </summary>
+    public ServiceRequestPhoto AddPhoto(string filePath)
+    {
+        EnsureIsEditable();
+
+        var photo = ServiceRequestPhoto.Create(Id, filePath);
+        Photos.Add(photo);
+        UpdatedAt = DateTime.UtcNow;
+        return photo;
+    }
+
+    /// <summary>
     /// Assigns a Freelancer to the ServiceRequest.
     /// Can be assigned if it is Opened and does not have a freelancer assigned.
     /// When assigning a freelancer, the request stops accepting applications.
@@ -147,22 +190,33 @@ public class ServiceRequest : BaseEntity
     }
 
     /// <summary>
-    /// Cancels the ServiceRequest.
-    /// Can be cancelled if it is in state Opened.
-    /// Once cancelled, it cannot be reopened or modified.
+    /// Cancels the ServiceRequest when it is Opened and there is no active contract.
+    /// Rejects all pending freelancer applications.
     /// </summary>
-    public void Cancel()
+    public void Cancel(Contract? contract, IEnumerable<FreelancerApplication> applications)
     {
         if (Status == ServiceRequestStatus.Cancelled)
         {
-            return; // Idempotent: if it is already cancelled, do nothing
+            return;
         }
 
         if (Status != ServiceRequestStatus.Opened)
         {
             throw new DomainException(
-                "Solo se puede cancelar un ServiceRequest abierto",
+                "Solo se puede cancelar un pedido abierto",
                 "SERVICE_REQUEST_NOT_OPENED");
+        }
+
+        if (contract != null && !contract.IsCancelled() && !contract.IsCompleted())
+        {
+            throw new DomainException(
+                "Tenés un contrato en curso con este pedido. Para cancelarlo, primero cancelá el contrato vigente.",
+                "ACTIVE_CONTRACT_BLOCKS_CANCEL");
+        }
+
+        foreach (var application in applications.Where(a => a.IsPending()))
+        {
+            application.Reject();
         }
 
         Status = ServiceRequestStatus.Cancelled;
@@ -267,6 +321,57 @@ public class ServiceRequest : BaseEntity
     public bool HasContract()
     {
         return Contract != null;
+    }
+
+    /// <summary>
+    /// Indicates if the client can cancel this service request.
+    /// </summary>
+    public bool CanBeCancelled(Contract? contract)
+    {
+        if (Status != ServiceRequestStatus.Opened)
+            return false;
+
+        if (contract != null && !contract.IsCancelled() && !contract.IsCompleted())
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Returns a user-friendly reason when cancellation is blocked, or null if allowed.
+    /// </summary>
+    public string? GetCancelBlockedReason(Contract? contract)
+    {
+        if (Status == ServiceRequestStatus.Cancelled)
+            return null;
+
+        if (Status != ServiceRequestStatus.Opened)
+            return "Solo podés cancelar pedidos que siguen abiertos.";
+
+        if (contract != null && !contract.IsCancelled() && !contract.IsCompleted())
+        {
+            return "Tenés un contrato en curso con este pedido. Para cancelarlo, primero cancelá el contrato vigente.";
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Returns a user-friendly reason when editing is blocked, or null if editable.
+    /// </summary>
+    public string? GetEditBlockedReason()
+    {
+        if (IsEditable())
+            return null;
+
+        return Status switch
+        {
+            ServiceRequestStatus.Closed =>
+                "No podés editar un pedido que ya tiene un profesional asignado.",
+            ServiceRequestStatus.Cancelled =>
+                "Este pedido fue cancelado y ya no se puede modificar.",
+            _ => "Este pedido ya no se puede modificar.",
+        };
     }
 
     // ====================================================================

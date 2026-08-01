@@ -9,6 +9,7 @@ import 'package:mobile/features/service_requests/presentation/bloc/service_reque
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_event.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_state.dart';
 import 'package:mobile/features/service_requests/presentation/navigation/service_request_applications_navigation.dart';
+import 'package:mobile/features/service_requests/presentation/widgets/edit_service_request/cancel_service_request_dialog.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/activity/service_request_detail_activity_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_detail/service_request_detail_info_tab.dart';
 import 'package:mobile/features/service_requests/presentation/widgets/service_request_status_badge.dart';
@@ -86,6 +87,7 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
                 info: info,
                 tabController: _tabController,
                 onOpenApplications: () => _openApplications(context),
+                onEditPressed: () => _openEdit(context),
               ),
               failure: (message) => _FailureView(
                 message: message,
@@ -120,6 +122,31 @@ class _ServiceRequestDetailPageState extends State<ServiceRequestDetailPage>
       const SnackBar(content: Text('Profesional elegido con éxito')),
     );
   }
+
+  Future<void> _openEdit(BuildContext context) async {
+    final state = context.read<ServiceRequestDetailBloc>().state;
+    final info = state.mapOrNull(loaded: (value) => value.info);
+    if (info == null) return;
+
+    if (!info.isEditable) {
+      await showEditBlockedDialog(
+        context,
+        message: info.editBlockedReason ??
+            'Este pedido ya no se puede modificar',
+      );
+      return;
+    }
+
+    final updated = await context.push<bool>(
+      '/service-requests/${widget.serviceRequestId}/edit',
+    );
+
+    if (updated != true || !context.mounted) return;
+
+    context.read<ServiceRequestDetailBloc>().add(
+      const ServiceRequestDetailEvent.refreshRequested(),
+    );
+  }
 }
 
 class _DetailBody extends StatelessWidget {
@@ -127,12 +154,14 @@ class _DetailBody extends StatelessWidget {
   final ServiceRequestInfo info;
   final TabController tabController;
   final Future<void> Function() onOpenApplications;
+  final Future<void> Function() onEditPressed;
 
   const _DetailBody({
     required this.serviceRequestId,
     required this.info,
     required this.tabController,
     required this.onOpenApplications,
+    required this.onEditPressed,
   });
 
   @override
@@ -187,8 +216,10 @@ class _DetailBody extends StatelessWidget {
             controller: tabController,
             children: [
               ServiceRequestDetailInfoTab(
+                serviceRequestId: serviceRequestId,
                 info: info,
                 onApplicationsPressed: () => onOpenApplications(),
+                onEditPressed: onEditPressed,
               ),
               ServiceRequestDetailActivityTab(
                 serviceRequestId: serviceRequestId,

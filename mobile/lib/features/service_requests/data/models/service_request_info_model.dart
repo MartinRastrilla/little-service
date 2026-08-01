@@ -31,6 +31,9 @@ abstract class ServiceRequestInfoModel with _$ServiceRequestInfoModel {
     double? price,
     required String priceMode,
     @Default(false) bool isEditable,
+    @Default(false) bool canCancel,
+    String? cancelBlockedReason,
+    String? editBlockedReason,
     @Default(0) int messagesCount,
     @Default(0) int applicationsCount,
     @Default(<ServiceRequestInfoPhotoModel>[])
@@ -53,6 +56,9 @@ abstract class ServiceRequestInfoModel with _$ServiceRequestInfoModel {
     price: price,
     priceMode: ServiceRequestPriceMode.fromApi(priceMode),
     isEditable: isEditable,
+    canCancel: canCancel,
+    cancelBlockedReason: cancelBlockedReason,
+    editBlockedReason: editBlockedReason,
     messagesCount: messagesCount,
     applicationsCount: applicationsCount,
     photos: photos

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:mobile/core/error/exceptions.dart';
 import 'package:mobile/features/service_requests/data/models/paged_service_requests_result_model.dart';
@@ -7,6 +9,7 @@ import 'package:mobile/features/service_requests/data/models/service_request_det
 import 'package:mobile/features/service_requests/data/models/service_request_info_model.dart';
 import 'package:mobile/features/service_requests/domain/entities/create_service_request_params.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
+import 'package:mobile/features/service_requests/domain/entities/update_service_request_params.dart';
 
 class ServiceRequestsRemoteDataSource {
   final Dio dio;
@@ -77,6 +80,53 @@ class ServiceRequestsRemoteDataSource {
       return ServiceRequestDetailModel.fromJson(
         response.data as Map<String, dynamic>,
       );
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<ServiceRequestDetailModel> updateServiceRequest(
+    UpdateServiceRequestParams params,
+  ) async {
+    try {
+      final formData = FormData.fromMap({
+        'title': params.title,
+        'description': params.description,
+        'location': params.location,
+        'clearPrice': params.clearPrice.toString(),
+        if (params.price != null) 'price': params.price!.round().toString(),
+        if (params.deletedPhotoIds.isNotEmpty)
+          'deletedPhotoIds': jsonEncode(params.deletedPhotoIds),
+      });
+
+      for (final photo in params.newPhotos) {
+        formData.files.add(
+          MapEntry(
+            'photos',
+            await MultipartFile.fromFile(
+              photo.path,
+              filename: photo.fileName,
+            ),
+          ),
+        );
+      }
+
+      final response = await dio.put(
+        '/service-requests/${params.serviceRequestId}',
+        data: formData,
+      );
+
+      return ServiceRequestDetailModel.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<void> cancelServiceRequest(String id) async {
+    try {
+      await dio.post('/service-requests/$id/cancel');
     } on DioException catch (error) {
       throw _mapDioException(error);
     }

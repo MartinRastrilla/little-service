@@ -31,6 +31,9 @@ class ServiceRequestInfo {
   final double? price;
   final ServiceRequestPriceMode priceMode;
   final bool isEditable;
+  final bool canCancel;
+  final String? cancelBlockedReason;
+  final String? editBlockedReason;
   final int messagesCount;
   final int applicationsCount;
   final List<ServiceRequestInfoPhoto> photos;
@@ -47,6 +50,9 @@ class ServiceRequestInfo {
     required this.price,
     required this.priceMode,
     required this.isEditable,
+    required this.canCancel,
+    required this.cancelBlockedReason,
+    required this.editBlockedReason,
     required this.messagesCount,
     required this.applicationsCount,
     required this.photos,

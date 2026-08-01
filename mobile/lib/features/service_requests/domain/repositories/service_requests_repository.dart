@@ -7,6 +7,7 @@ import 'package:mobile/features/service_requests/domain/entities/service_request
 import 'package:mobile/features/service_requests/domain/entities/service_request_detail.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_info.dart';
 import 'package:mobile/features/service_requests/domain/entities/service_request_filter_option.dart';
+import 'package:mobile/features/service_requests/domain/entities/update_service_request_params.dart';
 
 abstract class ServiceRequestsRepository {
   Future<Either<Failure, PagedServiceRequestsResult>> getMyServiceRequests({
@@ -42,4 +43,10 @@ abstract class ServiceRequestsRepository {
     required String serviceRequestId,
     required String applicationId,
   });
+
+  Future<Either<Failure, ServiceRequestDetail>> updateServiceRequest(
+    UpdateServiceRequestParams params,
+  );
+
+  Future<Either<Failure, void>> cancelServiceRequest(String serviceRequestId);
 }

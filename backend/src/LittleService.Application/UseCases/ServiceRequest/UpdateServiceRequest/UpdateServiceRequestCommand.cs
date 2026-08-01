@@ -8,4 +8,5 @@ public class UpdateServiceRequestCommand : IRequest<Result<UpdateServiceRequestR
     public Guid UserId { get; set; }
     public Guid ServiceRequestId { get; set; }
     public UpdateServiceRequestRequest Request { get; set; } = null!;
+    public IList<ServiceRequestPhotoUploadInput> NewPhotos { get; set; } = new List<ServiceRequestPhotoUploadInput>();
 }

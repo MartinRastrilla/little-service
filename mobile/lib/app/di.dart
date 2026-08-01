@@ -27,7 +27,10 @@ import 'package:mobile/features/service_requests/domain/usecases/reject_service_
 import 'package:mobile/features/service_requests/domain/usecases/get_my_service_requests_usecase.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_detail/service_request_detail_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/service_request_applications/service_request_applications_bloc.dart';
+import 'package:mobile/features/service_requests/domain/usecases/update_service_request_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/cancel_service_request_usecase.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/create_service_request/create_service_request_bloc.dart';
+import 'package:mobile/features/service_requests/presentation/bloc/edit_service_request/edit_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
 import 'package:mobile/features/freelancer_home/data/datasources/open_service_requests_remote_datasource.dart';
 import 'package:mobile/features/freelancer_home/data/repositories/freelancer_home_repository_impl.dart';
@@ -131,6 +134,8 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton(() => GetServiceRequestApplicationsUseCase(sl()));
   sl.registerLazySingleton(() => AcceptServiceRequestApplicationUseCase(sl()));
   sl.registerLazySingleton(() => RejectServiceRequestApplicationUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateServiceRequestUseCase(sl()));
+  sl.registerLazySingleton(() => CancelServiceRequestUseCase(sl()));
 
   sl.registerFactory(
     () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
@@ -152,6 +157,14 @@ Future<void> setupDependencyInjection() async {
       getServiceRequestApplicationsUseCase: sl(),
       acceptServiceRequestApplicationUseCase: sl(),
       rejectServiceRequestApplicationUseCase: sl(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => EditServiceRequestBloc(
+      getServiceRequestInfoUseCase: sl(),
+      updateServiceRequestUseCase: sl(),
+      cancelServiceRequestUseCase: sl(),
     ),
   );
 

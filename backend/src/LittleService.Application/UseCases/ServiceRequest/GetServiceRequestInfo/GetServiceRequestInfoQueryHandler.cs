@@ -74,6 +74,9 @@ public class GetServiceRequestInfoQueryHandler : IRequestHandler<GetServiceReque
             Price = serviceRequest.Price,
             PriceMode = serviceRequest.Price.HasValue ? "Estimated" : "ToBeAgreed",
             IsEditable = serviceRequest.IsEditable(),
+            CanCancel = serviceRequest.CanBeCancelled(serviceRequest.Contract),
+            CancelBlockedReason = serviceRequest.GetCancelBlockedReason(serviceRequest.Contract),
+            EditBlockedReason = serviceRequest.GetEditBlockedReason(),
             MessagesCount = messagesCount,
             ApplicationsCount = applicationsCount,
             Photos = serviceRequest.Photos.Select(p => new ServiceRequestPhotoDto

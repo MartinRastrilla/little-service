@@ -1,11 +1,12 @@
-namespace LittleService.Application.UseCases.ServiceRequest.UpdateServiceRequest;
+namespace LittleService.Api.Models;
 
-public class UpdateServiceRequestRequest
+public class UpdateServiceRequestFormDto
 {
     public string? Title { get; set; }
     public string? Description { get; set; }
     public string? Location { get; set; }
     public decimal? Price { get; set; }
     public bool ClearPrice { get; set; }
-    public IList<Guid> DeletedPhotoIds { get; set; } = new List<Guid>();
+    public string? DeletedPhotoIds { get; set; }
+    public IList<IFormFile>? Photos { get; set; }
 }

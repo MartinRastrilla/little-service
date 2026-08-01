@@ -282,7 +282,7 @@ as String,
 /// @nodoc
 mixin _$ServiceRequestInfoModel {
 
-@JsonKey(fromJson: stringFromJson) String get id; String get title; String get description; String get location; String get status; String get displayStatus; String? get contractStatus; double? get price; String get priceMode; bool get isEditable; int get messagesCount; int get applicationsCount; List<ServiceRequestInfoPhotoModel> get photos;@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime get createdAt;
+@JsonKey(fromJson: stringFromJson) String get id; String get title; String get description; String get location; String get status; String get displayStatus; String? get contractStatus; double? get price; String get priceMode; bool get isEditable; bool get canCancel; String? get cancelBlockedReason; String? get editBlockedReason; int get messagesCount; int get applicationsCount; List<ServiceRequestInfoPhotoModel> get photos;@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime get createdAt;
 /// Create a copy of ServiceRequestInfoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -295,16 +295,16 @@ $ServiceRequestInfoModelCopyWith<ServiceRequestInfoModel> get copyWith => _$Serv
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.status, status) || other.status == status)&&(identical(other.displayStatus, displayStatus) || other.displayStatus == displayStatus)&&(identical(other.contractStatus, contractStatus) || other.contractStatus == contractStatus)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.isEditable, isEditable) || other.isEditable == isEditable)&&(identical(other.messagesCount, messagesCount) || other.messagesCount == messagesCount)&&(identical(other.applicationsCount, applicationsCount) || other.applicationsCount == applicationsCount)&&const DeepCollectionEquality().equals(other.photos, photos)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.status, status) || other.status == status)&&(identical(other.displayStatus, displayStatus) || other.displayStatus == displayStatus)&&(identical(other.contractStatus, contractStatus) || other.contractStatus == contractStatus)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.isEditable, isEditable) || other.isEditable == isEditable)&&(identical(other.canCancel, canCancel) || other.canCancel == canCancel)&&(identical(other.cancelBlockedReason, cancelBlockedReason) || other.cancelBlockedReason == cancelBlockedReason)&&(identical(other.editBlockedReason, editBlockedReason) || other.editBlockedReason == editBlockedReason)&&(identical(other.messagesCount, messagesCount) || other.messagesCount == messagesCount)&&(identical(other.applicationsCount, applicationsCount) || other.applicationsCount == applicationsCount)&&const DeepCollectionEquality().equals(other.photos, photos)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,location,status,displayStatus,contractStatus,price,priceMode,isEditable,messagesCount,applicationsCount,const DeepCollectionEquality().hash(photos),createdAt);
+int get hashCode => Object.hash(runtimeType,id,title,description,location,status,displayStatus,contractStatus,price,priceMode,isEditable,canCancel,cancelBlockedReason,editBlockedReason,messagesCount,applicationsCount,const DeepCollectionEquality().hash(photos),createdAt);
 
 @override
 String toString() {
-  return 'ServiceRequestInfoModel(id: $id, title: $title, description: $description, location: $location, status: $status, displayStatus: $displayStatus, contractStatus: $contractStatus, price: $price, priceMode: $priceMode, isEditable: $isEditable, messagesCount: $messagesCount, applicationsCount: $applicationsCount, photos: $photos, createdAt: $createdAt)';
+  return 'ServiceRequestInfoModel(id: $id, title: $title, description: $description, location: $location, status: $status, displayStatus: $displayStatus, contractStatus: $contractStatus, price: $price, priceMode: $priceMode, isEditable: $isEditable, canCancel: $canCancel, cancelBlockedReason: $cancelBlockedReason, editBlockedReason: $editBlockedReason, messagesCount: $messagesCount, applicationsCount: $applicationsCount, photos: $photos, createdAt: $createdAt)';
 }
 
 
@@ -315,7 +315,7 @@ abstract mixin class $ServiceRequestInfoModelCopyWith<$Res>  {
   factory $ServiceRequestInfoModelCopyWith(ServiceRequestInfoModel value, $Res Function(ServiceRequestInfoModel) _then) = _$ServiceRequestInfoModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: stringFromJson) String id, String title, String description, String location, String status, String displayStatus, String? contractStatus, double? price, String priceMode, bool isEditable, int messagesCount, int applicationsCount, List<ServiceRequestInfoPhotoModel> photos,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
+@JsonKey(fromJson: stringFromJson) String id, String title, String description, String location, String status, String displayStatus, String? contractStatus, double? price, String priceMode, bool isEditable, bool canCancel, String? cancelBlockedReason, String? editBlockedReason, int messagesCount, int applicationsCount, List<ServiceRequestInfoPhotoModel> photos,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
 });
 
 
@@ -332,7 +332,7 @@ class _$ServiceRequestInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? location = null,Object? status = null,Object? displayStatus = null,Object? contractStatus = freezed,Object? price = freezed,Object? priceMode = null,Object? isEditable = null,Object? messagesCount = null,Object? applicationsCount = null,Object? photos = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? location = null,Object? status = null,Object? displayStatus = null,Object? contractStatus = freezed,Object? price = freezed,Object? priceMode = null,Object? isEditable = null,Object? canCancel = null,Object? cancelBlockedReason = freezed,Object? editBlockedReason = freezed,Object? messagesCount = null,Object? applicationsCount = null,Object? photos = null,Object? createdAt = null,}) {
   return _then(ServiceRequestInfoModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -344,7 +344,10 @@ as String,contractStatus: freezed == contractStatus ? _self.contractStatus : con
 as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double?,priceMode: null == priceMode ? _self.priceMode : priceMode // ignore: cast_nullable_to_non_nullable
 as String,isEditable: null == isEditable ? _self.isEditable : isEditable // ignore: cast_nullable_to_non_nullable
-as bool,messagesCount: null == messagesCount ? _self.messagesCount : messagesCount // ignore: cast_nullable_to_non_nullable
+as bool,canCancel: null == canCancel ? _self.canCancel : canCancel // ignore: cast_nullable_to_non_nullable
+as bool,cancelBlockedReason: freezed == cancelBlockedReason ? _self.cancelBlockedReason : cancelBlockedReason // ignore: cast_nullable_to_non_nullable
+as String?,editBlockedReason: freezed == editBlockedReason ? _self.editBlockedReason : editBlockedReason // ignore: cast_nullable_to_non_nullable
+as String?,messagesCount: null == messagesCount ? _self.messagesCount : messagesCount // ignore: cast_nullable_to_non_nullable
 as int,applicationsCount: null == applicationsCount ? _self.applicationsCount : applicationsCount // ignore: cast_nullable_to_non_nullable
 as int,photos: null == photos ? _self.photos : photos // ignore: cast_nullable_to_non_nullable
 as List<ServiceRequestInfoPhotoModel>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -433,10 +436,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id,  String title,  String description,  String location,  String status,  String displayStatus,  String? contractStatus,  double? price,  String priceMode,  bool isEditable,  int messagesCount,  int applicationsCount,  List<ServiceRequestInfoPhotoModel> photos, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id,  String title,  String description,  String location,  String status,  String displayStatus,  String? contractStatus,  double? price,  String priceMode,  bool isEditable,  bool canCancel,  String? cancelBlockedReason,  String? editBlockedReason,  int messagesCount,  int applicationsCount,  List<ServiceRequestInfoPhotoModel> photos, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ServiceRequestInfoModel() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.location,_that.status,_that.displayStatus,_that.contractStatus,_that.price,_that.priceMode,_that.isEditable,_that.messagesCount,_that.applicationsCount,_that.photos,_that.createdAt);case _:
+return $default(_that.id,_that.title,_that.description,_that.location,_that.status,_that.displayStatus,_that.contractStatus,_that.price,_that.priceMode,_that.isEditable,_that.canCancel,_that.cancelBlockedReason,_that.editBlockedReason,_that.messagesCount,_that.applicationsCount,_that.photos,_that.createdAt);case _:
   return orElse();
 
 }
@@ -454,10 +457,10 @@ return $default(_that.id,_that.title,_that.description,_that.location,_that.stat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id,  String title,  String description,  String location,  String status,  String displayStatus,  String? contractStatus,  double? price,  String priceMode,  bool isEditable,  int messagesCount,  int applicationsCount,  List<ServiceRequestInfoPhotoModel> photos, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: stringFromJson)  String id,  String title,  String description,  String location,  String status,  String displayStatus,  String? contractStatus,  double? price,  String priceMode,  bool isEditable,  bool canCancel,  String? cancelBlockedReason,  String? editBlockedReason,  int messagesCount,  int applicationsCount,  List<ServiceRequestInfoPhotoModel> photos, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ServiceRequestInfoModel():
-return $default(_that.id,_that.title,_that.description,_that.location,_that.status,_that.displayStatus,_that.contractStatus,_that.price,_that.priceMode,_that.isEditable,_that.messagesCount,_that.applicationsCount,_that.photos,_that.createdAt);case _:
+return $default(_that.id,_that.title,_that.description,_that.location,_that.status,_that.displayStatus,_that.contractStatus,_that.price,_that.priceMode,_that.isEditable,_that.canCancel,_that.cancelBlockedReason,_that.editBlockedReason,_that.messagesCount,_that.applicationsCount,_that.photos,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -474,10 +477,10 @@ return $default(_that.id,_that.title,_that.description,_that.location,_that.stat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: stringFromJson)  String id,  String title,  String description,  String location,  String status,  String displayStatus,  String? contractStatus,  double? price,  String priceMode,  bool isEditable,  int messagesCount,  int applicationsCount,  List<ServiceRequestInfoPhotoModel> photos, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: stringFromJson)  String id,  String title,  String description,  String location,  String status,  String displayStatus,  String? contractStatus,  double? price,  String priceMode,  bool isEditable,  bool canCancel,  String? cancelBlockedReason,  String? editBlockedReason,  int messagesCount,  int applicationsCount,  List<ServiceRequestInfoPhotoModel> photos, @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson)  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ServiceRequestInfoModel() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.location,_that.status,_that.displayStatus,_that.contractStatus,_that.price,_that.priceMode,_that.isEditable,_that.messagesCount,_that.applicationsCount,_that.photos,_that.createdAt);case _:
+return $default(_that.id,_that.title,_that.description,_that.location,_that.status,_that.displayStatus,_that.contractStatus,_that.price,_that.priceMode,_that.isEditable,_that.canCancel,_that.cancelBlockedReason,_that.editBlockedReason,_that.messagesCount,_that.applicationsCount,_that.photos,_that.createdAt);case _:
   return null;
 
 }
@@ -489,7 +492,7 @@ return $default(_that.id,_that.title,_that.description,_that.location,_that.stat
 @JsonSerializable()
 
 class _ServiceRequestInfoModel extends ServiceRequestInfoModel {
-  const _ServiceRequestInfoModel({@JsonKey(fromJson: stringFromJson) required this.id, required this.title, required this.description, required this.location, required this.status, required this.displayStatus, this.contractStatus, this.price, required this.priceMode, this.isEditable = false, this.messagesCount = 0, this.applicationsCount = 0,  List<ServiceRequestInfoPhotoModel> photos = const <ServiceRequestInfoPhotoModel>[], @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) required this.createdAt}): _photos = photos,super._();
+  const _ServiceRequestInfoModel({@JsonKey(fromJson: stringFromJson) required this.id, required this.title, required this.description, required this.location, required this.status, required this.displayStatus, this.contractStatus, this.price, required this.priceMode, this.isEditable = false, this.canCancel = false, this.cancelBlockedReason, this.editBlockedReason, this.messagesCount = 0, this.applicationsCount = 0,  List<ServiceRequestInfoPhotoModel> photos = const <ServiceRequestInfoPhotoModel>[], @JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) required this.createdAt}): _photos = photos,super._();
   factory _ServiceRequestInfoModel.fromJson(Map<String, dynamic> json) => _$ServiceRequestInfoModelFromJson(json);
 
 @override@JsonKey(fromJson: stringFromJson) final  String id;
@@ -502,6 +505,9 @@ class _ServiceRequestInfoModel extends ServiceRequestInfoModel {
 @override final  double? price;
 @override final  String priceMode;
 @override@JsonKey() final  bool isEditable;
+@override@JsonKey() final  bool canCancel;
+@override final  String? cancelBlockedReason;
+@override final  String? editBlockedReason;
 @override@JsonKey() final  int messagesCount;
 @override@JsonKey() final  int applicationsCount;
  final  List<ServiceRequestInfoPhotoModel> _photos;
@@ -526,16 +532,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServiceRequestInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.status, status) || other.status == status)&&(identical(other.displayStatus, displayStatus) || other.displayStatus == displayStatus)&&(identical(other.contractStatus, contractStatus) || other.contractStatus == contractStatus)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.isEditable, isEditable) || other.isEditable == isEditable)&&(identical(other.messagesCount, messagesCount) || other.messagesCount == messagesCount)&&(identical(other.applicationsCount, applicationsCount) || other.applicationsCount == applicationsCount)&&const DeepCollectionEquality().equals(other._photos, _photos)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServiceRequestInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.status, status) || other.status == status)&&(identical(other.displayStatus, displayStatus) || other.displayStatus == displayStatus)&&(identical(other.contractStatus, contractStatus) || other.contractStatus == contractStatus)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.isEditable, isEditable) || other.isEditable == isEditable)&&(identical(other.canCancel, canCancel) || other.canCancel == canCancel)&&(identical(other.cancelBlockedReason, cancelBlockedReason) || other.cancelBlockedReason == cancelBlockedReason)&&(identical(other.editBlockedReason, editBlockedReason) || other.editBlockedReason == editBlockedReason)&&(identical(other.messagesCount, messagesCount) || other.messagesCount == messagesCount)&&(identical(other.applicationsCount, applicationsCount) || other.applicationsCount == applicationsCount)&&const DeepCollectionEquality().equals(other._photos, _photos)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,location,status,displayStatus,contractStatus,price,priceMode,isEditable,messagesCount,applicationsCount,const DeepCollectionEquality().hash(_photos),createdAt);
+int get hashCode => Object.hash(runtimeType,id,title,description,location,status,displayStatus,contractStatus,price,priceMode,isEditable,canCancel,cancelBlockedReason,editBlockedReason,messagesCount,applicationsCount,const DeepCollectionEquality().hash(_photos),createdAt);
 
 @override
 String toString() {
-  return 'ServiceRequestInfoModel(id: $id, title: $title, description: $description, location: $location, status: $status, displayStatus: $displayStatus, contractStatus: $contractStatus, price: $price, priceMode: $priceMode, isEditable: $isEditable, messagesCount: $messagesCount, applicationsCount: $applicationsCount, photos: $photos, createdAt: $createdAt)';
+  return 'ServiceRequestInfoModel(id: $id, title: $title, description: $description, location: $location, status: $status, displayStatus: $displayStatus, contractStatus: $contractStatus, price: $price, priceMode: $priceMode, isEditable: $isEditable, canCancel: $canCancel, cancelBlockedReason: $cancelBlockedReason, editBlockedReason: $editBlockedReason, messagesCount: $messagesCount, applicationsCount: $applicationsCount, photos: $photos, createdAt: $createdAt)';
 }
 
 
@@ -546,7 +552,7 @@ abstract mixin class _$ServiceRequestInfoModelCopyWith<$Res> implements $Service
   factory _$ServiceRequestInfoModelCopyWith(_ServiceRequestInfoModel value, $Res Function(_ServiceRequestInfoModel) _then) = __$ServiceRequestInfoModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: stringFromJson) String id, String title, String description, String location, String status, String displayStatus, String? contractStatus, double? price, String priceMode, bool isEditable, int messagesCount, int applicationsCount, List<ServiceRequestInfoPhotoModel> photos,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
+@JsonKey(fromJson: stringFromJson) String id, String title, String description, String location, String status, String displayStatus, String? contractStatus, double? price, String priceMode, bool isEditable, bool canCancel, String? cancelBlockedReason, String? editBlockedReason, int messagesCount, int applicationsCount, List<ServiceRequestInfoPhotoModel> photos,@JsonKey(fromJson: dateTimeFromJson, toJson: dateTimeToJson) DateTime createdAt
 });
 
 
@@ -563,7 +569,7 @@ class __$ServiceRequestInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? location = null,Object? status = null,Object? displayStatus = null,Object? contractStatus = freezed,Object? price = freezed,Object? priceMode = null,Object? isEditable = null,Object? messagesCount = null,Object? applicationsCount = null,Object? photos = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? location = null,Object? status = null,Object? displayStatus = null,Object? contractStatus = freezed,Object? price = freezed,Object? priceMode = null,Object? isEditable = null,Object? canCancel = null,Object? cancelBlockedReason = freezed,Object? editBlockedReason = freezed,Object? messagesCount = null,Object? applicationsCount = null,Object? photos = null,Object? createdAt = null,}) {
   return _then(_ServiceRequestInfoModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -575,7 +581,10 @@ as String,contractStatus: freezed == contractStatus ? _self.contractStatus : con
 as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double?,priceMode: null == priceMode ? _self.priceMode : priceMode // ignore: cast_nullable_to_non_nullable
 as String,isEditable: null == isEditable ? _self.isEditable : isEditable // ignore: cast_nullable_to_non_nullable
-as bool,messagesCount: null == messagesCount ? _self.messagesCount : messagesCount // ignore: cast_nullable_to_non_nullable
+as bool,canCancel: null == canCancel ? _self.canCancel : canCancel // ignore: cast_nullable_to_non_nullable
+as bool,cancelBlockedReason: freezed == cancelBlockedReason ? _self.cancelBlockedReason : cancelBlockedReason // ignore: cast_nullable_to_non_nullable
+as String?,editBlockedReason: freezed == editBlockedReason ? _self.editBlockedReason : editBlockedReason // ignore: cast_nullable_to_non_nullable
+as String?,messagesCount: null == messagesCount ? _self.messagesCount : messagesCount // ignore: cast_nullable_to_non_nullable
 as int,applicationsCount: null == applicationsCount ? _self.applicationsCount : applicationsCount // ignore: cast_nullable_to_non_nullable
 as int,photos: null == photos ? _self._photos : photos // ignore: cast_nullable_to_non_nullable
 as List<ServiceRequestInfoPhotoModel>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
