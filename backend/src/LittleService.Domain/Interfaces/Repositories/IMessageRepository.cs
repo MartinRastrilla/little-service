@@ -1,4 +1,5 @@
 using LittleService.Domain.Entities;
+using LittleService.Domain.Queries;
 
 namespace LittleService.Domain.Interfaces.Repositories;
 
@@ -28,23 +29,54 @@ public interface IMessageRepository
 
     //? Combined Queries
     Task<IEnumerable<Message>> GetConversationAsync(Guid serviceRequestId, Guid userId1, Guid userId2, CancellationToken cancellationToken = default);
+    Task<MessagePageReadModel> GetConversationPageAsync(
+        Guid serviceRequestId,
+        Guid userId1,
+        Guid userId2,
+        DateTime? cursor,
+        int limit = 50,
+        CancellationToken cancellationToken = default);
 
     //? Queries for date range
     Task<IEnumerable<Message>> GetMessagesByDateRangeAsync(Guid serviceRequestId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
 
     //? Queries to mark as read
     Task<int> MarkAsReadByToUserIdAndServiceRequestIdAsync(Guid toUserId, Guid serviceRequestId, CancellationToken cancellationToken = default);
+    Task<int> MarkConversationAsReadAsync(
+        Guid toUserId,
+        Guid fromUserId,
+        Guid serviceRequestId,
+        CancellationToken cancellationToken = default);
     Task<bool> MarkAsReadByIdAsync(Guid messageId, CancellationToken cancellationToken = default);
 
     //? Queries for count
     Task<int> GetUnreadCountByToUserIdAsync(Guid toUserId, CancellationToken cancellationToken = default);
     Task<int> GetUnreadCountByToUserIdAndServiceRequestIdAsync(Guid toUserId, Guid serviceRequestId, CancellationToken cancellationToken = default);
+    Task<int> GetUnreadCountInConversationAsync(
+        Guid toUserId,
+        Guid fromUserId,
+        Guid serviceRequestId,
+        CancellationToken cancellationToken = default);
 
     //? Queries for validations
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> HasClientInitiatedThreadAsync(
+        Guid serviceRequestId,
+        Guid clientUserId,
+        Guid freelancerUserId,
+        CancellationToken cancellationToken = default);
 
     Task<int> GetActiveConversationsCountByServiceRequestIdAsync(
         Guid serviceRequestId,
         Guid clientUserId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ConversationSummaryReadModel>> GetInterlocutorsForServiceRequestAsync(
+        Guid serviceRequestId,
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<InboxServiceRequestGroupReadModel>> GetInboxForUserAsync(
+        Guid userId,
         CancellationToken cancellationToken = default);
 }

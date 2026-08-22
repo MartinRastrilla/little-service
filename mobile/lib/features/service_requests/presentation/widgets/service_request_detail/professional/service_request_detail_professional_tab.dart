@@ -130,6 +130,13 @@ class _ProfessionalContent extends StatelessWidget {
 
     final freelancerId = pro.freelancerId;
     final comingSoon = () => showProfessionalComingSoonSnackBar(context);
+    final canOpenChat =
+        pro.hasAssignedProfessional && pro.freelancerId != null;
+    final openChat = canOpenChat
+        ? () => context.push(
+              '/chat/service-requests/$serviceRequestId/with/$freelancerId?name=${Uri.encodeComponent(profile!.fullName)}',
+            )
+        : null;
 
     return Stack(
       children: [
@@ -149,6 +156,7 @@ class _ProfessionalContent extends StatelessWidget {
                     : () => context.push(
                       '/clients/freelancers/$freelancerId?serviceRequestId=$serviceRequestId',
                     ),
+                onOpenChat: openChat,
                 onComingSoon: comingSoon,
               ),
               const SizedBox(height: 24),
@@ -157,6 +165,7 @@ class _ProfessionalContent extends StatelessWidget {
               ProfessionalActionsList(
                 professional: pro,
                 professionalName: profile!.fullName,
+                onOpenChat: openChat,
                 onRevokeEngagement: () => _handleRevoke(context),
                 onComingSoon: comingSoon,
               ),

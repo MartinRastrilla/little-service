@@ -4,11 +4,13 @@ import 'package:mobile/features/service_requests/presentation/mappers/profession
 
 class ProfessionalQuickActionsRow extends StatelessWidget {
   final VoidCallback? onOpenProfile;
+  final VoidCallback? onOpenChat;
   final VoidCallback onComingSoon;
 
   const ProfessionalQuickActionsRow({
     super.key,
     required this.onOpenProfile,
+    required this.onOpenChat,
     required this.onComingSoon,
   });
 
@@ -20,9 +22,8 @@ class ProfessionalQuickActionsRow extends StatelessWidget {
           child: _QuickActionButton(
             icon: Icons.chat_bubble_outline,
             label: 'Enviar\nmensaje',
-            // TODO(professional-tab): chat integration
-            onPressed: onComingSoon,
-            isDisabled: true,
+            onPressed: onOpenChat,
+            isDisabled: onOpenChat == null,
           ),
         ),
         const SizedBox(width: 12),

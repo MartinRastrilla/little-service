@@ -61,6 +61,16 @@ import 'package:mobile/features/freelancer_public_profile/data/repositories/free
 import 'package:mobile/features/freelancer_public_profile/domain/repositories/freelancer_public_profile_repository.dart';
 import 'package:mobile/features/freelancer_public_profile/domain/usecases/get_public_freelancer_profile_usecase.dart';
 import 'package:mobile/features/freelancer_public_profile/presentation/bloc/freelancer_public_profile_bloc.dart';
+import 'package:mobile/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:mobile/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:mobile/features/chat/data/services/chat_signalr_service.dart';
+import 'package:mobile/features/chat/domain/repositories/chat_repository.dart';
+import 'package:mobile/features/chat/domain/usecases/get_chat_access_usecase.dart';
+import 'package:mobile/features/chat/domain/usecases/get_chat_messages_usecase.dart';
+import 'package:mobile/features/chat/domain/usecases/get_service_request_conversations_usecase.dart';
+import 'package:mobile/features/chat/domain/usecases/mark_chat_as_read_usecase.dart';
+import 'package:mobile/features/chat/domain/usecases/send_chat_message_usecase.dart';
+import 'package:mobile/features/chat/presentation/bloc/chat_bloc.dart';
 
 const authDioInstanceName = 'authDio';
 const apiDioInstanceName = 'apiDio';
@@ -264,6 +274,36 @@ Future<void> setupDependencyInjection() async {
   sl.registerFactory(
     () => FreelancerPublicProfileBloc(
       getPublicFreelancerProfileUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => ChatRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(remote: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetChatAccessUseCase(sl()));
+  sl.registerLazySingleton(() => GetChatMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => SendChatMessageUseCase(sl()));
+  sl.registerLazySingleton(() => MarkChatAsReadUseCase(sl()));
+  sl.registerLazySingleton(() => GetServiceRequestConversationsUseCase(sl()));
+
+  sl.registerLazySingleton(ChatSignalRService.new);
+
+  sl.registerFactory(
+    () => ChatBloc(
+      getChatAccessUseCase: sl(),
+      getChatMessagesUseCase: sl(),
+      sendChatMessageUseCase: sl(),
+      markChatAsReadUseCase: sl(),
+      getConversationsUseCase: sl(),
+      signalRService: sl(),
+      tokenStorage: sl(),
     ),
   );
 }

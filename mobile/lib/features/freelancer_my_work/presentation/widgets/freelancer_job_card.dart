@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
 import 'package:mobile/features/freelancer_my_work/domain/entities/freelancer_work_item.dart';
@@ -183,7 +184,9 @@ class FreelancerJobCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: OutlinedButton(
-                onPressed: null,
+                onPressed: () => context.push(
+                  '/chat/service-requests/${item.id}',
+                ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,

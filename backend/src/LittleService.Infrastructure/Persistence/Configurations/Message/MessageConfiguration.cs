@@ -39,6 +39,9 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
             .WithMany(sr => sr.Messages)
             .HasForeignKey(m => m.ServiceRequestId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(m => new { m.ServiceRequestId, m.CreatedAt });
+        builder.HasIndex(m => new { m.ToUserId, m.ServiceRequestId, m.IsRead });
     }
 }
 

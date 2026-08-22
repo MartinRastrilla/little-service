@@ -17,6 +17,11 @@ using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestProfess
 using LittleService.Application.UseCases.ServiceRequest.GetServiceRequestActivity;
 using LittleService.Application.UseCases.ServiceRequest.RejectApplication;
 using LittleService.Application.UseCases.ServiceRequest.UpdateServiceRequest;
+using LittleService.Application.UseCases.Message.GetChatAccess;
+using LittleService.Application.UseCases.Message.GetConversation;
+using LittleService.Application.UseCases.Message.GetServiceRequestConversations;
+using LittleService.Application.UseCases.Message.MarkConversationAsRead;
+using LittleService.Application.UseCases.Message.SendMessage;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -285,6 +290,166 @@ public class ServiceRequestsController : ControllerBase
         }
 
         return Ok(result.Value!.Activity);
+    }
+
+    [HttpGet("{id:guid}/conversations")]
+    public async Task<IActionResult> GetConversations(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var query = new GetServiceRequestConversationsQuery
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "USER_NOT_FOUND" or "SERVICE_REQUEST_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" => Forbid(),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Conversations);
+    }
+
+    [HttpGet("{id:guid}/messages")]
+    public async Task<IActionResult> GetMessages(
+        Guid id,
+        [FromQuery] Guid withUserId,
+        [FromQuery] DateTime? cursor,
+        [FromQuery] int limit = 50,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var query = new GetConversationQuery
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id,
+            WithUserId = withUserId,
+            Cursor = cursor,
+            Limit = limit
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "SERVICE_REQUEST_NOT_FOUND" or "USER_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" or "CHAT_NOT_ALLOWED" => Forbid(),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Messages);
+    }
+
+    [HttpPost("{id:guid}/messages")]
+    public async Task<IActionResult> SendMessage(
+        Guid id,
+        [FromBody] SendMessageRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var command = new SendMessageCommand
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id,
+            ToUserId = request.ToUserId,
+            Content = request.Content
+        };
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "SERVICE_REQUEST_NOT_FOUND" or "USER_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" or "CHAT_NOT_ALLOWED" => Forbid(),
+                "WAITING_FOR_CLIENT_MESSAGE" or "SERVICE_REQUEST_READ_ONLY" or
+                "APPLICATION_REJECTED_READ_ONLY" or "MESSAGE_CONTENT_EMPTY" or
+                "MESSAGE_CONTENT_TOO_LONG" or "SELF_MESSAGE_NOT_ALLOWED" =>
+                    BadRequest(new { message = result.Error, code = result.ErrorCode }),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return StatusCode(201, result.Value!.Message);
+    }
+
+    [HttpPost("{id:guid}/messages/read")]
+    public async Task<IActionResult> MarkMessagesAsRead(
+        Guid id,
+        [FromBody] MarkConversationAsReadRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var command = new MarkConversationAsReadCommand
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id,
+            WithUserId = request.WithUserId
+        };
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "SERVICE_REQUEST_NOT_FOUND" or "USER_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" or "CHAT_NOT_ALLOWED" => Forbid(),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{id:guid}/chat-access")]
+    public async Task<IActionResult> GetChatAccess(
+        Guid id,
+        [FromQuery] Guid withUserId,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var query = new GetChatAccessQuery
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id,
+            WithUserId = withUserId
+        };
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ErrorCode switch
+            {
+                "SERVICE_REQUEST_NOT_FOUND" or "USER_NOT_FOUND" =>
+                    NotFound(new { message = result.Error, code = result.ErrorCode }),
+                "FORBIDDEN" or "CHAT_NOT_ALLOWED" => Forbid(),
+                _ => BadRequest(new { message = result.Error, code = result.ErrorCode })
+            };
+        }
+
+        return Ok(result.Value!.Access);
     }
 
     [HttpGet("{id:guid}")]

@@ -5,6 +5,7 @@ import 'package:mobile/features/service_requests/domain/entities/service_request
 class ProfessionalActionsList extends StatelessWidget {
   final ServiceRequestProfessional professional;
   final String professionalName;
+  final VoidCallback? onOpenChat;
   final VoidCallback? onRevokeEngagement;
   final VoidCallback onComingSoon;
 
@@ -12,6 +13,7 @@ class ProfessionalActionsList extends StatelessWidget {
     super.key,
     required this.professional,
     required this.professionalName,
+    required this.onOpenChat,
     required this.onRevokeEngagement,
     required this.onComingSoon,
   });
@@ -32,9 +34,8 @@ class ProfessionalActionsList extends StatelessWidget {
           icon: Icons.chat_bubble_outline,
           title: 'Ir al chat con $professionalName',
           subtitle: 'Conversación privada sobre este pedido',
-          // TODO(professional-tab): chat integration
-          onTap: onComingSoon,
-          isDisabled: true,
+          onTap: onOpenChat,
+          isDisabled: onOpenChat == null,
         ),
         _ActionTile(
           icon: Icons.description_outlined,

@@ -218,6 +218,16 @@ class _DetailContent extends StatelessWidget {
                   client: detail.client,
                   serviceRequestId: serviceRequestId,
                 ),
+                if (detail.hasApplied) ...[
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () => context.push(
+                      '/chat/service-requests/$serviceRequestId/with/${detail.client.clientId}?name=${Uri.encodeComponent(detail.client.clientName)}',
+                    ),
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: const Text('Ir al chat'),
+                  ),
+                ],
               ],
             ),
           ),

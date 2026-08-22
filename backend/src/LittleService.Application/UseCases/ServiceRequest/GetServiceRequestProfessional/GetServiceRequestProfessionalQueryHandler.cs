@@ -1,4 +1,5 @@
 using LittleService.Application.Common;
+using LittleService.Application.Interfaces.Services;
 using LittleService.Application.Mappers;
 using LittleService.Domain.Interfaces.Repositories;
 using Mediator;
@@ -10,13 +11,16 @@ public class GetServiceRequestProfessionalQueryHandler
     : IRequestHandler<GetServiceRequestProfessionalQuery, Result<GetServiceRequestProfessionalResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IChatAuthorizationService _chatAuthorizationService;
     private readonly ILogger<GetServiceRequestProfessionalQueryHandler> _logger;
 
     public GetServiceRequestProfessionalQueryHandler(
         IUnitOfWork unitOfWork,
+        IChatAuthorizationService chatAuthorizationService,
         ILogger<GetServiceRequestProfessionalQueryHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _chatAuthorizationService = chatAuthorizationService;
         _logger = logger;
     }
 
@@ -46,6 +50,7 @@ public class GetServiceRequestProfessionalQueryHandler
                 "FORBIDDEN");
 
         var dto = ServiceRequestProfessionalMapper.Map(serviceRequest);
+        dto.Actions.CanOpenChat = _chatAuthorizationService.CanOpenChatForServiceRequest(serviceRequest);
 
         return Result<GetServiceRequestProfessionalResult>.Success(new GetServiceRequestProfessionalResult
         {

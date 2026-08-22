@@ -17,6 +17,7 @@ import 'package:mobile/features/service_requests/presentation/pages/service_requ
 import 'package:mobile/features/freelancer_service_request_detail/presentation/pages/freelancer_service_request_detail_page.dart';
 import 'package:mobile/features/client_public_profile/presentation/pages/client_public_profile_page.dart';
 import 'package:mobile/features/freelancer_public_profile/presentation/pages/freelancer_public_profile_page.dart';
+import 'package:mobile/features/chat/presentation/pages/chat_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -101,6 +102,20 @@ class AppRouter {
             path: '/service-requests/:id',
             builder: (context, state) => ServiceRequestDetailPage(
               serviceRequestId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
+            path: '/chat/service-requests/:serviceRequestId/with/:withUserId',
+            builder: (context, state) => ChatPage(
+              serviceRequestId: state.pathParameters['serviceRequestId']!,
+              withUserId: state.pathParameters['withUserId'],
+              interlocutorName: state.uri.queryParameters['name'],
+            ),
+          ),
+          GoRoute(
+            path: '/chat/service-requests/:serviceRequestId',
+            builder: (context, state) => ChatPage(
+              serviceRequestId: state.pathParameters['serviceRequestId']!,
             ),
           ),
           GoRoute(

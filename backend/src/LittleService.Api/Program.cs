@@ -1,7 +1,10 @@
 using System.Text;
+using LittleService.Api.Hubs;
 using LittleService.Api.Middleware;
+using LittleService.Api.Services;
 using LittleService.Application.Interfaces.Services;
 using LittleService.Application.Mappers;
+using LittleService.Application.Services;
 using LittleService.Domain.Interfaces.Repositories;
 using LittleService.Infrastructure.Persistence;
 using LittleService.Infrastructure.Persistence.Seeders;
@@ -31,9 +34,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtIssuer,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/chat"))
+                    context.Token = accessToken;
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 //? Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -45,6 +61,8 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IAuthTokenIssuer, AuthTokenIssuer>();
+builder.Services.AddScoped<IChatAuthorizationService, ChatAuthorizationService>();
+builder.Services.AddScoped<IChatEventPublisher, SignalRChatEventPublisher>();
 
 //? Mediator (discovers handlers from Application assembly)
 builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
@@ -151,6 +169,7 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 app.MapGet("/api/hello", () => Results.Ok("Hello from Little Service API"));

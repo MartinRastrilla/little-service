@@ -8,4 +8,9 @@ class Env {
     'MEDIA_BASE_URL',
     defaultValue: 'http://10.0.2.2:5278',
   );
+
+  static const String hubUrl = String.fromEnvironment(
+    'HUB_URL',
+    defaultValue: 'http://10.0.2.2:5278/hubs/chat',
+  );
 }

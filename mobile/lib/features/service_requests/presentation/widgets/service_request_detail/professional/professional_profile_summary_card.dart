@@ -88,23 +88,30 @@ class ProfessionalProfileSummaryCard extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 8),
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Icon(
-                          Icons.star_rounded,
-                          size: 16,
-                          color: profile.totalReviewsCount > 0
-                              ? const Color(0xFFF5B301)
-                              : context.colors.onSurfaceVariant,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.star_rounded,
+                              size: 16,
+                              color: profile.totalReviewsCount > 0
+                                  ? const Color(0xFFF5B301)
+                                  : context.colors.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              ratingLabel,
+                              style: context.text.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          ratingLabel,
-                          style: context.text.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
                         Text(
                           '${profile.completedJobs} trabajos completados',
                           style: context.text.bodySmall?.copyWith(
