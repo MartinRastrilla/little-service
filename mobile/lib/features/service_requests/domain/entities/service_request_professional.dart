@@ -21,6 +21,8 @@ class ServiceRequestProfessionalActions {
   final bool canOpenChat;
   final bool canCall;
   final bool canViewContract;
+  final bool canCreateContract;
+  final bool canEditContract;
 
   const ServiceRequestProfessionalActions({
     required this.canRevokeEngagement,
@@ -29,6 +31,8 @@ class ServiceRequestProfessionalActions {
     required this.canOpenChat,
     required this.canCall,
     required this.canViewContract,
+    required this.canCreateContract,
+    required this.canEditContract,
   });
 }
 

@@ -36,6 +36,8 @@ _$ServiceRequestProfessionalActionsModelFromJson(Map<String, dynamic> json) =>
       canOpenChat: json['canOpenChat'] as bool? ?? false,
       canCall: json['canCall'] as bool? ?? false,
       canViewContract: json['canViewContract'] as bool? ?? false,
+      canCreateContract: json['canCreateContract'] as bool? ?? false,
+      canEditContract: json['canEditContract'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ServiceRequestProfessionalActionsModelToJson(
@@ -47,6 +49,8 @@ Map<String, dynamic> _$ServiceRequestProfessionalActionsModelToJson(
   'canOpenChat': instance.canOpenChat,
   'canCall': instance.canCall,
   'canViewContract': instance.canViewContract,
+  'canCreateContract': instance.canCreateContract,
+  'canEditContract': instance.canEditContract,
 };
 
 _ServiceRequestProfessionalModel _$ServiceRequestProfessionalModelFromJson(

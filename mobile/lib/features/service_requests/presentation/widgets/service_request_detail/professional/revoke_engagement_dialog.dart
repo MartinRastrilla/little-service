@@ -12,6 +12,7 @@ Future<bool?> showRevokeEngagementDialog(
         content: Text(
           'Vas a dejar de trabajar con $professionalName en este pedido. '
           'El pedido volverá a la fase de postulaciones y su postulación quedará rechazada. '
+          'Si hay un contrato en borrador, se eliminará y no se podrá recuperar. '
           'Esta acción no se puede deshacer.',
         ),
         actions: [

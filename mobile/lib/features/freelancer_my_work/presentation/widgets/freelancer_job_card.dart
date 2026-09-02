@@ -183,26 +183,55 @@ class FreelancerJobCard extends StatelessWidget {
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerRight,
-              child: OutlinedButton(
-                onPressed: () => context.push(
-                  '/chat/service-requests/${item.id}',
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.end,
+                children: [
+                  if (item.hasContract)
+                    OutlinedButton(
+                      onPressed: () => context.push(
+                        '/freelancer/jobs/${item.id}/contract',
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Ver contrato'),
+                          SizedBox(width: 4),
+                          Icon(Icons.description_outlined, size: 18),
+                        ],
+                      ),
+                    ),
+                  OutlinedButton(
+                    onPressed: () => context.push(
+                      '/chat/service-requests/${item.id}',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Abrir chat'),
+                        SizedBox(width: 4),
+                        Icon(Icons.chevron_right, size: 18),
+                      ],
+                    ),
                   ),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Abrir chat'),
-                    SizedBox(width: 4),
-                    Icon(Icons.chevron_right, size: 18),
-                  ],
-                ),
+                ],
               ),
             ),
           ],

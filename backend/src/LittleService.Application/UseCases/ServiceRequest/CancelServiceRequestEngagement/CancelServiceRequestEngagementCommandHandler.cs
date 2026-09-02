@@ -61,6 +61,11 @@ public class CancelServiceRequestEngagementCommandHandler
                 "No se encontró la postulación aceptada del profesional",
                 "ACCEPTED_APPLICATION_NOT_FOUND");
 
+        if (serviceRequest.Contract?.IsDraft() == true)
+        {
+            await _unitOfWork.Contracts.DeleteAsync(serviceRequest.Contract.Id, cancellationToken);
+        }
+
         try
         {
             serviceRequest.RevokeEngagement(serviceRequest.Contract, acceptedApplication);
@@ -93,7 +98,10 @@ public class CancelServiceRequestEngagementCommandHandler
             "Contratación cancelada para el pedido {ServiceRequestId}",
             command.ServiceRequestId);
 
-        var dto = ServiceRequestProfessionalMapper.Map(serviceRequest);
+        var refreshed = await _unitOfWork.ServiceRequests.GetByIdWithApplicationsAsync(
+            command.ServiceRequestId,
+            cancellationToken);
+        var dto = ServiceRequestProfessionalMapper.Map(refreshed ?? serviceRequest);
 
         return Result<CancelServiceRequestEngagementResult>.Success(new CancelServiceRequestEngagementResult
         {

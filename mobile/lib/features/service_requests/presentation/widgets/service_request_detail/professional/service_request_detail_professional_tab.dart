@@ -66,6 +66,7 @@ class ServiceRequestDetailProfessionalTab extends StatelessWidget {
             professional: state.professional,
             profile: state.freelancerProfile,
             isRevoking: state.isRevokingEngagement,
+            suggestedAmount: state.info.price,
           ),
         };
       },
@@ -78,13 +79,41 @@ class _ProfessionalContent extends StatelessWidget {
   final ServiceRequestProfessional? professional;
   final FreelancerPublicProfile? profile;
   final bool isRevoking;
+  final double? suggestedAmount;
 
   const _ProfessionalContent({
     required this.serviceRequestId,
     required this.professional,
     required this.profile,
     required this.isRevoking,
+    this.suggestedAmount,
   });
+
+  Future<void> _openContract(BuildContext context) async {
+    final pro = professional;
+    if (pro == null) return;
+
+    final canOpen =
+        pro.actions.canCreateContract || pro.actions.canViewContract;
+    if (!canOpen) return;
+
+    final query = <String, String>{
+      if (pro.actions.canCreateContract) 'allowCreate': 'true',
+      if (suggestedAmount != null) 'suggestedAmount': '$suggestedAmount',
+    };
+    final queryString = query.isEmpty
+        ? ''
+        : '?${query.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}';
+
+    final changed = await context.push<bool>(
+      '/service-requests/$serviceRequestId/contract$queryString',
+    );
+    if (changed != true || !context.mounted) return;
+
+    context.read<ServiceRequestDetailBloc>()
+      ..add(const ServiceRequestDetailEvent.professionalRefreshRequested())
+      ..add(const ServiceRequestDetailEvent.activityRefreshRequested());
+  }
 
   Future<void> _handleRevoke(BuildContext context) async {
     final pro = professional;
@@ -166,6 +195,10 @@ class _ProfessionalContent extends StatelessWidget {
                 professional: pro,
                 professionalName: profile!.fullName,
                 onOpenChat: openChat,
+                onOpenContract:
+                    pro.actions.canCreateContract || pro.actions.canViewContract
+                        ? () => _openContract(context)
+                        : null,
                 onRevokeEngagement: () => _handleRevoke(context),
                 onComingSoon: comingSoon,
               ),

@@ -291,7 +291,7 @@ as String?,
 /// @nodoc
 mixin _$ServiceRequestProfessionalActionsModel {
 
- bool get canRevokeEngagement; String? get revokeEngagementBlockedReason; bool get canOpenProfile; bool get canOpenChat; bool get canCall; bool get canViewContract;
+ bool get canRevokeEngagement; String? get revokeEngagementBlockedReason; bool get canOpenProfile; bool get canOpenChat; bool get canCall; bool get canViewContract; bool get canCreateContract; bool get canEditContract;
 /// Create a copy of ServiceRequestProfessionalActionsModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -304,16 +304,16 @@ $ServiceRequestProfessionalActionsModelCopyWith<ServiceRequestProfessionalAction
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestProfessionalActionsModel&&(identical(other.canRevokeEngagement, canRevokeEngagement) || other.canRevokeEngagement == canRevokeEngagement)&&(identical(other.revokeEngagementBlockedReason, revokeEngagementBlockedReason) || other.revokeEngagementBlockedReason == revokeEngagementBlockedReason)&&(identical(other.canOpenProfile, canOpenProfile) || other.canOpenProfile == canOpenProfile)&&(identical(other.canOpenChat, canOpenChat) || other.canOpenChat == canOpenChat)&&(identical(other.canCall, canCall) || other.canCall == canCall)&&(identical(other.canViewContract, canViewContract) || other.canViewContract == canViewContract));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServiceRequestProfessionalActionsModel&&(identical(other.canRevokeEngagement, canRevokeEngagement) || other.canRevokeEngagement == canRevokeEngagement)&&(identical(other.revokeEngagementBlockedReason, revokeEngagementBlockedReason) || other.revokeEngagementBlockedReason == revokeEngagementBlockedReason)&&(identical(other.canOpenProfile, canOpenProfile) || other.canOpenProfile == canOpenProfile)&&(identical(other.canOpenChat, canOpenChat) || other.canOpenChat == canOpenChat)&&(identical(other.canCall, canCall) || other.canCall == canCall)&&(identical(other.canViewContract, canViewContract) || other.canViewContract == canViewContract)&&(identical(other.canCreateContract, canCreateContract) || other.canCreateContract == canCreateContract)&&(identical(other.canEditContract, canEditContract) || other.canEditContract == canEditContract));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,canRevokeEngagement,revokeEngagementBlockedReason,canOpenProfile,canOpenChat,canCall,canViewContract);
+int get hashCode => Object.hash(runtimeType,canRevokeEngagement,revokeEngagementBlockedReason,canOpenProfile,canOpenChat,canCall,canViewContract,canCreateContract,canEditContract);
 
 @override
 String toString() {
-  return 'ServiceRequestProfessionalActionsModel(canRevokeEngagement: $canRevokeEngagement, revokeEngagementBlockedReason: $revokeEngagementBlockedReason, canOpenProfile: $canOpenProfile, canOpenChat: $canOpenChat, canCall: $canCall, canViewContract: $canViewContract)';
+  return 'ServiceRequestProfessionalActionsModel(canRevokeEngagement: $canRevokeEngagement, revokeEngagementBlockedReason: $revokeEngagementBlockedReason, canOpenProfile: $canOpenProfile, canOpenChat: $canOpenChat, canCall: $canCall, canViewContract: $canViewContract, canCreateContract: $canCreateContract, canEditContract: $canEditContract)';
 }
 
 
@@ -324,7 +324,7 @@ abstract mixin class $ServiceRequestProfessionalActionsModelCopyWith<$Res>  {
   factory $ServiceRequestProfessionalActionsModelCopyWith(ServiceRequestProfessionalActionsModel value, $Res Function(ServiceRequestProfessionalActionsModel) _then) = _$ServiceRequestProfessionalActionsModelCopyWithImpl;
 @useResult
 $Res call({
- bool canRevokeEngagement, String? revokeEngagementBlockedReason, bool canOpenProfile, bool canOpenChat, bool canCall, bool canViewContract
+ bool canRevokeEngagement, String? revokeEngagementBlockedReason, bool canOpenProfile, bool canOpenChat, bool canCall, bool canViewContract, bool canCreateContract, bool canEditContract
 });
 
 
@@ -341,7 +341,7 @@ class _$ServiceRequestProfessionalActionsModelCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestProfessionalActionsModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? canRevokeEngagement = null,Object? revokeEngagementBlockedReason = freezed,Object? canOpenProfile = null,Object? canOpenChat = null,Object? canCall = null,Object? canViewContract = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? canRevokeEngagement = null,Object? revokeEngagementBlockedReason = freezed,Object? canOpenProfile = null,Object? canOpenChat = null,Object? canCall = null,Object? canViewContract = null,Object? canCreateContract = null,Object? canEditContract = null,}) {
   return _then(ServiceRequestProfessionalActionsModel(
 canRevokeEngagement: null == canRevokeEngagement ? _self.canRevokeEngagement : canRevokeEngagement // ignore: cast_nullable_to_non_nullable
 as bool,revokeEngagementBlockedReason: freezed == revokeEngagementBlockedReason ? _self.revokeEngagementBlockedReason : revokeEngagementBlockedReason // ignore: cast_nullable_to_non_nullable
@@ -349,6 +349,8 @@ as String?,canOpenProfile: null == canOpenProfile ? _self.canOpenProfile : canOp
 as bool,canOpenChat: null == canOpenChat ? _self.canOpenChat : canOpenChat // ignore: cast_nullable_to_non_nullable
 as bool,canCall: null == canCall ? _self.canCall : canCall // ignore: cast_nullable_to_non_nullable
 as bool,canViewContract: null == canViewContract ? _self.canViewContract : canViewContract // ignore: cast_nullable_to_non_nullable
+as bool,canCreateContract: null == canCreateContract ? _self.canCreateContract : canCreateContract // ignore: cast_nullable_to_non_nullable
+as bool,canEditContract: null == canEditContract ? _self.canEditContract : canEditContract // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -434,10 +436,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool canRevokeEngagement,  String? revokeEngagementBlockedReason,  bool canOpenProfile,  bool canOpenChat,  bool canCall,  bool canViewContract)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool canRevokeEngagement,  String? revokeEngagementBlockedReason,  bool canOpenProfile,  bool canOpenChat,  bool canCall,  bool canViewContract,  bool canCreateContract,  bool canEditContract)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ServiceRequestProfessionalActionsModel() when $default != null:
-return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_that.canOpenProfile,_that.canOpenChat,_that.canCall,_that.canViewContract);case _:
+return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_that.canOpenProfile,_that.canOpenChat,_that.canCall,_that.canViewContract,_that.canCreateContract,_that.canEditContract);case _:
   return orElse();
 
 }
@@ -455,10 +457,10 @@ return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool canRevokeEngagement,  String? revokeEngagementBlockedReason,  bool canOpenProfile,  bool canOpenChat,  bool canCall,  bool canViewContract)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool canRevokeEngagement,  String? revokeEngagementBlockedReason,  bool canOpenProfile,  bool canOpenChat,  bool canCall,  bool canViewContract,  bool canCreateContract,  bool canEditContract)  $default,) {final _that = this;
 switch (_that) {
 case _ServiceRequestProfessionalActionsModel():
-return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_that.canOpenProfile,_that.canOpenChat,_that.canCall,_that.canViewContract);case _:
+return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_that.canOpenProfile,_that.canOpenChat,_that.canCall,_that.canViewContract,_that.canCreateContract,_that.canEditContract);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -475,10 +477,10 @@ return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool canRevokeEngagement,  String? revokeEngagementBlockedReason,  bool canOpenProfile,  bool canOpenChat,  bool canCall,  bool canViewContract)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool canRevokeEngagement,  String? revokeEngagementBlockedReason,  bool canOpenProfile,  bool canOpenChat,  bool canCall,  bool canViewContract,  bool canCreateContract,  bool canEditContract)?  $default,) {final _that = this;
 switch (_that) {
 case _ServiceRequestProfessionalActionsModel() when $default != null:
-return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_that.canOpenProfile,_that.canOpenChat,_that.canCall,_that.canViewContract);case _:
+return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_that.canOpenProfile,_that.canOpenChat,_that.canCall,_that.canViewContract,_that.canCreateContract,_that.canEditContract);case _:
   return null;
 
 }
@@ -490,7 +492,7 @@ return $default(_that.canRevokeEngagement,_that.revokeEngagementBlockedReason,_t
 @JsonSerializable()
 
 class _ServiceRequestProfessionalActionsModel extends ServiceRequestProfessionalActionsModel {
-  const _ServiceRequestProfessionalActionsModel({this.canRevokeEngagement = false, this.revokeEngagementBlockedReason, this.canOpenProfile = false, this.canOpenChat = false, this.canCall = false, this.canViewContract = false}): super._();
+  const _ServiceRequestProfessionalActionsModel({this.canRevokeEngagement = false, this.revokeEngagementBlockedReason, this.canOpenProfile = false, this.canOpenChat = false, this.canCall = false, this.canViewContract = false, this.canCreateContract = false, this.canEditContract = false}): super._();
   factory _ServiceRequestProfessionalActionsModel.fromJson(Map<String, dynamic> json) => _$ServiceRequestProfessionalActionsModelFromJson(json);
 
 @override@JsonKey() final  bool canRevokeEngagement;
@@ -499,6 +501,8 @@ class _ServiceRequestProfessionalActionsModel extends ServiceRequestProfessional
 @override@JsonKey() final  bool canOpenChat;
 @override@JsonKey() final  bool canCall;
 @override@JsonKey() final  bool canViewContract;
+@override@JsonKey() final  bool canCreateContract;
+@override@JsonKey() final  bool canEditContract;
 
 /// Create a copy of ServiceRequestProfessionalActionsModel
 /// with the given fields replaced by the non-null parameter values.
@@ -513,16 +517,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServiceRequestProfessionalActionsModel&&(identical(other.canRevokeEngagement, canRevokeEngagement) || other.canRevokeEngagement == canRevokeEngagement)&&(identical(other.revokeEngagementBlockedReason, revokeEngagementBlockedReason) || other.revokeEngagementBlockedReason == revokeEngagementBlockedReason)&&(identical(other.canOpenProfile, canOpenProfile) || other.canOpenProfile == canOpenProfile)&&(identical(other.canOpenChat, canOpenChat) || other.canOpenChat == canOpenChat)&&(identical(other.canCall, canCall) || other.canCall == canCall)&&(identical(other.canViewContract, canViewContract) || other.canViewContract == canViewContract));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServiceRequestProfessionalActionsModel&&(identical(other.canRevokeEngagement, canRevokeEngagement) || other.canRevokeEngagement == canRevokeEngagement)&&(identical(other.revokeEngagementBlockedReason, revokeEngagementBlockedReason) || other.revokeEngagementBlockedReason == revokeEngagementBlockedReason)&&(identical(other.canOpenProfile, canOpenProfile) || other.canOpenProfile == canOpenProfile)&&(identical(other.canOpenChat, canOpenChat) || other.canOpenChat == canOpenChat)&&(identical(other.canCall, canCall) || other.canCall == canCall)&&(identical(other.canViewContract, canViewContract) || other.canViewContract == canViewContract)&&(identical(other.canCreateContract, canCreateContract) || other.canCreateContract == canCreateContract)&&(identical(other.canEditContract, canEditContract) || other.canEditContract == canEditContract));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,canRevokeEngagement,revokeEngagementBlockedReason,canOpenProfile,canOpenChat,canCall,canViewContract);
+int get hashCode => Object.hash(runtimeType,canRevokeEngagement,revokeEngagementBlockedReason,canOpenProfile,canOpenChat,canCall,canViewContract,canCreateContract,canEditContract);
 
 @override
 String toString() {
-  return 'ServiceRequestProfessionalActionsModel(canRevokeEngagement: $canRevokeEngagement, revokeEngagementBlockedReason: $revokeEngagementBlockedReason, canOpenProfile: $canOpenProfile, canOpenChat: $canOpenChat, canCall: $canCall, canViewContract: $canViewContract)';
+  return 'ServiceRequestProfessionalActionsModel(canRevokeEngagement: $canRevokeEngagement, revokeEngagementBlockedReason: $revokeEngagementBlockedReason, canOpenProfile: $canOpenProfile, canOpenChat: $canOpenChat, canCall: $canCall, canViewContract: $canViewContract, canCreateContract: $canCreateContract, canEditContract: $canEditContract)';
 }
 
 
@@ -533,7 +537,7 @@ abstract mixin class _$ServiceRequestProfessionalActionsModelCopyWith<$Res> impl
   factory _$ServiceRequestProfessionalActionsModelCopyWith(_ServiceRequestProfessionalActionsModel value, $Res Function(_ServiceRequestProfessionalActionsModel) _then) = __$ServiceRequestProfessionalActionsModelCopyWithImpl;
 @override @useResult
 $Res call({
- bool canRevokeEngagement, String? revokeEngagementBlockedReason, bool canOpenProfile, bool canOpenChat, bool canCall, bool canViewContract
+ bool canRevokeEngagement, String? revokeEngagementBlockedReason, bool canOpenProfile, bool canOpenChat, bool canCall, bool canViewContract, bool canCreateContract, bool canEditContract
 });
 
 
@@ -550,7 +554,7 @@ class __$ServiceRequestProfessionalActionsModelCopyWithImpl<$Res>
 
 /// Create a copy of ServiceRequestProfessionalActionsModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? canRevokeEngagement = null,Object? revokeEngagementBlockedReason = freezed,Object? canOpenProfile = null,Object? canOpenChat = null,Object? canCall = null,Object? canViewContract = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? canRevokeEngagement = null,Object? revokeEngagementBlockedReason = freezed,Object? canOpenProfile = null,Object? canOpenChat = null,Object? canCall = null,Object? canViewContract = null,Object? canCreateContract = null,Object? canEditContract = null,}) {
   return _then(_ServiceRequestProfessionalActionsModel(
 canRevokeEngagement: null == canRevokeEngagement ? _self.canRevokeEngagement : canRevokeEngagement // ignore: cast_nullable_to_non_nullable
 as bool,revokeEngagementBlockedReason: freezed == revokeEngagementBlockedReason ? _self.revokeEngagementBlockedReason : revokeEngagementBlockedReason // ignore: cast_nullable_to_non_nullable
@@ -558,6 +562,8 @@ as String?,canOpenProfile: null == canOpenProfile ? _self.canOpenProfile : canOp
 as bool,canOpenChat: null == canOpenChat ? _self.canOpenChat : canOpenChat // ignore: cast_nullable_to_non_nullable
 as bool,canCall: null == canCall ? _self.canCall : canCall // ignore: cast_nullable_to_non_nullable
 as bool,canViewContract: null == canViewContract ? _self.canViewContract : canViewContract // ignore: cast_nullable_to_non_nullable
+as bool,canCreateContract: null == canCreateContract ? _self.canCreateContract : canCreateContract // ignore: cast_nullable_to_non_nullable
+as bool,canEditContract: null == canEditContract ? _self.canEditContract : canEditContract // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

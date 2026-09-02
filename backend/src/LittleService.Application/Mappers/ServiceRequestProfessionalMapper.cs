@@ -68,7 +68,9 @@ public static class ServiceRequestProfessionalMapper
             CanOpenProfile = hasProfessional,
             CanOpenChat = false,
             CanCall = false,
-            CanViewContract = false
+            CanViewContract = contract != null,
+            CanCreateContract = hasProfessional && contract == null,
+            CanEditContract = contract?.IsDraft() == true
         };
     }
 }

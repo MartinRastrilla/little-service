@@ -46,6 +46,9 @@ public class ContractConfiguration : IEntityTypeConfiguration<Contract>
             .HasForeignKey<Contract>(c => c.ServiceRequestId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasIndex(c => c.ServiceRequestId)
+            .IsUnique();
+
         builder.HasMany(c => c.ContractPayments)
             .WithOne(cp => cp.Contract)
             .HasForeignKey(cp => cp.ContractId)

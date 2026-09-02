@@ -6,6 +6,7 @@ class ProfessionalActionsList extends StatelessWidget {
   final ServiceRequestProfessional professional;
   final String professionalName;
   final VoidCallback? onOpenChat;
+  final VoidCallback? onOpenContract;
   final VoidCallback? onRevokeEngagement;
   final VoidCallback onComingSoon;
 
@@ -14,6 +15,7 @@ class ProfessionalActionsList extends StatelessWidget {
     required this.professional,
     required this.professionalName,
     required this.onOpenChat,
+    this.onOpenContract,
     required this.onRevokeEngagement,
     required this.onComingSoon,
   });
@@ -39,11 +41,16 @@ class ProfessionalActionsList extends StatelessWidget {
         ),
         _ActionTile(
           icon: Icons.description_outlined,
-          title: 'Ver contrato',
-          subtitle: 'Revisá los términos acordados',
-          // TODO(professional-tab): contract viewer screen/PDF
-          onTap: onComingSoon,
-          isDisabled: true,
+          title: professional.actions.canCreateContract
+              ? 'Crear contrato'
+              : 'Ver contrato',
+          subtitle: professional.actions.canCreateContract
+              ? 'Asentá los términos acordados con el profesional'
+              : professional.actions.canViewContract
+                  ? 'Revisá o actualizá los términos acordados'
+                  : 'Todavía no hay un contrato en este pedido',
+          onTap: onOpenContract,
+          isDisabled: onOpenContract == null,
         ),
         _ActionTile(
           icon: Icons.cancel_outlined,

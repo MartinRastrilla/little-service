@@ -32,6 +32,7 @@ public class ServiceRequestProfessionalActionsDto
     // TODO(professional-tab): phone field on User + call flow
     public bool CanCall { get; set; }
 
-    // TODO(professional-tab): contract viewer screen/PDF
     public bool CanViewContract { get; set; }
+    public bool CanCreateContract { get; set; }
+    public bool CanEditContract { get; set; }
 }

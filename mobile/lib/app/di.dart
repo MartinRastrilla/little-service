@@ -15,8 +15,11 @@ import 'package:mobile/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/register_usecase.dart';
 import 'package:mobile/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mobile/features/service_requests/data/datasources/contracts_remote_datasource.dart';
 import 'package:mobile/features/service_requests/data/datasources/service_requests_remote_datasource.dart';
+import 'package:mobile/features/service_requests/data/repositories/contracts_repository_impl.dart';
 import 'package:mobile/features/service_requests/data/repositories/service_requests_repository_impl.dart';
+import 'package:mobile/features/service_requests/domain/repositories/contracts_repository.dart';
 import 'package:mobile/features/service_requests/domain/repositories/service_requests_repository.dart';
 import 'package:mobile/features/service_requests/domain/usecases/create_service_request_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/get_service_request_activity_usecase.dart';
@@ -31,6 +34,10 @@ import 'package:mobile/features/service_requests/domain/usecases/update_service_
 import 'package:mobile/features/service_requests/domain/usecases/cancel_service_request_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/cancel_service_request_engagement_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/get_service_request_professional_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/get_contract_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/create_contract_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/update_contract_usecase.dart';
+import 'package:mobile/features/service_requests/presentation/bloc/contract_form/contract_form_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/create_service_request/create_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/edit_service_request/edit_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/my_service_requests_bloc.dart';
@@ -139,6 +146,16 @@ Future<void> setupDependencyInjection() async {
     () => ServiceRequestsRepositoryImpl(remote: sl()),
   );
 
+  sl.registerLazySingleton(
+    () => ContractsRemoteDataSource(
+      dio: sl<Dio>(instanceName: apiDioInstanceName),
+    ),
+  );
+
+  sl.registerLazySingleton<ContractsRepository>(
+    () => ContractsRepositoryImpl(remote: sl()),
+  );
+
   sl.registerLazySingleton(() => GetMyServiceRequestsUseCase(sl()));
   sl.registerLazySingleton(() => CreateServiceRequestUseCase(sl()));
   sl.registerLazySingleton(() => GetServiceRequestInfoUseCase(sl()));
@@ -150,6 +167,9 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton(() => CancelServiceRequestUseCase(sl()));
   sl.registerLazySingleton(() => GetServiceRequestProfessionalUseCase(sl()));
   sl.registerLazySingleton(() => CancelServiceRequestEngagementUseCase(sl()));
+  sl.registerLazySingleton(() => GetContractUseCase(sl()));
+  sl.registerLazySingleton(() => CreateContractUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateContractUseCase(sl()));
 
   sl.registerFactory(
     () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
@@ -166,6 +186,14 @@ Future<void> setupDependencyInjection() async {
       getServiceRequestProfessionalUseCase: sl(),
       getPublicFreelancerProfileUseCase: sl(),
       cancelServiceRequestEngagementUseCase: sl(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => ContractFormBloc(
+      getContractUseCase: sl(),
+      createContractUseCase: sl(),
+      updateContractUseCase: sl(),
     ),
   );
 

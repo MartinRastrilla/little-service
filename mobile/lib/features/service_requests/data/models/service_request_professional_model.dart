@@ -44,6 +44,8 @@ abstract class ServiceRequestProfessionalActionsModel
     @Default(false) bool canOpenChat,
     @Default(false) bool canCall,
     @Default(false) bool canViewContract,
+    @Default(false) bool canCreateContract,
+    @Default(false) bool canEditContract,
   }) = _ServiceRequestProfessionalActionsModel;
 
   factory ServiceRequestProfessionalActionsModel.fromJson(
@@ -58,6 +60,8 @@ abstract class ServiceRequestProfessionalActionsModel
         canOpenChat: canOpenChat,
         canCall: canCall,
         canViewContract: canViewContract,
+        canCreateContract: canCreateContract,
+        canEditContract: canEditContract,
       );
 }
 
