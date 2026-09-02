@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using LittleService.Application.DTOs.Contracts;
+using LittleService.Application.UseCases.Contract.CancelPartialContract;
 using LittleService.Application.UseCases.Contract.CreateContract;
 using LittleService.Application.UseCases.Contract.GetContract;
+using LittleService.Application.UseCases.Contract.SignContract;
 using LittleService.Application.UseCases.Contract.UpdateContract;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -92,6 +94,44 @@ public class ContractController : ControllerBase
         return Ok(result.Value!.Contract);
     }
 
+    [HttpPost("{id:guid}/contract/sign")]
+    public async Task<IActionResult> SignContract(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var command = new SignContractCommand
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id
+        };
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+            return MapContractError(result.Error, result.ErrorCode);
+
+        return Ok(result.Value!.Contract);
+    }
+
+    [HttpDelete("{id:guid}/contract")]
+    public async Task<IActionResult> CancelPartialContract(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var command = new CancelPartialContractCommand
+        {
+            UserId = userId.Value,
+            ServiceRequestId = id
+        };
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccess)
+            return MapContractError(result.Error, result.ErrorCode);
+
+        return NoContent();
+    }
+
     private IActionResult MapContractError(string? error, string? errorCode)
     {
         return errorCode switch
@@ -102,6 +142,8 @@ public class ContractController : ControllerBase
             "FORBIDDEN" => Forbid(),
             "CONTRACT_ALREADY_EXISTS" =>
                 Conflict(new { message = error, code = errorCode }),
+            "CONTRACT_NOT_PARTIALLY_SIGNED" =>
+                BadRequest(new { message = error, code = errorCode }),
             _ => BadRequest(new { message = error, code = errorCode })
         };
     }

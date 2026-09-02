@@ -5,61 +5,62 @@ using LittleService.Domain.Interfaces.Repositories;
 using Mediator;
 using Microsoft.Extensions.Logging;
 
-namespace LittleService.Application.UseCases.Contract.UpdateContract;
+namespace LittleService.Application.UseCases.Contract.SignContract;
 
-public class UpdateContractCommandHandler
-    : IRequestHandler<UpdateContractCommand, Result<UpdateContractResult>>
+public class SignContractCommandHandler
+    : IRequestHandler<SignContractCommand, Result<SignContractResult>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<UpdateContractCommandHandler> _logger;
+    private readonly ILogger<SignContractCommandHandler> _logger;
 
-    public UpdateContractCommandHandler(
+    public SignContractCommandHandler(
         IUnitOfWork unitOfWork,
-        ILogger<UpdateContractCommandHandler> logger)
+        ILogger<SignContractCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    public async ValueTask<Result<UpdateContractResult>> Handle(
-        UpdateContractCommand command,
+    public async ValueTask<Result<SignContractResult>> Handle(
+        SignContractCommand command,
         CancellationToken cancellationToken)
     {
         var user = await _unitOfWork.Users.GetByIdAsync(command.UserId, cancellationToken);
         if (user == null)
-            return Result<UpdateContractResult>.Failure("Usuario no encontrado", "USER_NOT_FOUND");
-        if (user.Client == null)
-            return Result<UpdateContractResult>.Failure("Perfil de cliente no encontrado", "CLIENT_NOT_FOUND");
+            return Result<SignContractResult>.Failure("Usuario no encontrado", "USER_NOT_FOUND");
 
         var serviceRequest = await _unitOfWork.ServiceRequests.GetByIdWithApplicationsAsync(
             command.ServiceRequestId,
             cancellationToken);
         if (serviceRequest == null)
-            return Result<UpdateContractResult>.Failure(
+            return Result<SignContractResult>.Failure(
                 "Solicitud de servicio no encontrada",
                 "SERVICE_REQUEST_NOT_FOUND");
 
-        if (serviceRequest.ClientId != user.Client.Id)
-            return Result<UpdateContractResult>.Failure(
-                "No tienes permisos para editar este contrato",
+        var isClientOwner = user.Client != null && serviceRequest.ClientId == user.Client.Id;
+        var isAssignedFreelancer = serviceRequest.FreelancerPickedId.HasValue &&
+                                   serviceRequest.FreelancerPickedId.Value == user.Id;
+
+        if (!isClientOwner && !isAssignedFreelancer)
+            return Result<SignContractResult>.Failure(
+                "No tienes permisos para firmar este contrato",
                 "FORBIDDEN");
 
         if (serviceRequest.Contract == null)
-            return Result<UpdateContractResult>.Failure(
+            return Result<SignContractResult>.Failure(
                 "Este pedido aún no tiene un contrato",
                 "CONTRACT_NOT_FOUND");
 
         try
         {
-            serviceRequest.Contract.UpdateDetails(
-                command.Request.Terms,
-                command.Request.StartDate,
-                command.Request.EndDate,
-                command.Request.Amount);
+            if (isClientOwner)
+                serviceRequest.Contract.SignByClient();
+            else
+                serviceRequest.Contract.SignByFreelancer();
         }
         catch (DomainException ex)
         {
-            return Result<UpdateContractResult>.Failure(ex.Message, ex.ErrorCode);
+            return Result<SignContractResult>.Failure(ex.Message, ex.ErrorCode);
         }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -74,25 +75,25 @@ public class UpdateContractCommandHandler
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
             _logger.LogError(
                 ex,
-                "Error al actualizar el contrato del pedido {ServiceRequestId}",
+                "Error al firmar el contrato del pedido {ServiceRequestId}",
                 command.ServiceRequestId);
-            return Result<UpdateContractResult>.Failure(
-                "Error al actualizar el contrato",
-                "UPDATE_CONTRACT_ERROR");
+            return Result<SignContractResult>.Failure(
+                "Error al firmar el contrato",
+                "SIGN_CONTRACT_ERROR");
         }
 
         _logger.LogInformation(
-            "Contrato {ContractId} actualizado para el pedido {ServiceRequestId}",
+            "Contrato {ContractId} firmado por el usuario {UserId}",
             serviceRequest.Contract.Id,
-            command.ServiceRequestId);
+            command.UserId);
 
-        return Result<UpdateContractResult>.Success(new UpdateContractResult
+        return Result<SignContractResult>.Success(new SignContractResult
         {
             Contract = ContractMapper.Map(
                 serviceRequest.Contract,
                 serviceRequest.Price,
-                isClientOwner: true,
-                isAssignedFreelancer: false)
+                isClientOwner,
+                isAssignedFreelancer)
         });
     }
 }

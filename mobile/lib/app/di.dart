@@ -37,6 +37,8 @@ import 'package:mobile/features/service_requests/domain/usecases/get_service_req
 import 'package:mobile/features/service_requests/domain/usecases/get_contract_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/create_contract_usecase.dart';
 import 'package:mobile/features/service_requests/domain/usecases/update_contract_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/sign_contract_usecase.dart';
+import 'package:mobile/features/service_requests/domain/usecases/cancel_contract_usecase.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/contract_form/contract_form_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/create_service_request/create_service_request_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/edit_service_request/edit_service_request_bloc.dart';
@@ -170,6 +172,8 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton(() => GetContractUseCase(sl()));
   sl.registerLazySingleton(() => CreateContractUseCase(sl()));
   sl.registerLazySingleton(() => UpdateContractUseCase(sl()));
+  sl.registerLazySingleton(() => SignContractUseCase(sl()));
+  sl.registerLazySingleton(() => CancelContractUseCase(sl()));
 
   sl.registerFactory(
     () => MyServiceRequestsBloc(getMyServiceRequestsUseCase: sl()),
@@ -194,6 +198,8 @@ Future<void> setupDependencyInjection() async {
       getContractUseCase: sl(),
       createContractUseCase: sl(),
       updateContractUseCase: sl(),
+      signContractUseCase: sl(),
+      cancelContractUseCase: sl(),
     ),
   );
 

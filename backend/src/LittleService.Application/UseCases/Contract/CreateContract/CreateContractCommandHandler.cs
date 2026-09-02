@@ -98,7 +98,11 @@ public class CreateContractCommandHandler
 
         return Result<CreateContractResult>.Success(new CreateContractResult
         {
-            Contract = ContractMapper.Map(contract, serviceRequest.Price, canEdit: true)
+            Contract = ContractMapper.Map(
+                contract,
+                serviceRequest.Price,
+                isClientOwner: true,
+                isAssignedFreelancer: false)
         });
     }
 }

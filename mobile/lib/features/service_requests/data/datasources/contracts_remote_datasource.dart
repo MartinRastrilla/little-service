@@ -45,6 +45,25 @@ class ContractsRemoteDataSource {
     }
   }
 
+  Future<ServiceRequestContractModel> signContract(String serviceRequestId) async {
+    try {
+      final response = await dio.post(
+        '/service-requests/$serviceRequestId/contract/sign',
+      );
+      return _parseContract(response);
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
+  Future<void> cancelContract(String serviceRequestId) async {
+    try {
+      await dio.delete('/service-requests/$serviceRequestId/contract');
+    } on DioException catch (error) {
+      throw _mapDioException(error);
+    }
+  }
+
   Map<String, dynamic> _contractBody(UpsertContractParams params) {
     return {
       'terms': params.terms,

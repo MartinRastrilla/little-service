@@ -45,4 +45,26 @@ class ContractsRepositoryImpl implements ContractsRepository {
       return Left(mapExceptionToFailure(error));
     }
   }
+
+  @override
+  Future<Either<Failure, ServiceRequestContract>> signContract(
+    String serviceRequestId,
+  ) async {
+    try {
+      final model = await remote.signContract(serviceRequestId);
+      return Right(model.toEntity());
+    } catch (error) {
+      return Left(mapExceptionToFailure(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> cancelContract(String serviceRequestId) async {
+    try {
+      await remote.cancelContract(serviceRequestId);
+      return const Right(null);
+    } catch (error) {
+      return Left(mapExceptionToFailure(error));
+    }
+  }
 }

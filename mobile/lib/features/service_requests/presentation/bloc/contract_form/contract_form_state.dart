@@ -15,6 +15,7 @@ sealed class ContractFormState with _$ContractFormState {
     required bool canCreate,
     required bool canEdit,
     @Default(false) bool isSaving,
+    @Default(false) bool shouldPop,
     String? errorMessage,
   }) = ContractFormReady;
 

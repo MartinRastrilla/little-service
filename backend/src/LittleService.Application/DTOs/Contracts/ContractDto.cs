@@ -11,6 +11,8 @@ public class ContractDto
     public string Status { get; set; } = string.Empty;
     public decimal? SuggestedAmount { get; set; }
     public bool CanEdit { get; set; }
+    public bool CanSign { get; set; }
+    public bool CanCancelPartial { get; set; }
     public DateTime? SignedByClientAt { get; set; }
     public DateTime? SignedByFreelancerAt { get; set; }
     public DateTime CreatedAt { get; set; }

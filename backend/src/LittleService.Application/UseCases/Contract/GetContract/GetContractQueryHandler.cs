@@ -44,14 +44,13 @@ public class GetContractQueryHandler : IRequestHandler<GetContractQuery, Result<
                 "Este pedido aún no tiene un contrato",
                 "CONTRACT_NOT_FOUND");
 
-        var canEdit = isClientOwner && serviceRequest.Contract.IsDraft();
-
         return Result<GetContractResult>.Success(new GetContractResult
         {
             Contract = ContractMapper.Map(
                 serviceRequest.Contract,
                 serviceRequest.Price,
-                canEdit)
+                isClientOwner,
+                isAssignedFreelancer)
         });
     }
 }

@@ -14,4 +14,10 @@ abstract class ContractsRepository {
   Future<Either<Failure, ServiceRequestContract>> updateContract(
     UpsertContractParams params,
   );
+
+  Future<Either<Failure, ServiceRequestContract>> signContract(
+    String serviceRequestId,
+  );
+
+  Future<Either<Failure, void>> cancelContract(String serviceRequestId);
 }

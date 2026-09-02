@@ -16,4 +16,8 @@ sealed class ContractFormEvent with _$ContractFormEvent {
     required DateTime endDate,
     required double amount,
   }) = ContractFormSaveRequested;
+
+  const factory ContractFormEvent.signRequested() = ContractFormSignRequested;
+
+  const factory ContractFormEvent.cancelRequested() = ContractFormCancelRequested;
 }

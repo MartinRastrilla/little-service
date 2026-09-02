@@ -21,6 +21,8 @@ abstract class ServiceRequestContractModel with _$ServiceRequestContractModel {
     @Default('') String status,
     double? suggestedAmount,
     @Default(false) bool canEdit,
+    @Default(false) bool canSign,
+    @Default(false) bool canCancelPartial,
     @JsonKey(fromJson: nullableDateTimeFromJson, toJson: nullableDateTimeToJson)
     DateTime? signedByClientAt,
     @JsonKey(fromJson: nullableDateTimeFromJson, toJson: nullableDateTimeToJson)
@@ -44,6 +46,8 @@ abstract class ServiceRequestContractModel with _$ServiceRequestContractModel {
     status: status,
     suggestedAmount: suggestedAmount,
     canEdit: canEdit,
+    canSign: canSign,
+    canCancelPartial: canCancelPartial,
     signedByClientAt: signedByClientAt,
     signedByFreelancerAt: signedByFreelancerAt,
     createdAt: createdAt,

@@ -126,12 +126,12 @@ return failure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( ServiceRequestContract? contract,  double? suggestedAmount,  bool canCreate,  bool canEdit,  bool isSaving,  String? errorMessage)?  ready,TResult Function( String message)?  failure,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( ServiceRequestContract? contract,  double? suggestedAmount,  bool canCreate,  bool canEdit,  bool isSaving,  bool shouldPop,  String? errorMessage)?  ready,TResult Function( String message)?  failure,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ContractFormInitial() when initial != null:
 return initial();case ContractFormLoading() when loading != null:
 return loading();case ContractFormReady() when ready != null:
-return ready(_that.contract,_that.suggestedAmount,_that.canCreate,_that.canEdit,_that.isSaving,_that.errorMessage);case ContractFormFailure() when failure != null:
+return ready(_that.contract,_that.suggestedAmount,_that.canCreate,_that.canEdit,_that.isSaving,_that.shouldPop,_that.errorMessage);case ContractFormFailure() when failure != null:
 return failure(_that.message);case _:
   return orElse();
 
@@ -150,12 +150,12 @@ return failure(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( ServiceRequestContract? contract,  double? suggestedAmount,  bool canCreate,  bool canEdit,  bool isSaving,  String? errorMessage)  ready,required TResult Function( String message)  failure,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( ServiceRequestContract? contract,  double? suggestedAmount,  bool canCreate,  bool canEdit,  bool isSaving,  bool shouldPop,  String? errorMessage)  ready,required TResult Function( String message)  failure,}) {final _that = this;
 switch (_that) {
 case ContractFormInitial():
 return initial();case ContractFormLoading():
 return loading();case ContractFormReady():
-return ready(_that.contract,_that.suggestedAmount,_that.canCreate,_that.canEdit,_that.isSaving,_that.errorMessage);case ContractFormFailure():
+return ready(_that.contract,_that.suggestedAmount,_that.canCreate,_that.canEdit,_that.isSaving,_that.shouldPop,_that.errorMessage);case ContractFormFailure():
 return failure(_that.message);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -170,12 +170,12 @@ return failure(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( ServiceRequestContract? contract,  double? suggestedAmount,  bool canCreate,  bool canEdit,  bool isSaving,  String? errorMessage)?  ready,TResult? Function( String message)?  failure,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( ServiceRequestContract? contract,  double? suggestedAmount,  bool canCreate,  bool canEdit,  bool isSaving,  bool shouldPop,  String? errorMessage)?  ready,TResult? Function( String message)?  failure,}) {final _that = this;
 switch (_that) {
 case ContractFormInitial() when initial != null:
 return initial();case ContractFormLoading() when loading != null:
 return loading();case ContractFormReady() when ready != null:
-return ready(_that.contract,_that.suggestedAmount,_that.canCreate,_that.canEdit,_that.isSaving,_that.errorMessage);case ContractFormFailure() when failure != null:
+return ready(_that.contract,_that.suggestedAmount,_that.canCreate,_that.canEdit,_that.isSaving,_that.shouldPop,_that.errorMessage);case ContractFormFailure() when failure != null:
 return failure(_that.message);case _:
   return null;
 
@@ -252,7 +252,7 @@ String toString() {
 
 
 class ContractFormReady implements ContractFormState {
-  const ContractFormReady({this.contract, this.suggestedAmount, required this.canCreate, required this.canEdit, this.isSaving = false, this.errorMessage});
+  const ContractFormReady({this.contract, this.suggestedAmount, required this.canCreate, required this.canEdit, this.isSaving = false, this.shouldPop = false, this.errorMessage});
   
 
  final  ServiceRequestContract? contract;
@@ -260,6 +260,7 @@ class ContractFormReady implements ContractFormState {
  final  bool canCreate;
  final  bool canEdit;
 @JsonKey() final  bool isSaving;
+@JsonKey() final  bool shouldPop;
  final  String? errorMessage;
 
 /// Create a copy of ContractFormState
@@ -272,16 +273,16 @@ $ContractFormReadyCopyWith<ContractFormReady> get copyWith => _$ContractFormRead
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContractFormReady&&(identical(other.contract, contract) || other.contract == contract)&&(identical(other.suggestedAmount, suggestedAmount) || other.suggestedAmount == suggestedAmount)&&(identical(other.canCreate, canCreate) || other.canCreate == canCreate)&&(identical(other.canEdit, canEdit) || other.canEdit == canEdit)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContractFormReady&&(identical(other.contract, contract) || other.contract == contract)&&(identical(other.suggestedAmount, suggestedAmount) || other.suggestedAmount == suggestedAmount)&&(identical(other.canCreate, canCreate) || other.canCreate == canCreate)&&(identical(other.canEdit, canEdit) || other.canEdit == canEdit)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.shouldPop, shouldPop) || other.shouldPop == shouldPop)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,contract,suggestedAmount,canCreate,canEdit,isSaving,errorMessage);
+int get hashCode => Object.hash(runtimeType,contract,suggestedAmount,canCreate,canEdit,isSaving,shouldPop,errorMessage);
 
 @override
 String toString() {
-  return 'ContractFormState.ready(contract: $contract, suggestedAmount: $suggestedAmount, canCreate: $canCreate, canEdit: $canEdit, isSaving: $isSaving, errorMessage: $errorMessage)';
+  return 'ContractFormState.ready(contract: $contract, suggestedAmount: $suggestedAmount, canCreate: $canCreate, canEdit: $canEdit, isSaving: $isSaving, shouldPop: $shouldPop, errorMessage: $errorMessage)';
 }
 
 
@@ -292,7 +293,7 @@ abstract mixin class $ContractFormReadyCopyWith<$Res> implements $ContractFormSt
   factory $ContractFormReadyCopyWith(ContractFormReady value, $Res Function(ContractFormReady) _then) = _$ContractFormReadyCopyWithImpl;
 @useResult
 $Res call({
- ServiceRequestContract? contract, double? suggestedAmount, bool canCreate, bool canEdit, bool isSaving, String? errorMessage
+ ServiceRequestContract? contract, double? suggestedAmount, bool canCreate, bool canEdit, bool isSaving, bool shouldPop, String? errorMessage
 });
 
 
@@ -309,13 +310,14 @@ class _$ContractFormReadyCopyWithImpl<$Res>
 
 /// Create a copy of ContractFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? contract = freezed,Object? suggestedAmount = freezed,Object? canCreate = null,Object? canEdit = null,Object? isSaving = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? contract = freezed,Object? suggestedAmount = freezed,Object? canCreate = null,Object? canEdit = null,Object? isSaving = null,Object? shouldPop = null,Object? errorMessage = freezed,}) {
   return _then(ContractFormReady(
 contract: freezed == contract ? _self.contract : contract // ignore: cast_nullable_to_non_nullable
 as ServiceRequestContract?,suggestedAmount: freezed == suggestedAmount ? _self.suggestedAmount : suggestedAmount // ignore: cast_nullable_to_non_nullable
 as double?,canCreate: null == canCreate ? _self.canCreate : canCreate // ignore: cast_nullable_to_non_nullable
 as bool,canEdit: null == canEdit ? _self.canEdit : canEdit // ignore: cast_nullable_to_non_nullable
 as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
+as bool,shouldPop: null == shouldPop ? _self.shouldPop : shouldPop // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

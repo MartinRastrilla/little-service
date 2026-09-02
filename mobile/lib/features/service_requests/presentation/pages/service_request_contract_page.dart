@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile/app/di.dart';
 import 'package:mobile/core/theme/theme_context.dart';
 import 'package:mobile/core/utils/formatters.dart';
+import 'package:mobile/features/service_requests/domain/entities/service_request_contract.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/contract_form/contract_form_bloc.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/contract_form/contract_form_event.dart';
 import 'package:mobile/features/service_requests/presentation/bloc/contract_form/contract_form_state.dart';
@@ -54,6 +55,7 @@ class _ServiceRequestContractViewState
   DateTime? _startDate;
   DateTime? _endDate;
   var _initialized = false;
+  var _didMutate = false;
 
   @override
   void dispose() {
@@ -140,40 +142,109 @@ class _ServiceRequestContractViewState
     );
   }
 
+  Future<void> _confirmSign(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('¿Firmar el contrato?'),
+          content: const Text(
+            'Al firmar no vas a poder editar los términos. '
+            'Esta acción no se puede deshacer.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Volver'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Firmar'),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !context.mounted) return;
+    context.read<ContractFormBloc>().add(const ContractFormEvent.signRequested());
+  }
+
+  Future<void> _confirmCancel(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('¿Anular las firmas?'),
+          content: const Text(
+            'Se elimina este contrato y las firmas. El profesional se mantiene '
+            'asignado. El cliente deberá crear un contrato nuevo.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Volver'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(dialogContext).colorScheme.error,
+                foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Anular firmas'),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !context.mounted) return;
+    context.read<ContractFormBloc>().add(
+      const ContractFormEvent.cancelRequested(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ContractFormBloc, ContractFormState>(
-      listenWhen: (previous, current) {
-        if (previous is! ContractFormReady || current is! ContractFormReady) {
-          return false;
-        }
-        return previous.isSaving &&
-            !current.isSaving &&
-            current.contract != null &&
-            current.errorMessage == null;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.of(context).pop(_didMutate);
       },
-      listener: (context, state) {
-        if (!context.mounted) return;
-        context.pop(true);
-      },
-      builder: (context, state) {
-        return switch (state) {
-          ContractFormInitial() || ContractFormLoading() => Scaffold(
-            appBar: AppBar(title: const Text('Contrato')),
-            body: const Center(child: CircularProgressIndicator()),
-          ),
-          ContractFormFailure(:final message) => Scaffold(
-            appBar: AppBar(title: const Text('Contrato')),
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Text(message, textAlign: TextAlign.center),
+      child: BlocConsumer<ContractFormBloc, ContractFormState>(
+        listenWhen: (previous, current) {
+          if (previous is! ContractFormReady || current is! ContractFormReady) {
+            return false;
+          }
+          return previous.isSaving &&
+              !current.isSaving &&
+              current.errorMessage == null;
+        },
+        listener: (context, state) {
+          if (state is! ContractFormReady || !context.mounted) return;
+          _didMutate = true;
+          if (state.shouldPop) {
+            context.pop(true);
+          }
+        },
+        builder: (context, state) {
+          return switch (state) {
+            ContractFormInitial() || ContractFormLoading() => Scaffold(
+              appBar: AppBar(title: const Text('Contrato')),
+              body: const Center(child: CircularProgressIndicator()),
+            ),
+            ContractFormFailure(:final message) => Scaffold(
+              appBar: AppBar(title: const Text('Contrato')),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(message, textAlign: TextAlign.center),
+                ),
               ),
             ),
-          ),
-          ContractFormReady() => _buildReady(context, state),
-        };
-      },
+            ContractFormReady() => _buildReady(context, state),
+          };
+        },
+      ),
     );
   }
 
@@ -195,8 +266,11 @@ class _ServiceRequestContractViewState
       );
     }
 
+    final contract = state.contract;
     final isEditable = state.canCreate || state.canEdit;
-    final title = state.contract == null ? 'Crear contrato' : 'Contrato';
+    final title = contract == null ? 'Crear contrato' : 'Contrato';
+    final canSign = contract?.canSign == true;
+    final canCancelPartial = contract?.canCancelPartial == true;
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -207,21 +281,15 @@ class _ServiceRequestContractViewState
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
               children: [
-                if (isEditable)
-                  Text(
-                    'Si el profesional pide cambios, actualizá el contrato. '
-                    'El chat es el canal de negociación.',
-                    style: context.text.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
-                    ),
-                  )
-                else
-                  Text(
-                    'Pedí cambios por el chat. El cliente actualizará el contrato.',
-                    style: context.text.bodyMedium?.copyWith(
-                      color: context.colors.onSurfaceVariant,
-                    ),
+                Text(
+                  _hintText(
+                    isEditable: isEditable,
+                    status: contract?.status,
                   ),
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 20),
                 IgnorePointer(
                   ignoring: !isEditable,
@@ -277,12 +345,12 @@ class _ServiceRequestContractViewState
                     )?.message,
                   ),
                 ),
-                if (!isEditable) ...[
-                  const SizedBox(height: 16),
+                if (contract != null) ...[
+                  const SizedBox(height: 20),
                   Text(
-                    'Estado: ${state.contract?.status ?? ''}',
-                    style: context.text.bodySmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    _statusCopy(contract),
+                    style: context.text.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -300,10 +368,29 @@ class _ServiceRequestContractViewState
                   FilledButton(
                     onPressed: state.isSaving ? null : () => _submit(context),
                     child: Text(
-                      state.contract == null
-                          ? 'Crear contrato'
-                          : 'Guardar cambios',
+                      contract == null ? 'Crear contrato' : 'Guardar cambios',
                     ),
+                  ),
+                ],
+                if (canSign) ...[
+                  SizedBox(height: isEditable ? 12 : 24),
+                  FilledButton(
+                    onPressed: state.isSaving
+                        ? null
+                        : () => _confirmSign(context),
+                    child: const Text('Firmar'),
+                  ),
+                ],
+                if (canCancelPartial) ...[
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: context.colors.error,
+                    ),
+                    onPressed: state.isSaving
+                        ? null
+                        : () => _confirmCancel(context),
+                    child: const Text('Anular firmas'),
                   ),
                 ],
               ],
@@ -317,6 +404,46 @@ class _ServiceRequestContractViewState
         ],
       ),
     );
+  }
+
+  String _hintText({required bool isEditable, required String? status}) {
+    if (isEditable) {
+      return 'Si el profesional pide cambios, actualizá el contrato. '
+          'El chat es el canal de negociación.';
+    }
+    if (status == null || status == 'Draft') {
+      return 'Pedí cambios por el chat. El cliente actualizará el contrato.';
+    }
+    if (status == 'SignedByClient' || status == 'SignedByFreelancer') {
+      return 'Los términos ya no se pueden editar. Podés anular las firmas '
+          'o completar la firma que falta.';
+    }
+    return 'El contrato está firmado por ambas partes.';
+  }
+
+  String _statusCopy(ServiceRequestContract contract) {
+    final clientSigned = contract.signedByClientAt != null
+        ? 'Cliente: ${formatDetailDateTime(contract.signedByClientAt!)}'
+        : null;
+    final freelancerSigned = contract.signedByFreelancerAt != null
+        ? 'Profesional: ${formatDetailDateTime(contract.signedByFreelancerAt!)}'
+        : null;
+    final timestamps = [
+      if (clientSigned != null) clientSigned,
+      if (freelancerSigned != null) freelancerSigned,
+    ].join('\n');
+
+    final summary = switch (contract.status) {
+      'Draft' => 'Borrador. Todavía se pueden editar los términos.',
+      'SignedByClient' =>
+        'Pendiente de firma del profesional.',
+      'SignedByFreelancer' => 'Pendiente de firma del cliente.',
+      'Signed' => 'Firmado por ambas partes.',
+      _ => 'Estado: ${contract.status}',
+    };
+
+    if (timestamps.isEmpty) return summary;
+    return '$summary\n$timestamps';
   }
 }
 

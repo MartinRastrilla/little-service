@@ -56,12 +56,14 @@ extension ContractFormEventPatterns on ContractFormEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ContractFormStarted value)?  started,TResult Function( ContractFormSaveRequested value)?  saveRequested,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ContractFormStarted value)?  started,TResult Function( ContractFormSaveRequested value)?  saveRequested,TResult Function( ContractFormSignRequested value)?  signRequested,TResult Function( ContractFormCancelRequested value)?  cancelRequested,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ContractFormStarted() when started != null:
 return started(_that);case ContractFormSaveRequested() when saveRequested != null:
-return saveRequested(_that);case _:
+return saveRequested(_that);case ContractFormSignRequested() when signRequested != null:
+return signRequested(_that);case ContractFormCancelRequested() when cancelRequested != null:
+return cancelRequested(_that);case _:
   return orElse();
 
 }
@@ -79,12 +81,14 @@ return saveRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ContractFormStarted value)  started,required TResult Function( ContractFormSaveRequested value)  saveRequested,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ContractFormStarted value)  started,required TResult Function( ContractFormSaveRequested value)  saveRequested,required TResult Function( ContractFormSignRequested value)  signRequested,required TResult Function( ContractFormCancelRequested value)  cancelRequested,}){
 final _that = this;
 switch (_that) {
 case ContractFormStarted():
 return started(_that);case ContractFormSaveRequested():
-return saveRequested(_that);}
+return saveRequested(_that);case ContractFormSignRequested():
+return signRequested(_that);case ContractFormCancelRequested():
+return cancelRequested(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -98,12 +102,14 @@ return saveRequested(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ContractFormStarted value)?  started,TResult? Function( ContractFormSaveRequested value)?  saveRequested,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ContractFormStarted value)?  started,TResult? Function( ContractFormSaveRequested value)?  saveRequested,TResult? Function( ContractFormSignRequested value)?  signRequested,TResult? Function( ContractFormCancelRequested value)?  cancelRequested,}){
 final _that = this;
 switch (_that) {
 case ContractFormStarted() when started != null:
 return started(_that);case ContractFormSaveRequested() when saveRequested != null:
-return saveRequested(_that);case _:
+return saveRequested(_that);case ContractFormSignRequested() when signRequested != null:
+return signRequested(_that);case ContractFormCancelRequested() when cancelRequested != null:
+return cancelRequested(_that);case _:
   return null;
 
 }
@@ -120,11 +126,13 @@ return saveRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String serviceRequestId,  double? suggestedAmount,  bool allowCreate)?  started,TResult Function( String terms,  DateTime startDate,  DateTime endDate,  double amount)?  saveRequested,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String serviceRequestId,  double? suggestedAmount,  bool allowCreate)?  started,TResult Function( String terms,  DateTime startDate,  DateTime endDate,  double amount)?  saveRequested,TResult Function()?  signRequested,TResult Function()?  cancelRequested,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ContractFormStarted() when started != null:
 return started(_that.serviceRequestId,_that.suggestedAmount,_that.allowCreate);case ContractFormSaveRequested() when saveRequested != null:
-return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);case _:
+return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);case ContractFormSignRequested() when signRequested != null:
+return signRequested();case ContractFormCancelRequested() when cancelRequested != null:
+return cancelRequested();case _:
   return orElse();
 
 }
@@ -142,11 +150,13 @@ return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String serviceRequestId,  double? suggestedAmount,  bool allowCreate)  started,required TResult Function( String terms,  DateTime startDate,  DateTime endDate,  double amount)  saveRequested,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String serviceRequestId,  double? suggestedAmount,  bool allowCreate)  started,required TResult Function( String terms,  DateTime startDate,  DateTime endDate,  double amount)  saveRequested,required TResult Function()  signRequested,required TResult Function()  cancelRequested,}) {final _that = this;
 switch (_that) {
 case ContractFormStarted():
 return started(_that.serviceRequestId,_that.suggestedAmount,_that.allowCreate);case ContractFormSaveRequested():
-return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);}
+return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);case ContractFormSignRequested():
+return signRequested();case ContractFormCancelRequested():
+return cancelRequested();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -160,11 +170,13 @@ return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String serviceRequestId,  double? suggestedAmount,  bool allowCreate)?  started,TResult? Function( String terms,  DateTime startDate,  DateTime endDate,  double amount)?  saveRequested,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String serviceRequestId,  double? suggestedAmount,  bool allowCreate)?  started,TResult? Function( String terms,  DateTime startDate,  DateTime endDate,  double amount)?  saveRequested,TResult? Function()?  signRequested,TResult? Function()?  cancelRequested,}) {final _that = this;
 switch (_that) {
 case ContractFormStarted() when started != null:
 return started(_that.serviceRequestId,_that.suggestedAmount,_that.allowCreate);case ContractFormSaveRequested() when saveRequested != null:
-return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);case _:
+return saveRequested(_that.terms,_that.startDate,_that.endDate,_that.amount);case ContractFormSignRequested() when signRequested != null:
+return signRequested();case ContractFormCancelRequested() when cancelRequested != null:
+return cancelRequested();case _:
   return null;
 
 }
@@ -313,5 +325,69 @@ as double,
 
 
 }
+
+/// @nodoc
+
+
+class ContractFormSignRequested implements ContractFormEvent {
+  const ContractFormSignRequested();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContractFormSignRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ContractFormEvent.signRequested()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ContractFormCancelRequested implements ContractFormEvent {
+  const ContractFormCancelRequested();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContractFormCancelRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ContractFormEvent.cancelRequested()';
+}
+
+
+}
+
+
+
 
 // dart format on

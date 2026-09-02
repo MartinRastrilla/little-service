@@ -8,6 +8,8 @@ class ServiceRequestContract {
   final String status;
   final double? suggestedAmount;
   final bool canEdit;
+  final bool canSign;
+  final bool canCancelPartial;
   final DateTime? signedByClientAt;
   final DateTime? signedByFreelancerAt;
   final DateTime createdAt;
@@ -23,6 +25,8 @@ class ServiceRequestContract {
     required this.status,
     this.suggestedAmount,
     required this.canEdit,
+    this.canSign = false,
+    this.canCancelPartial = false,
     this.signedByClientAt,
     this.signedByFreelancerAt,
     required this.createdAt,
